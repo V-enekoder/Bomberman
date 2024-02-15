@@ -18,7 +18,6 @@ public class Bomberman implements Runnable { //Menu con modo ataque, defensa y e
     private InterfazGrafica GUI;
     //private boolean running;
     private Cliente socketCliente;
-    private Cliente socketCliente1;
     private Servidor socketServidor;
     private Thread gameThread;
 	private static ArrayList<int[]> inicio = new ArrayList<>();
@@ -41,25 +40,13 @@ public class Bomberman implements Runnable { //Menu con modo ataque, defensa y e
         GUI.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         tablero.agregarSensor(GUI.getBombermanComponent());
         this.socketCliente = new Cliente();
-        this.socketCliente1 = new Cliente();
         this.socketServidor = new Servidor(this);
         //this.running = false;
-    }
-
-    public void agregarJugador(){
-        Random random = new Random();
-        int numeroAleatorio = random.nextInt(inicio.size());
-        int[] casillas = inicio.get(numeroAleatorio);
-
-        tablero.crearJugador(GUI.getBombermanComponent(), tablero, casillas,id.get(0));
-        inicio.remove(numeroAleatorio);
-        id.remove(0);
     }
 
     public static void main(String[] args){
         boolean servidor = true;
         Bomberman bomberman = new Bomberman(15, 15, 10);
-        //bomberman.agregarJugador();
         //bomberman.startGame();
         bomberman.startGameThread(servidor);
     }
@@ -76,12 +63,18 @@ public class Bomberman implements Runnable { //Menu con modo ataque, defensa y e
         }
         Packet00Ingreso ingreso = new Packet00Ingreso("Eldesbaratamala");
         ingreso.escribirInformacion(socketCliente);
-        Packet00Ingreso ingreso1 = new Packet00Ingreso("Prueba");
-        ingreso1.escribirInformacion(socketCliente1);
         /*this.gameThread = new Thread(this);
         gameThread.start();*/
     }
+    public void agregarJugador(){
+        Random random = new Random();
+        int numeroAleatorio = random.nextInt(inicio.size());
+        int[] casillas = inicio.get(numeroAleatorio);
 
+        tablero.crearJugador(GUI.getBombermanComponent(), tablero, casillas,id.get(0));
+        inicio.remove(numeroAleatorio);
+        id.remove(0);
+    }
     public void run() {
         startGame();
     }
@@ -107,6 +100,11 @@ public class Bomberman implements Runnable { //Menu con modo ataque, defensa y e
         tablero.generarExplosion();
         tablero.aplicarExplosion();
         tablero.informarSensores();
+
+        for(Jugador jugador: tablero.getJugadores())
+            jugador.chocaConEnemigo(tablero);
+        
+            tablero.reducirTiempoInmunidad();
     }
 
     private void gameOver(){

@@ -2,6 +2,7 @@ package game;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
 
 public class Jugador extends Personaje{
 	//LS = 30*18; LI = 30*2
@@ -9,17 +10,48 @@ public class Jugador extends Personaje{
     private int radioExplosion;
     private int bombasDisponibles;
 	private int vidas;
+	private boolean dentroEnemigo;
+	private int duracionInmunidad;
+	private int tiempoInmunidad;
+	private boolean inmune;
 
-    public Jugador(ComponenteGrafico bombermanComponent, Tablero tablero, int[] posicion, int id){
+
+
+	public int getTiempoInmunidad() {
+		return tiempoInmunidad;
+	}
+
+	public void restaurarTiempoInmunidad(){
+		tiempoInmunidad = duracionInmunidad;
+	}
+
+
+	public void reducirTiempoInmunidad(){
+		this.tiempoInmunidad -= 125;
+	}
+
+	public boolean isInmune() {
+		return inmune;
+	}
+
+	public void setInmune(boolean inmune) {
+		this.inmune = inmune;
+	}
+
+	public Jugador(ComponenteGrafico bombermanComponent, Tablero tablero, int[] posicion, int id){
 		super(posicion[0],posicion[1]);
 		radioExplosion = 1;
 		bombasDisponibles = 1;
-		vidas = 1;
+		vidas = 3;
 		this.id = id;
+		dentroEnemigo = false;
+		duracionInmunidad = 5*1000; //5 segundos por 1000 milisegundos
+		tiempoInmunidad = duracionInmunidad;
+		inmune = false; 
 		configurarControles(bombermanComponent, tablero);
     }
 
-	/*private*/protected void configurarControles(ComponenteGrafico bombermanComponent, Tablero tablero){
+	protected void configurarControles(ComponenteGrafico bombermanComponent, Tablero tablero){
 		bombermanComponent.getInputMap().put(KeyStroke.getKeyStroke("RIGHT"), "Derecha");
 		bombermanComponent.getInputMap().put(KeyStroke.getKeyStroke("LEFT"), "Izquierda");
 		bombermanComponent.getInputMap().put(KeyStroke.getKeyStroke("UP"), "Subir");
@@ -102,20 +134,61 @@ public class Jugador extends Personaje{
 	public int getID(){
 		return id;
 	}
-    /*private*/protected void moverJugador(Movimiento movimiento,Tablero tablero) {
+
+    public boolean isDentroEnemigo() {
+		return dentroEnemigo;
+	}
+
+	public void setDentroEnemigo(boolean dentroEnemigo) {
+		this.dentroEnemigo = dentroEnemigo;
+	}
+
+	/*protected void moverJugador(Movimiento movimiento, Tablero tablero) {
+		Movimiento(movimiento);
+	
+		if (tablero.chocaconBloque(this) || tablero.chocaconBomba(this))
+			regresar(movimiento);
+	
+		if (!dentroEnemigo) {
+			if (tablero.choqueconEnemigos()) {
+				reducirVidas();
+				if (vidas == 0)
+					tablero.setGameOver(true);
+				dentroEnemigo = true;
+				System.out.println("Vidas: " + vidas);
+			}
+		} else {
+			if (!tablero.choqueconEnemigos()) {
+				dentroEnemigo = false;
+			}
+		}
+	
+		tablero.verificarSalidaBomba();
+		tablero.verificarSalidaEnemigo();
+		tablero.verificarSalidaExplosion();
+		tablero.choqueconMejora();
+		tablero.informarSensores();
+	}*/
+    protected void moverJugador(Movimiento movimiento,Tablero tablero) {
 		Movimiento(movimiento);
 
 		if(tablero.chocaconBloque(this) || tablero.chocaconBomba(this))
 			regresar(movimiento);
-		
-		if(tablero.choqueconEnemigos()){
-			//reducirVidas();
-			//if(vidas == 0)
-			tablero.setGameOver(true);
-		}
 
 		tablero.verificarSalidaBomba();
 		tablero.choqueconMejora();
 		tablero.informarSensores();
     }
+
+	protected void chocaConEnemigo(Tablero tablero){
+		if(tablero.choqueconEnemigos() && !inmune){
+			reducirVidas();
+			inmune = true;
+			if(vidas == 0)
+				tablero.setGameOver(true);
+        	System.out.println("Vidas: " + vidas);
+		}
+	}
+
+
 }

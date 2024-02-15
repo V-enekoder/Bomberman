@@ -3,7 +3,7 @@ package game;
 public class Enemigo extends Personaje{
     private Movimiento direccion;
 
-    public Enemigo(int x, int y, boolean vertical){
+    public Enemigo(int x, int y, boolean vertical) {
         super(x, y);
         direccion = asignarDireccion(vertical);
     }

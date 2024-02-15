@@ -32,6 +32,7 @@ public class Tablero {
 		definirCasillas();
 		crearEnemigos(enemigos);
 	}
+	
 	private ArrayList<int[]> reservarCasillas() {
 		ArrayList<int[]> reserva = new ArrayList<>();
 	
@@ -61,42 +62,34 @@ public class Tablero {
 	
 		return reserva;
 	}
-	/*private ArrayList<int[]> reservarCasillas(){
-		ArrayList<int[]> reserva = new ArrayList<>();
-        
-        reserva.add(new int[] {1, 1});
-        reserva.add(new int[] {1, 2});
-        reserva.add(new int[] {2, 1});
 
-        reserva.add(new int[] {1, ancho - 3});
-        reserva.add(new int[] {1, ancho - 2});
-        reserva.add(new int[] {2, ancho - 2});
-
-        reserva.add(new int[] {alto - 3, 1});
-        reserva.add(new int[] {alto - 2, 1});
-        reserva.add(new int[] {alto - 2, 2});
-
-        reserva.add(new int[] {alto - 2, ancho - 3});
-        reserva.add(new int[] {alto - 2, ancho - 2});
-        reserva.add(new int[] {alto - 3, ancho - 2});
-		return reserva;
-	}*/
-
-	private void definirCasillas(){
+	private void definirCasillas() {
+		// Marcar todas las casillas como piso
 		for (int i = 0; i < alto; i++) {
 			for (int j = 0; j < ancho; j++) {
-				if ((esBorde(i, j) || (i % 2 == 0 && j % 2 == 0) && !estaReservado(i, j)))
-					celdas[i][j] = Celda.PARED;
-			
-				double prob = Math.random();
-
-				if (prob <= PROB_PARED && estaDisponible(celdas[i][j])&& !estaReservado(i, j))
-					celdas[i][j] = Celda.BLOQUE;
-
-				if (estaDisponible(celdas[i][j]))
-					celdas[i][j] = Celda.PISO;
-	  	  	}
+				celdas[i][j] = Celda.PISO;
+			}
 		}
+	
+	// Generar paredes y bloques solo en las casillas no reservadas
+		for (int i = 0; i < alto; i++) {
+			for (int j = 0; j < ancho; j++) {
+			// Generar paredes en los bordes y en las casillas pares
+				if (esBorde(i, j) || (i % 2 == 0 && j % 2 == 0) && !estaReservado(i, j))
+				celdas[i][j] = Celda.PARED;
+			else
+				// Generar bloques aleatoriamente solo si la casilla no está reservada
+				if (!estaReservado(i, j)) {
+					double prob = Math.random();
+				 	if (prob <= PROB_PARED)
+						celdas[i][j] = Celda.BLOQUE;
+				}
+			}
+		}
+		celdas[13][1] = Celda.PISO;
+		celdas[2][13] = Celda.PISO;
+		celdas[13][2] = Celda.PISO;
+		celdas[12][13] = Celda.PISO;
 	}
 
 	private boolean esBorde(int fila, int columna){
@@ -105,12 +98,13 @@ public class Tablero {
 		return false;
 	}
 
-	private boolean estaDisponible (Celda casilla){
-		if(casilla == Celda.PISO || casilla == Celda.BLOQUE || casilla == Celda.PARED)
-			return false;
-		return true;
+	private boolean estaReservado(int fila, int columna){
+		for (int[] position : reserva) {
+			if (position[0] == fila && position[1] == columna)
+				return true;
+		}
+		return false;
 	}
-
     private void crearEnemigos (int cantidadEnemigos){
 		int enemigos_generados = 0;
 		do{
@@ -131,13 +125,7 @@ public class Tablero {
         return (int) (Math.random() * rango) + minimo;
     }
 
-	private boolean estaReservado(int fila, int columna){
-		for (int[] position : reserva) {
-			if (position[0] == fila && position[1] == columna)
-				return true;
-		}
-		return false;
-	}
+
 
     public int transfromarAPixel(int coordenada){
 		return coordenada * ComponenteGrafico.getSquareSize();
@@ -374,7 +362,7 @@ public class Tablero {
 	}
 
 	private void generarMejora(int fila, int columna) {
-		int mejora = generarNumeroAleatorio(1, 4);
+		int mejora = generarNumeroAleatorio(1, 10);
 		int squareMiddle = ComponenteGrafico.getSquareMiddle();
 		int x = transfromarAPixel(fila) + squareMiddle;
 		int y = transfromarAPixel(columna) + squareMiddle;
@@ -405,10 +393,13 @@ public class Tablero {
 			x = transfromarAPixel(explosion.getColumna());
 			y =  transfromarAPixel(explosion.getFila());
 			for(Jugador jugador: jugadores){
-				if(hayChoque(jugador,x,y))
-				//jugador.reducirVidas();
-				//if(jugador.getVidas()==0)
-					GameOver = true;
+				if(hayChoque(jugador,x,y) && !jugador.isInmune()){
+					jugador.reducirVidas();
+					jugador.setInmune(true);
+					System.out.println("Vidas: " + jugador.getVidas());
+					if(jugador.getVidas() == 0)
+						GameOver = true;
+				}
 			}
 		}
     }
@@ -485,6 +476,15 @@ public class Tablero {
 				if(!bomb.estaJugadorFuera(jugador.getID()) &&
 				!hayChoque(jugador, x, y))
 					bomb.setJugadorFuera(true,jugador.getID());
+			}
+		}
+	}
+	public void reducirTiempoInmunidad() {
+		for(Jugador jugador: jugadores){
+			jugador.reducirTiempoInmunidad();
+			if(jugador.getTiempoInmunidad() <= 0){
+				jugador.setInmune(false);
+				jugador.restaurarTiempoInmunidad();
 			}
 		}
 	}
