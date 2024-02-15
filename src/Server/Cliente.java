@@ -14,6 +14,7 @@ public class Cliente implements Runnable {
     private DatagramSocket socket;
     private InetAddress direccionServidor;
     private volatile boolean running = true;
+    
     public Cliente(){
         this.PUERTO_SERVIDOR = 5000;
         this.datos = new byte[1024];

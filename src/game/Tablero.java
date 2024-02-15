@@ -3,6 +3,8 @@ package game;
 import game.Personaje.Movimiento;
 import java.util.*;
 
+import Server.JugadorMJ;
+
 public class Tablero {
     private final static double PROB_PARED = 0.4;
     /*private final static double PROB_AUMENTO_RADIO = 0.25;
@@ -193,8 +195,9 @@ public class Tablero {
 		bombas.add(bomba);
     }
 
-    public void crearJugador(ComponenteGrafico bombermanComponent, Tablero tablero, int[] casillas, int i){
-		jugadores.add(new Jugador(bombermanComponent, tablero,casillas, i));
+    public void crearJugador(ComponenteGrafico bombermanComponent, Tablero tablero, int[] casillas, int id){
+		jugadores.add(new Jugador(bombermanComponent, tablero,casillas, id));
+		//JugadorMJ j = new JugadorMJ(bombermanComponent, tablero, casillas, id, null, id);
     }
 
     public void moverEnemigos(){

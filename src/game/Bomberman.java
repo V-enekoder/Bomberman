@@ -3,6 +3,7 @@ package game;
 import javax.swing.*;
 
 import Server.Cliente;
+import Server.Packet00Ingreso;
 import Server.Servidor;
 
 import java.awt.event.ActionEvent;
@@ -17,54 +18,68 @@ public class Bomberman implements Runnable { //Menu con modo ataque, defensa y e
     private InterfazGrafica GUI;
     //private boolean running;
     private Cliente socketCliente;
+    private Cliente socketCliente1;
     private Servidor socketServidor;
     private Thread gameThread;
 	private static ArrayList<int[]> inicio = new ArrayList<>();
+    private static ArrayList<Integer> id = new ArrayList<>();
 
 	static {
         inicio.add(new int[]{60, 60});
         inicio.add(new int[]{60, 540});
         inicio.add(new int[]{540, 60});
         inicio.add(new int[]{540, 540});
+        for(int i = 0; i < 4; i++){
+            id.add(i);
+        }
     }
 
     public Bomberman(int ancho, int alto, int enemigos) {
         this.tablero = new Tablero(ancho, alto, enemigos);
         this.GUI = new InterfazGrafica("Bomberman", tablero);
-
-        Random random = new Random();
-        int numeroAleatorio = random.nextInt(inicio.size());
-        int[] casillas = inicio.get(numeroAleatorio);
-        tablero.crearJugador(GUI.getBombermanComponent(), tablero, casillas,0);
-        inicio.remove(numeroAleatorio);
-
         GUI.setLocationRelativeTo(null);
         GUI.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         tablero.agregarSensor(GUI.getBombermanComponent());
         this.socketCliente = new Cliente();
-        this.socketServidor = new Servidor();
+        this.socketCliente1 = new Cliente();
+        this.socketServidor = new Servidor(this);
         //this.running = false;
     }
 
+    public void agregarJugador(){
+        Random random = new Random();
+        int numeroAleatorio = random.nextInt(inicio.size());
+        int[] casillas = inicio.get(numeroAleatorio);
+
+        tablero.crearJugador(GUI.getBombermanComponent(), tablero, casillas,id.get(0));
+        inicio.remove(numeroAleatorio);
+        id.remove(0);
+    }
+
     public static void main(String[] args){
-        //boolean servidor = true;
+        boolean servidor = true;
         Bomberman bomberman = new Bomberman(15, 15, 10);
-        bomberman.startGame();
-        //bomberman.startGameThread(!servidor);
+        //bomberman.agregarJugador();
+        //bomberman.startGame();
+        bomberman.startGameThread(servidor);
     }
 
     public synchronized void startGameThread(boolean servidor) {
         //running = true;
         this.gameThread = new Thread(this);
         gameThread.start();
-
         if (servidor) {
             Thread servidorThread = new Thread(socketServidor);
             servidorThread.start();
-            Thread clienteThread = new Thread(socketCliente);
-            clienteThread.start();
-
+            //Thread clienteThread = new Thread(socketCliente);
+            //clienteThread.start();
         }
+        Packet00Ingreso ingreso = new Packet00Ingreso("Eldesbaratamala");
+        ingreso.escribirInformacion(socketCliente);
+        Packet00Ingreso ingreso1 = new Packet00Ingreso("Prueba");
+        ingreso1.escribirInformacion(socketCliente1);
+        /*this.gameThread = new Thread(this);
+        gameThread.start();*/
     }
 
     public void run() {
@@ -72,7 +87,6 @@ public class Bomberman implements Runnable { //Menu con modo ataque, defensa y e
     }
 
     public void startGame() {
-        //socketCliente.enviar("hola".getBytes());
         Action doOneStep = new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 tick();

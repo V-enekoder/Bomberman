@@ -19,7 +19,7 @@ public class Jugador extends Personaje{
 		configurarControles(bombermanComponent, tablero);
     }
 
-	private void configurarControles(ComponenteGrafico bombermanComponent, Tablero tablero){
+	/*private*/protected void configurarControles(ComponenteGrafico bombermanComponent, Tablero tablero){
 		bombermanComponent.getInputMap().put(KeyStroke.getKeyStroke("RIGHT"), "Derecha");
 		bombermanComponent.getInputMap().put(KeyStroke.getKeyStroke("LEFT"), "Izquierda");
 		bombermanComponent.getInputMap().put(KeyStroke.getKeyStroke("UP"), "Subir");
@@ -40,7 +40,7 @@ public class Jugador extends Personaje{
 		}
     };*/
 
-    private Action mover(Movimiento Movimiento, Tablero tablero) {
+    /*private*/protected Action mover(Movimiento Movimiento, Tablero tablero) {
         return new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 moverJugador(Movimiento, tablero);
@@ -48,7 +48,7 @@ public class Jugador extends Personaje{
         };
     }
 
-    private Action ponerBomba(Tablero tablero) {
+    /*private*/protected Action ponerBomba(Tablero tablero) {
         return new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 if (!tablero.tieneBomba(getUbicacionFila(), getUbicacionColumna()) &&
@@ -102,7 +102,7 @@ public class Jugador extends Personaje{
 	public int getID(){
 		return id;
 	}
-    private void moverJugador(Movimiento movimiento,Tablero tablero) {
+    /*private*/protected void moverJugador(Movimiento movimiento,Tablero tablero) {
 		Movimiento(movimiento);
 
 		if(tablero.chocaconBloque(this) || tablero.chocaconBomba(this))
