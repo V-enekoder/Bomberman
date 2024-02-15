@@ -1,6 +1,9 @@
-package game;
+package Juego;
 
 import javax.swing.*;
+
+import Juego.Mejoras.Mejora;
+
 import java.awt.*;
 import java.util.AbstractMap;
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package game;
+package Juego;
 
 import javax.swing.*;
 
@@ -104,7 +104,7 @@ public class Bomberman implements Runnable { //Menu con modo ataque, defensa y e
         for(Jugador jugador: tablero.getJugadores())
             jugador.chocaConEnemigo(tablero);
         
-            tablero.reducirTiempoInmunidad();
+        tablero.reducirTiempoInmunidad();
     }
 
     private void gameOver(){

@@ -1,4 +1,6 @@
-package game;
+package Juego.Mejoras;
+
+import Juego.Jugador;
 
 public class AumentoVelocidad extends Mejora {
     

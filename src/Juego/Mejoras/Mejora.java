@@ -1,10 +1,7 @@
-package game;
+package Juego.Mejoras;
 
-/**
- * This class is the basis for powerups, and the contents are shared between the different types of powerups that extends
- * PowerUp. The classes that extend this class is AumentoBombasDisponibles and AumentoRadioExplosion. The constructor needs an x and y
- * coordinate that will be the placement for the powerup.
- */
+import Juego.Jugador;
+
 public abstract class Mejora{  //Vida extra, mas velocidad y destruir pared
 
     protected final static int POWERUP_SIZE = 30;

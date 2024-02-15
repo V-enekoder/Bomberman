@@ -2,9 +2,9 @@ package Server;
 
 import java.net.InetAddress;
 
-import game.ComponenteGrafico;
-import game.Jugador;
-import game.Tablero;
+import Juego.ComponenteGrafico;
+import Juego.Jugador;
+import Juego.Tablero;
 
 public class JugadorMJ extends Jugador{
     public InetAddress direccionIP;

@@ -1,4 +1,4 @@
-package game;
+package Juego;
 
 /**
  * This Interface class is excluded to one method, tableroChanged which is implemented in BombermanComponent

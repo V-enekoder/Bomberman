@@ -1,8 +1,9 @@
-package game;
+package Juego;
 
-import game.Personaje.Movimiento;
 import java.util.*;
 
+import Juego.Mejoras.*;
+import Juego.Personaje.Movimiento;
 import Server.JugadorMJ;
 
 public class Tablero {
@@ -396,7 +397,6 @@ public class Tablero {
 				if(hayChoque(jugador,x,y) && !jugador.isInmune()){
 					jugador.reducirVidas();
 					jugador.setInmune(true);
-					System.out.println("Vidas: " + jugador.getVidas());
 					if(jugador.getVidas() == 0)
 						GameOver = true;
 				}

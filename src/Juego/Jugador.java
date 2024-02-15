@@ -1,4 +1,4 @@
-package game;
+package Juego;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -10,12 +10,9 @@ public class Jugador extends Personaje{
     private int radioExplosion;
     private int bombasDisponibles;
 	private int vidas;
-	private boolean dentroEnemigo;
 	private int duracionInmunidad;
 	private int tiempoInmunidad;
 	private boolean inmune;
-
-
 
 	public int getTiempoInmunidad() {
 		return tiempoInmunidad;
@@ -44,7 +41,6 @@ public class Jugador extends Personaje{
 		bombasDisponibles = 1;
 		vidas = 3;
 		this.id = id;
-		dentroEnemigo = false;
 		duracionInmunidad = 5*1000; //5 segundos por 1000 milisegundos
 		tiempoInmunidad = duracionInmunidad;
 		inmune = false; 
@@ -135,40 +131,6 @@ public class Jugador extends Personaje{
 		return id;
 	}
 
-    public boolean isDentroEnemigo() {
-		return dentroEnemigo;
-	}
-
-	public void setDentroEnemigo(boolean dentroEnemigo) {
-		this.dentroEnemigo = dentroEnemigo;
-	}
-
-	/*protected void moverJugador(Movimiento movimiento, Tablero tablero) {
-		Movimiento(movimiento);
-	
-		if (tablero.chocaconBloque(this) || tablero.chocaconBomba(this))
-			regresar(movimiento);
-	
-		if (!dentroEnemigo) {
-			if (tablero.choqueconEnemigos()) {
-				reducirVidas();
-				if (vidas == 0)
-					tablero.setGameOver(true);
-				dentroEnemigo = true;
-				System.out.println("Vidas: " + vidas);
-			}
-		} else {
-			if (!tablero.choqueconEnemigos()) {
-				dentroEnemigo = false;
-			}
-		}
-	
-		tablero.verificarSalidaBomba();
-		tablero.verificarSalidaEnemigo();
-		tablero.verificarSalidaExplosion();
-		tablero.choqueconMejora();
-		tablero.informarSensores();
-	}*/
     protected void moverJugador(Movimiento movimiento,Tablero tablero) {
 		Movimiento(movimiento);
 
@@ -186,7 +148,6 @@ public class Jugador extends Personaje{
 			inmune = true;
 			if(vidas == 0)
 				tablero.setGameOver(true);
-        	System.out.println("Vidas: " + vidas);
 		}
 	}
 

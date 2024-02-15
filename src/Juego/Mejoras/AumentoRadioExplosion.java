@@ -1,4 +1,7 @@
-package game;
+package Juego.Mejoras;
+
+import Juego.Jugador;
+
 public class AumentoRadioExplosion extends Mejora{
 
     public AumentoRadioExplosion(int fila, int columna){

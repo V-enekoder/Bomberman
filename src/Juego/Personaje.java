@@ -1,4 +1,4 @@
-package game;
+package Juego;
 
 public class Personaje{
     

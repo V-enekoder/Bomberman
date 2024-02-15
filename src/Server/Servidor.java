@@ -8,8 +8,8 @@ import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 
+import Juego.Bomberman;
 import Server.Packet.TiposPacket;
-import game.Bomberman;
 
 public class Servidor implements Runnable{
     private final int PUERTO;
