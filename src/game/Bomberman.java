@@ -1,58 +1,110 @@
 package game;
 
 import javax.swing.*;
+
+import Server.Cliente;
+import Server.Servidor;
+
 import java.awt.event.ActionEvent;
-/*import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;*/
+import java.util.Random;
 
-public class Bomberman{
+public class Bomberman implements Runnable { //Menu con modo ataque, defensa y equilibrado
+//hay que extenderlo a multijugador local
+    private final int TIME_STEP = 30;
+    private Timer clockTimer;
+    private Tablero tablero;
+    private InterfazGrafica GUI;
+    //private boolean running;
+    private Cliente socketCliente;
+    private Servidor socketServidor;
+    private Thread gameThread;
+	private static ArrayList<int[]> inicio = new ArrayList<>();
 
-    private static final int TIME_STEP = 30;
-    private static int ancho = 15;
-    private static int alto = 15;
-    private static int enemigos = 10;
-    private static Timer clockTimer;
-	public static int contador;
+	static {
+        inicio.add(new int[]{60, 60});
+        inicio.add(new int[]{60, 540});
+        inicio.add(new int[]{540, 60});
+        inicio.add(new int[]{540, 540});
+    }
+
+    public Bomberman(int ancho, int alto, int enemigos) {
+        this.tablero = new Tablero(ancho, alto, enemigos);
+        this.GUI = new InterfazGrafica("Bomberman", tablero);
+
+        Random random = new Random();
+        int numeroAleatorio = random.nextInt(inicio.size());
+        int[] casillas = inicio.get(numeroAleatorio);
+        tablero.crearJugador(GUI.getBombermanComponent(), tablero, casillas,0);
+        inicio.remove(numeroAleatorio);
+
+        GUI.setLocationRelativeTo(null);
+        GUI.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        tablero.agregarSensor(GUI.getBombermanComponent());
+        this.socketCliente = new Cliente();
+        this.socketServidor = new Servidor();
+        //this.running = false;
+    }
 
     public static void main(String[] args){
-		startGame();
+        //boolean servidor = true;
+        Bomberman bomberman = new Bomberman(15, 15, 10);
+        bomberman.startGame();
+        //bomberman.startGameThread(!servidor);
     }
 
-    public static void startGame(){
-		Tablero tablero = new Tablero(ancho, alto, enemigos);
-	 	InterfazGrafica frame = new InterfazGrafica("Bomberman", tablero);
-		frame.setLocationRelativeTo(null);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		tablero.agregarSensor(frame.getBombermanComponent());
+    public synchronized void startGameThread(boolean servidor) {
+        //running = true;
+        this.gameThread = new Thread(this);
+        gameThread.start();
 
-		Action doOneStep = new AbstractAction(){
-			public void actionPerformed(ActionEvent e) {
-				tick(frame, tablero);
-			}
-		};
+        if (servidor) {
+            Thread servidorThread = new Thread(socketServidor);
+            servidorThread.start();
+            Thread clienteThread = new Thread(socketCliente);
+            clienteThread.start();
 
-		clockTimer = new Timer(TIME_STEP, doOneStep);
-		clockTimer.setCoalesce(true);
-		clockTimer.start();
+        }
     }
 
-    private static void tick(InterfazGrafica frame, Tablero tablero){
-	
-		if (tablero.isGameOver())
-		   	gameOver(frame, tablero);
-	
-		tablero.moverEnemigos();
-		tablero.avanzarCuentaRegresiva();
-		tablero.generarExplosion();
-		tablero.aplicarExplosion();
-		tablero.informarSensores();
+    public void run() {
+        startGame();
     }
 
-    private static void gameOver(InterfazGrafica frame, Tablero tablero){
-		clockTimer.stop();
-		frame.dispose();
+    public void startGame() {
+        //socketCliente.enviar("hola".getBytes());
+        Action doOneStep = new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                tick();
+            }
+        };
+
+        clockTimer = new Timer(TIME_STEP, doOneStep);
+        clockTimer.setCoalesce(true);
+        clockTimer.start();
+    }
+
+    private void tick() {
+        if (tablero.isGameOver())
+            gameOver();
+
+        tablero.moverEnemigos();
+        tablero.avanzarCuentaRegresiva();
+        tablero.generarExplosion();
+        tablero.aplicarExplosion();
+        tablero.informarSensores();
+    }
+
+    private void gameOver(){
+        clockTimer.stop();
+        GUI.dispose();
+        /*if (gameThread != null)
+            gameThread.interrupt();    
+        if (socketServidor != null)
+            socketServidor.stop();
+            //socketServidor.stop();
+        if (socketCliente != null){
+            socketCliente.stop();
+        }*/
     }
 }

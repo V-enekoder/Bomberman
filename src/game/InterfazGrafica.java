@@ -8,20 +8,17 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
 public class InterfazGrafica extends JFrame{
-	
-		private ComponenteGrafico bombermanComponent;
+	private ComponenteGrafico bombermanComponent;
 
-		public InterfazGrafica(final String title, Tablero tablero) throws HeadlessException {
-			super(title);
-			this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-			bombermanComponent = new ComponenteGrafico(tablero);
-			tablero.crearJugador(bombermanComponent, tablero);
-			setKeyStrokes();
-
-			this.setLayout(new BorderLayout());
-			this.add(bombermanComponent, BorderLayout.CENTER);
-			this.pack();
-			this.setVisible(true);
+	public InterfazGrafica(final String title, Tablero tablero) throws HeadlessException {
+		super(title);
+		this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		bombermanComponent = new ComponenteGrafico(tablero);
+		setKeyStrokes();
+		this.setLayout(new BorderLayout());
+		this.add(bombermanComponent, BorderLayout.CENTER);
+		this.pack();
+		this.setVisible(true);
     }
 
     public ComponenteGrafico getBombermanComponent() {

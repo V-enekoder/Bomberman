@@ -7,13 +7,15 @@ public class Bomba{
     private int fila;
     private int columna;
     private int radioExplosion;
-    private boolean jugadorFuera;
+    private boolean[] jugadorFuera;
 
     public Bomba(final int fila, final int columna, int radioExplosion){
         this.fila = fila;
         this.columna = columna;
         this.radioExplosion = radioExplosion;
-        jugadorFuera = false;
+        jugadorFuera = new boolean[2];
+        for(int i = 0; i < 2; i++)
+            this.jugadorFuera[i] = false;
     }
 
     public int getFila(){
@@ -40,12 +42,12 @@ public class Bomba{
         return radioExplosion;
     }
 
-    public boolean estaJugadorFuera(){
-        return jugadorFuera;
+    public boolean estaJugadorFuera(int id){
+        return jugadorFuera[id];
     }
 
-    public void setJugadorFuera(final boolean jugadorFuera) {
-        this.jugadorFuera = jugadorFuera;
+    public void setJugadorFuera(boolean valor, int id) {
+        jugadorFuera[id] = valor;
     }
 
     public void reducirTiempoExplosion(){

@@ -3,9 +3,7 @@ package game;
 import game.Personaje.Movimiento;
 import java.util.*;
 
-
 public class Tablero {
-    // Constants are static by definition.
     private final static double PROB_PARED = 0.4;
     /*private final static double PROB_AUMENTO_RADIO = 0.25;
     private final static double PROB_AUMENTO_BOMBAS = 0.25;
@@ -15,39 +13,82 @@ public class Tablero {
     private int ancho;
     private int alto;
     private Collection<Sensor> sensores = new ArrayList<>();
-    private Jugador jugador;
+	private ArrayList<Jugador> jugadores = new ArrayList<>();
     private Collection<Enemigo> enemigos = new ArrayList<>();
     private List<Bomba> bombas = new ArrayList<>();
     private Collection<Mejora> mejoras = new ArrayList<>();
     private Collection<Bomba> explosiones = new ArrayList<>();
     private Collection<Explosion> ubicacionExplosiones= new ArrayList<>();
     private boolean GameOver = false;
-	private int[][] reservado = {{1, 1}, {1, 2}, {2, 1}};
-
+	ArrayList<int[]> reserva;
 
     public Tablero(int ancho, int alto, int enemigos){
 		this.ancho = ancho;
 		this.alto = alto;
 		this.celdas = new Celda[alto][ancho];
+		this.reserva = reservarCasillas();
 		definirCasillas();
 		crearEnemigos(enemigos);
 	}
+	private ArrayList<int[]> reservarCasillas() {
+		ArrayList<int[]> reserva = new ArrayList<>();
+	
+		int[] coordenadas = {1, 1};
+		for (int i = 0; i < 3; i++) {
+			reserva.add(coordenadas.clone());
+			coordenadas[1]++;
+		}
+	
+		coordenadas = new int[]{1, ancho - 3};
+		for (int i = 0; i < 3; i++) {
+			reserva.add(coordenadas.clone());
+			coordenadas[1]++;
+		}
+	
+		coordenadas = new int[]{alto - 3, 1};
+		for (int i = 0; i < 3; i++) {
+			reserva.add(coordenadas.clone());
+			coordenadas[1]++;
+		}
+	
+		coordenadas = new int[]{alto - 2, ancho - 3};
+		for (int i = 0; i < 3; i++) {
+			reserva.add(coordenadas.clone());
+			coordenadas[1]++;
+		}
+	
+		return reserva;
+	}
+	/*private ArrayList<int[]> reservarCasillas(){
+		ArrayList<int[]> reserva = new ArrayList<>();
+        
+        reserva.add(new int[] {1, 1});
+        reserva.add(new int[] {1, 2});
+        reserva.add(new int[] {2, 1});
+
+        reserva.add(new int[] {1, ancho - 3});
+        reserva.add(new int[] {1, ancho - 2});
+        reserva.add(new int[] {2, ancho - 2});
+
+        reserva.add(new int[] {alto - 3, 1});
+        reserva.add(new int[] {alto - 2, 1});
+        reserva.add(new int[] {alto - 2, 2});
+
+        reserva.add(new int[] {alto - 2, ancho - 3});
+        reserva.add(new int[] {alto - 2, ancho - 2});
+        reserva.add(new int[] {alto - 3, ancho - 2});
+		return reserva;
+	}*/
 
 	private void definirCasillas(){
-		int i,j;
-
-		celdas[1][1] = Celda.PISO;
-		celdas[1][2] = Celda.PISO;
-		celdas[2][1] = Celda.PISO;
-
-		for (i = 0; i < alto; i++) {
-			for (j = 0; j < ancho; j++) {
-				if (esBorde(i, j) || (i % 2 == 0 && j % 2 == 0))
+		for (int i = 0; i < alto; i++) {
+			for (int j = 0; j < ancho; j++) {
+				if ((esBorde(i, j) || (i % 2 == 0 && j % 2 == 0) && !estaReservado(i, j)))
 					celdas[i][j] = Celda.PARED;
 			
 				double prob = Math.random();
 
-				if (prob <= PROB_PARED && estaDisponible(celdas[i][j]))
+				if (prob <= PROB_PARED && estaDisponible(celdas[i][j])&& !estaReservado(i, j))
 					celdas[i][j] = Celda.BLOQUE;
 
 				if (estaDisponible(celdas[i][j]))
@@ -89,7 +130,7 @@ public class Tablero {
     }
 
 	private boolean estaReservado(int fila, int columna){
-		for (int[] position : reservado) {
+		for (int[] position : reserva) {
 			if (position[0] == fila && position[1] == columna)
 				return true;
 		}
@@ -116,9 +157,9 @@ public class Tablero {
 		return alto;
     }
 
-    public Jugador getJugador(){
-		return jugador;
-    }
+	public ArrayList<Jugador> getJugadores(){
+		return jugadores;
+	}
 
     public Collection<Enemigo> getEnemigos(){
 		return enemigos;
@@ -152,8 +193,8 @@ public class Tablero {
 		bombas.add(bomba);
     }
 
-    public void crearJugador(ComponenteGrafico bombermanComponent, Tablero tablero){
-		jugador = new Jugador(bombermanComponent, tablero);
+    public void crearJugador(ComponenteGrafico bombermanComponent, Tablero tablero, int[] casillas, int i){
+		jugadores.add(new Jugador(bombermanComponent, tablero,casillas, i));
     }
 
     public void moverEnemigos(){
@@ -222,11 +263,24 @@ public class Tablero {
     }
 
 
-    public boolean chocaconBomba(Personaje personaje) { 
+    public boolean chocaconBomba(Jugador jugador){ 
+		int x,y;
 		for (Bomba bomb : bombas) {
-			boolean exteriorBomba = personaje instanceof Jugador ? bomb.estaJugadorFuera(): true;
-			if(exteriorBomba && hayChoque(personaje, 
-				transfromarAPixel(bomb.getColumna()), transfromarAPixel(bomb.getFila())))
+			boolean exteriorBomba = bomb.estaJugadorFuera(jugador.getID());
+			x = transfromarAPixel(bomb.getColumna());
+			y = transfromarAPixel(bomb.getFila());
+			if(exteriorBomba && hayChoque(jugador,x,y))
+					return true;
+		}
+		return false;
+    }
+
+	public boolean chocaconBomba(Enemigo enemigo){
+		int x, y;
+		for (Bomba bomb : bombas){
+			x = transfromarAPixel(bomb.getColumna());
+			y = transfromarAPixel(bomb.getFila());
+			if(hayChoque(enemigo,x, y))
 					return true;
 		}
 		return false;
@@ -240,9 +294,8 @@ public class Tablero {
 			return true;
 		return false;
     }
-
+	
 	public void avanzarCuentaRegresiva(){
-		
 		Collection<Integer> bombas_por_Eliminar = new ArrayList<>();
 		explosiones.clear();
 		int bomba = 0;
@@ -257,7 +310,7 @@ public class Tablero {
 		for (int i: bombas_por_Eliminar)
 			bombas.remove(i);
 	}
-
+	
 	public void generarExplosion(){
 		Collection<Explosion> explosionesporEliminar = new ArrayList<>();
 		for (Explosion e:ubicacionExplosiones) {
@@ -267,7 +320,7 @@ public class Tablero {
 		}
 		for (Explosion e: explosionesporEliminar)
 			ubicacionExplosiones.remove(e);
-
+	
 		for (Bomba e: explosiones) {
 			int fila = e.getFila();
 			int columna = e.getColumna();
@@ -279,32 +332,46 @@ public class Tablero {
 			for (int i = 1; i < e.getRadioExplosion() + 1; i++){
 				if (fila - i >= 0 && northOpen)
 					northOpen = procesarExplosion(fila-i, columna);
-				if (fila - i <= alto && southOpen)
+				if (fila + i < alto && southOpen)
 					southOpen = procesarExplosion(fila+i, columna);
 				if (columna - i >= 0 && westOpen)
 					westOpen = procesarExplosion(fila, columna-i);
-				if (columna + i <= ancho && eastOpen)
+				if (columna + i < ancho && eastOpen)
 					eastOpen = procesarExplosion(fila, columna+i);
 			}
 		}
-    }
-
+	}
+	
 	private boolean procesarExplosion(int fila, int columna){
 		boolean open = true;
+
+		Iterator<Mejora> iteradorMejoras = mejoras.iterator();
+		while (iteradorMejoras.hasNext()) {
+			Mejora m = iteradorMejoras.next();
+			int filaMejora = transfromarACelda(m.getFila());
+			int columnaMejora = transfromarACelda(m.getColumna());
+			if(fila == filaMejora && columna == columnaMejora){
+				mejoras.remove(m);
+				break;
+			}
+		}
+
 		if(celdas[fila][columna] != Celda.PISO)
 			open = false;
-
+	
 		if(celdas[fila][columna] == Celda.BLOQUE){
 			celdas[fila][columna] = Celda.PISO;
 			generarMejora(fila, columna);
 		}
-		if(celdas[fila][columna] != Celda.PARED)
+
+		if(celdas[fila][columna] != Celda.PARED){
 			ubicacionExplosiones.add(new Explosion(fila, columna));
+		}
 		return open;
-    }
-    
+	}
+
 	private void generarMejora(int fila, int columna) {
-		int mejora = generarNumeroAleatorio(1, 8);
+		int mejora = generarNumeroAleatorio(1, 4);
 		int squareMiddle = ComponenteGrafico.getSquareMiddle();
 		int x = transfromarAPixel(fila) + squareMiddle;
 		int y = transfromarAPixel(columna) + squareMiddle;
@@ -330,19 +397,27 @@ public class Tablero {
     }
 
     public void aplicarExplosionJugador(){
-		for (Explosion explosion:ubicacionExplosiones) {
-			if(hayChoque(jugador, transfromarAPixel(explosion.getColumna()), transfromarAPixel(explosion.getFila())))
+		int x,y;
+		for (Explosion explosion:ubicacionExplosiones){
+			x = transfromarAPixel(explosion.getColumna());
+			y =  transfromarAPixel(explosion.getFila());
+			for(Jugador jugador: jugadores){
+				if(hayChoque(jugador,x,y))
 				//jugador.reducirVidas();
 				//if(jugador.getVidas()==0)
 					GameOver = true;
+			}
 		}
     }
 	
     public void aplicarExplosionEnemigo(){
-		for (Explosion exp:ubicacionExplosiones) {
+		int x,y;
+		for (Explosion exp:ubicacionExplosiones){
+			x = transfromarAPixel(exp.getColumna());
+			y = transfromarAPixel(exp.getFila());
 			Collection<Enemigo>enemigosporEliminar = new ArrayList<>();
 				for (Enemigo e : enemigos) {
-					if(hayChoque(e, transfromarAPixel(exp.getColumna()), transfromarAPixel(exp.getFila())))
+					if(hayChoque(e, x, y))
 						enemigosporEliminar.add(e);
 				}
 			for (Enemigo e:enemigosporEliminar ) 
@@ -361,38 +436,53 @@ public class Tablero {
     }
 
     public boolean choqueconEnemigos(){
-		for (Enemigo enemy : enemigos) {
-			if(hayChoque(jugador, enemy.getX()-ComponenteGrafico.getSquareMiddle(),
-				enemy.getY()-ComponenteGrafico.getSquareMiddle()))
+		int x,y;
+		for (Enemigo enemy : enemigos){
+			x = enemy.getX()-ComponenteGrafico.getSquareMiddle();
+			y = enemy.getY()-ComponenteGrafico.getSquareMiddle();
+			for(Jugador jugador: jugadores){
+				if(hayChoque(jugador, x,y))
 					return true;
+			}
 		}
 		return false;
     }
 
-    public void choqueconMejora(){
-		for (Mejora powerup : mejoras) {
-			if(hayChoque(jugador, powerup.getColumna()-ComponenteGrafico.getSquareMiddle(),
-				powerup.getFila()-ComponenteGrafico.getSquareMiddle())){
+	public void choqueconMejora(){
+		int x,y;
+		Iterator<Mejora> iteradorMejoras = mejoras.iterator();
+		while (iteradorMejoras.hasNext()) {
+			Mejora powerup = iteradorMejoras.next();
+			x = powerup.getColumna() - ComponenteGrafico.getSquareMiddle();
+			y = powerup.getFila() - ComponenteGrafico.getSquareMiddle();
+			for (Jugador jugador : jugadores) {
+				if (hayChoque(jugador, x, y)){
 					powerup.agregarMejora(jugador);
-					mejoras.remove(powerup);
+					iteradorMejoras.remove();
 					break;
+				}
 			}
 		}
-    }
-
+	}
+	
     public boolean tieneBomba(int fila, int columna){
 		for (Bomba bomba: bombas) {
-			if(bomba.getFila() == fila && bomba.getColumna() == columna && true)
+			if(bomba.getFila() == fila && bomba.getColumna() == columna)
 			return true;
 		}
 		return false;
     }
 
 	public void verificarSalidaBomba(){
-		for (Bomba bomb: bombas) {
-			if(!bomb.estaJugadorFuera() && !hayChoque(jugador,
-				transfromarAPixel(bomb.getColumna()), transfromarAPixel(bomb.getFila())))
-					bomb.setJugadorFuera(true);
+		int x,y;
+		for (Bomba bomb: bombas){
+			x = transfromarAPixel(bomb.getColumna());
+			y = transfromarAPixel(bomb.getFila());
+			for(Jugador jugador: jugadores){
+				if(!bomb.estaJugadorFuera(jugador.getID()) &&
+				!hayChoque(jugador, x, y))
+					bomb.setJugadorFuera(true,jugador.getID());
+			}
 		}
 	}
 }

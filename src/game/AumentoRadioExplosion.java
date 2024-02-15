@@ -1,9 +1,4 @@
 package game;
-
-/**
- * This class extends PowerUp and receives fundamental methods such as getters for its coordinates and size. This class
- * has an agregarMejora-method which adjusts the bombRadius of the jugador.
- */
 public class AumentoRadioExplosion extends Mejora{
 
     public AumentoRadioExplosion(int fila, int columna){

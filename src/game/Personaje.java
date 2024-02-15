@@ -35,16 +35,16 @@ public class Personaje{
 
   public void regresar(Movimiento direccion) {
     switch (direccion) {
-      case Movimiento.ABAJO:
+      case ABAJO:
         Movimiento(Movimiento.ARRIBA);
         break;
-      case Movimiento.ARRIBA:
+      case ARRIBA:
         Movimiento(Movimiento.ABAJO);
         break;
-      case Movimiento.IZQUIERDA:
+      case IZQUIERDA:
         Movimiento(Movimiento.DERECHA);
         break;
-      case Movimiento.DERECHA:
+      case DERECHA:
         Movimiento(Movimiento.IZQUIERDA);
         break;        
     }

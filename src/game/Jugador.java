@@ -3,20 +3,19 @@ package game;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 
-
 public class Jugador extends Personaje{
-
-    private static int CASILLA_INICIAL_X = 60;
-    private static int CASILLA_INICIAL_Y = 60;
+	//LS = 30*18; LI = 30*2
+	private int id;
     private int radioExplosion;
     private int bombasDisponibles;
 	private int vidas;
- 
-    public Jugador(ComponenteGrafico bombermanComponent, Tablero tablero){
-		super(CASILLA_INICIAL_X, CASILLA_INICIAL_Y);
+
+    public Jugador(ComponenteGrafico bombermanComponent, Tablero tablero, int[] posicion, int id){
+		super(posicion[0],posicion[1]);
 		radioExplosion = 1;
 		bombasDisponibles = 1;
 		vidas = 1;
+		this.id = id;
 		configurarControles(bombermanComponent, tablero);
     }
 
@@ -100,6 +99,9 @@ public class Jugador extends Personaje{
 		return vidas;
 	}
 
+	public int getID(){
+		return id;
+	}
     private void moverJugador(Movimiento movimiento,Tablero tablero) {
 		Movimiento(movimiento);
 
@@ -109,7 +111,7 @@ public class Jugador extends Personaje{
 		if(tablero.choqueconEnemigos()){
 			//reducirVidas();
 			//if(vidas == 0)
-				tablero.setGameOver(true);
+			tablero.setGameOver(true);
 		}
 
 		tablero.verificarSalidaBomba();

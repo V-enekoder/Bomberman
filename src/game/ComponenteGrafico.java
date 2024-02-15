@@ -3,6 +3,7 @@ package game;
 import javax.swing.*;
 import java.awt.*;
 import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.EnumMap;
 
 
@@ -58,7 +59,7 @@ public class ComponenteGrafico extends JComponent implements Sensor{
 
 		pintarCeldas(g2d);
 
-		pintarJugador(tablero.getJugador(), g2d);
+		pintarJugador(tablero.getJugadores(), g2d);
 
 		for (Enemigo e: tablero.getEnemigos())
 			pintarEnemigo(e, g2d);
@@ -154,34 +155,36 @@ public class ComponenteGrafico extends JComponent implements Sensor{
 		columna*DIMENSION_CELDA+DIMENSION_CELDA, fila*DIMENSION_CELDA+DIMENSION_CELDA);
     }
 
-	private void pintarJugador(Jugador jugador, Graphics g2d){
-		// Paint hat
-		g2d.setColor(Color.BLUE);
-		g2d.fillOval(jugador.getX()-CHARACTER_ADJUSTMENT_FOR_PAINT+PAINT_PARAMETER_15,
-			jugador.getY()-CHARACTER_ADJUSTMENT_FOR_PAINT-2, PAINT_PARAMETER_15, PAINT_PARAMETER_15);
-		
-		// Paint body
-		g2d.setColor(Color.LIGHT_GRAY);
-		g2d.fillOval(jugador.getX()-CHARACTER_ADJUSTMENT_FOR_PAINT,
-			 jugador.getY()-CHARACTER_ADJUSTMENT_FOR_PAINT, jugador.getSize(), jugador.getSize());
-		
-		 // Paint face
-		g2d.setColor(Color.PINK);
-		g2d.fillOval(jugador.getX()-CHARACTER_ADJUSTMENT_FOR_PAINT+3,
-			jugador.getY()-CHARACTER_ADJUSTMENT_FOR_PAINT+3, jugador.getSize()-6, jugador.getSize()-6);
-		
-		// Paint eyes
-		g2d.setColor(Color.BLACK);
-		
-		g2d.drawLine(jugador.getX()-CHARACTER_ADJUSTMENT_FOR_PAINT+10,
-			jugador.getY()-CHARACTER_ADJUSTMENT_FOR_PAINT+10,
-			 	jugador.getX()-CHARACTER_ADJUSTMENT_FOR_PAINT+10,
-					jugador.getY()-CHARACTER_ADJUSTMENT_FOR_PAINT+PAINT_PARAMETER_18);
-		
-					g2d.drawLine(jugador.getX()-CHARACTER_ADJUSTMENT_FOR_PAINT+PAINT_PARAMETER_20,
-			jugador.getY()-CHARACTER_ADJUSTMENT_FOR_PAINT+10,
-				jugador.getX()-CHARACTER_ADJUSTMENT_FOR_PAINT+PAINT_PARAMETER_20,
-					jugador.getY()-CHARACTER_ADJUSTMENT_FOR_PAINT+PAINT_PARAMETER_18);
+	private void pintarJugador(ArrayList<Jugador> jugadores, Graphics g2d){
+		for(Jugador jugador: jugadores){
+			// Paint hat
+			g2d.setColor(Color.BLUE);
+			g2d.fillOval(jugador.getX()-CHARACTER_ADJUSTMENT_FOR_PAINT+PAINT_PARAMETER_15,
+				jugador.getY()-CHARACTER_ADJUSTMENT_FOR_PAINT-2, PAINT_PARAMETER_15, PAINT_PARAMETER_15);
+			
+			// Paint body
+			g2d.setColor(Color.LIGHT_GRAY);
+			g2d.fillOval(jugador.getX()-CHARACTER_ADJUSTMENT_FOR_PAINT,
+				jugador.getY()-CHARACTER_ADJUSTMENT_FOR_PAINT, jugador.getSize(), jugador.getSize());
+			
+			// Paint face
+			g2d.setColor(Color.PINK);
+			g2d.fillOval(jugador.getX()-CHARACTER_ADJUSTMENT_FOR_PAINT+3,
+				jugador.getY()-CHARACTER_ADJUSTMENT_FOR_PAINT+3, jugador.getSize()-6, jugador.getSize()-6);
+			
+			// Paint eyes
+			g2d.setColor(Color.BLACK);
+			
+			g2d.drawLine(jugador.getX()-CHARACTER_ADJUSTMENT_FOR_PAINT+10,
+				jugador.getY()-CHARACTER_ADJUSTMENT_FOR_PAINT+10,
+					jugador.getX()-CHARACTER_ADJUSTMENT_FOR_PAINT+10,
+						jugador.getY()-CHARACTER_ADJUSTMENT_FOR_PAINT+PAINT_PARAMETER_18);
+			
+						g2d.drawLine(jugador.getX()-CHARACTER_ADJUSTMENT_FOR_PAINT+PAINT_PARAMETER_20,
+				jugador.getY()-CHARACTER_ADJUSTMENT_FOR_PAINT+10,
+					jugador.getX()-CHARACTER_ADJUSTMENT_FOR_PAINT+PAINT_PARAMETER_20,
+						jugador.getY()-CHARACTER_ADJUSTMENT_FOR_PAINT+PAINT_PARAMETER_18);
+		}
     }
 
     private void pintarEnemigo(Enemigo e, Graphics g2d){
