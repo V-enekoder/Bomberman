@@ -3,11 +3,15 @@ package Juego;
 import javax.swing.*;
 
 import Juego.Mejoras.Mejora;
+import Juego.Personaje.Enemigo;
+import Juego.Personaje.Jugador;
+import Server.JugadorMJ;
 
 import java.awt.*;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.List;
 
 
 public class ComponenteGrafico extends JComponent implements Sensor{
@@ -27,6 +31,7 @@ public class ComponenteGrafico extends JComponent implements Sensor{
     //private final static int PAINT_PARAMETER_24 = 24;
     private final Tablero tablero;
     private final AbstractMap<Celda, Color> mapaColores;
+	private ArrayList<JugadorMJ> jugadores = new ArrayList<>();
 
     public ComponenteGrafico(Tablero tablero) {
 		this.tablero = tablero;
@@ -35,6 +40,10 @@ public class ComponenteGrafico extends JComponent implements Sensor{
 		mapaColores.put(Celda.PARED, Color.BLACK);
 		mapaColores.put(Celda.BLOQUE, Color.RED);
     }
+
+	public void agregarJugador(JugadorMJ jugador){
+		jugadores.add(jugador);
+	}
 
     // This method is static since each square has the same size.
     public static int getSquareSize() {

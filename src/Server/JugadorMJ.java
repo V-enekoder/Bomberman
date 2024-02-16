@@ -3,8 +3,8 @@ package Server;
 import java.net.InetAddress;
 
 import Juego.ComponenteGrafico;
-import Juego.Jugador;
 import Juego.Tablero;
+import Juego.Personaje.Jugador;
 
 public class JugadorMJ extends Jugador{
     public InetAddress direccionIP;

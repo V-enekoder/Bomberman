@@ -1,9 +1,13 @@
 package Juego;
 
+import java.net.InetAddress;
 import java.util.*;
 
 import Juego.Mejoras.*;
-import Juego.Personaje.Movimiento;
+import Juego.Personaje.Enemigo;
+import Juego.Personaje.Jugador;
+import Juego.Personaje.Personaje;
+import Juego.Personaje.Personaje.Movimiento;
 import Server.JugadorMJ;
 
 public class Tablero {
@@ -126,8 +130,6 @@ public class Tablero {
         return (int) (Math.random() * rango) + minimo;
     }
 
-
-
     public int transfromarAPixel(int coordenada){
 		return coordenada * ComponenteGrafico.getSquareSize();
     }
@@ -184,9 +186,11 @@ public class Tablero {
 		bombas.add(bomba);
     }
 
-    public void crearJugador(ComponenteGrafico bombermanComponent, Tablero tablero, int[] casillas, int id){
-		jugadores.add(new Jugador(bombermanComponent, tablero,casillas, id));
-		//JugadorMJ j = new JugadorMJ(bombermanComponent, tablero, casillas, id, null, id);
+    public JugadorMJ crearJugador(ComponenteGrafico bombermanComponent, Tablero tablero, int[] casillas,
+		int id, InetAddress direccion, int port){
+		JugadorMJ nuevo = new JugadorMJ(bombermanComponent, tablero, casillas, id, direccion, port);
+		jugadores.add(nuevo);
+		return nuevo;
     }
 
     public void moverEnemigos(){
@@ -215,7 +219,7 @@ public class Tablero {
 		}
 	}
 	
-	public boolean chocaconBloque(Personaje personaje){
+	public boolean chocaconBloque(Personaje personaje){ // Preguntar
 		int fila = personaje.getUbicacionFila();  
 		int columna = personaje.getUbicacionColumna();
 

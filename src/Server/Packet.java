@@ -2,12 +2,12 @@ package Server;
 
 public abstract class Packet {
     
-    public static enum TiposPacket{
+    public static enum packet{
         INVALIDO(-1), INGRESO(00), DESCONEXION(01);
         
         private int id;
 
-        private TiposPacket(int id) {
+        private packet(int id) {
             this.id = id;
         }
         public int getId() {
@@ -29,19 +29,19 @@ public abstract class Packet {
         return mensaje.substring(2);
     }
 
-    public static TiposPacket identificarTipo(int id){
-        for(TiposPacket packet: TiposPacket.values()){
+    public static packet identificarTipo(int id){
+        for(packet packet: packet.values()){
             if(packet.getId() == id)
                 return packet;
         }
-        return TiposPacket.INVALIDO;
+        return packet.INVALIDO;
     }
 
-    public static TiposPacket buscarPacket(int id){
+    public static packet buscarPacket(int id){
         try{
             return identificarTipo(id);
         }catch(NumberFormatException e){
-            return TiposPacket.INVALIDO;
+            return packet.INVALIDO;
         }
     }
 

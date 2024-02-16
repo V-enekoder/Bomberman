@@ -27,8 +27,12 @@ public class Cliente implements Runnable {
     }
     @Override
     public void run() {
-        while(running){
+        //while(running){
+            
+            Packet00Ingreso ingreso = new Packet00Ingreso("Eldesbaratamala");
+            ingreso.escribirInformacion(this);
 
+            /*
             DatagramPacket recibido = recibir(datos);
 
             String mensaje = new String(recibido.getData(), 0, recibido.getLength());
@@ -36,8 +40,8 @@ public class Cliente implements Runnable {
 
             datos = "Sigue".getBytes();
     
-            enviar(datos);
-        }
+            enviar(datos);*/
+        //}
         socket.close();
     }
     public DatagramPacket recibir(byte[] datos){

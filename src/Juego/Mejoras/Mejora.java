@@ -1,10 +1,10 @@
 package Juego.Mejoras;
 
-import Juego.Jugador;
+import Juego.Personaje.Jugador;
 
 public abstract class Mejora{  //Vida extra, mas velocidad y destruir pared
 
-    protected final static int POWERUP_SIZE = 30;
+    protected final int SIZE = 30;
     protected int fila;
     protected int columna;
     protected String nombre;
@@ -18,7 +18,7 @@ public abstract class Mejora{  //Vida extra, mas velocidad y destruir pared
     public abstract String getNombre();
     
     public int getPowerupSize() {
-	    return POWERUP_SIZE;
+	    return SIZE;
     }
 
     public int getFila() {

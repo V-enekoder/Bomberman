@@ -1,8 +1,10 @@
-package Juego;
+package Juego.Personaje;
 
-public class Personaje{
+import Juego.Tablero;
+
+public abstract class Personaje{
     
-  private static int SIZE = 30;
+  private int SIZE = 30;
   private int x;
   private int y;
   protected int velocidad;

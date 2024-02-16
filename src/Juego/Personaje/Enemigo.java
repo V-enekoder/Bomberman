@@ -1,4 +1,4 @@
-package Juego;
+package Juego.Personaje;
 
 public class Enemigo extends Personaje{
     private Movimiento direccion;

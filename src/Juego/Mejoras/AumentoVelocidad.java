@@ -1,6 +1,6 @@
 package Juego.Mejoras;
 
-import Juego.Jugador;
+import Juego.Personaje.Jugador;
 
 public class AumentoVelocidad extends Mejora {
     

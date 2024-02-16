@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import Juego.Bomberman;
-import Server.Packet.TiposPacket;
+import Server.Packet.packet;
 
 public class Servidor implements Runnable{
     private final int PUERTO;
@@ -50,16 +50,17 @@ public class Servidor implements Runnable{
     private void analizarPacket(byte[] data, InetAddress address, int port) {
         String mensaje = new String(data).trim();
         int id = Integer.parseInt(mensaje.substring(0, 2));
-        TiposPacket tipo = Packet.identificarTipo(id);//TiposPacket.buscarPacket(Integer.parseInt(mensaje.substring(0,2)));
+        packet tipo = Packet.identificarTipo(id);
         switch(tipo){
             default:
             case INVALIDO:
                 break;
             case INGRESO:
                 Packet00Ingreso ingreso = new Packet00Ingreso(data);
+                
                 System.out.println("[Se ha conectado "+address.getHostAddress()+" ; "+port+" ] "+ingreso.getNombre() 
                     +" se ha conectado exitosamente");
-                juego.agregarJugador();
+                juego.agregarJugador(address,port);
                 break;
             case DESCONEXION:
                 break;
@@ -91,6 +92,5 @@ public class Servidor implements Runnable{
         for(JugadorMJ jugador: jugadoresConectados){
             enviar(datos,jugador.getDireccionIP(), jugador.getPuerto());
         }
-
     }
 }
