@@ -16,32 +16,9 @@ public class Jugador extends Personaje{
 	private int duracionInmunidad;
 	private int tiempoInmunidad;
 	private boolean inmune;
+	private String nombre;
 
-	public int getTiempoInmunidad() {
-		return tiempoInmunidad;
-	}
-
-	public void restaurarTiempoInmunidad(){
-		tiempoInmunidad = duracionInmunidad;
-	}
-
-	public void aumentarTiempoInmunidad(){
-		tiempoInmunidad += 1000;
-	}
-
-	public void reducirTiempoInmunidad(){
-		this.tiempoInmunidad -= 125;
-	}
-
-	public boolean isInmune() {
-		return inmune;
-	}
-
-	public void setInmune(boolean inmune) {
-		this.inmune = inmune;
-	}
-
-	public Jugador(ComponenteGrafico bombermanComponent, Tablero tablero, int[] posicion, int id){
+	public Jugador(ComponenteGrafico bombermanComponent, Tablero tablero, int[] posicion, int id, String nombre){
 		super(posicion[0],posicion[1]);
 		radioExplosion = 1;
 		bombasDisponibles = 1;
@@ -50,6 +27,7 @@ public class Jugador extends Personaje{
 		duracionInmunidad = 5*1000; //5 segundos por 1000 milisegundos
 		tiempoInmunidad = duracionInmunidad;
 		inmune = false; 
+		this.nombre = nombre;
 		configurarControles(bombermanComponent, tablero/*, id*/);
     }
 
@@ -104,6 +82,38 @@ public class Jugador extends Personaje{
             }
         };
     }
+
+	public String getNombre() {
+		return nombre;
+	}
+
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+
+	public int getTiempoInmunidad() {
+		return tiempoInmunidad;
+	}
+
+	public void restaurarTiempoInmunidad(){
+		tiempoInmunidad = duracionInmunidad;
+	}
+
+	public void aumentarTiempoInmunidad(){
+		tiempoInmunidad += 1000;
+	}
+
+	public void reducirTiempoInmunidad(){
+		this.tiempoInmunidad -= 125;
+	}
+
+	public boolean isInmune() {
+		return inmune;
+	}
+
+	public void setInmune(boolean inmune) {
+		this.inmune = inmune;
+	}
 
     public int getbombasDisponibles(){
 		return bombasDisponibles;

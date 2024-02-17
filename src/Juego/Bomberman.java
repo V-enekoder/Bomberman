@@ -3,10 +3,7 @@ package Juego;
 import javax.swing.*;
 
 import Juego.Personaje.Jugador;
-import Server.Cliente;
-import Server.JugadorMJ;
-import Server.Packet00Ingreso;
-import Server.Servidor;
+import Server.*;
 
 import java.awt.event.ActionEvent;
 import java.net.InetAddress;
@@ -15,6 +12,7 @@ import java.util.Random;
 
 public class Bomberman implements Runnable { //Menu con modo ataque, defensa y equilibrado
 //hay que extenderlo a multijugador local
+// Agregar INPUT HANDLER
     private final int TIME_STEP = 30;
     private Timer clockTimer;
     private Tablero tablero;
@@ -43,8 +41,8 @@ public class Bomberman implements Runnable { //Menu con modo ataque, defensa y e
         GUI.setLocationRelativeTo(null);
         GUI.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         tablero.agregarSensor(GUI.getBombermanComponent());
-        this.socketCliente = new Cliente();
-        this.socketCliente1 = new Cliente();
+        this.socketCliente = new Cliente(this);
+        this.socketCliente1 = new Cliente(this);
         this.socketServidor = new Servidor(this);
         //this.running = false;
     }
@@ -62,21 +60,26 @@ public class Bomberman implements Runnable { //Menu con modo ataque, defensa y e
         if (servidor) {
             Thread servidorThread = new Thread(socketServidor);
             servidorThread.start();
-            Thread clienteThread = new Thread(socketCliente);
-            clienteThread.start();
-            Thread clienteThread1 = new Thread(socketCliente1);
-            clienteThread1.start();
+            /*Thread clienteThread1 = new Thread(socketCliente1);
+            clienteThread1.start();*/
         }
+        Thread clienteThread = new Thread(socketCliente);
+        clienteThread.start();
+        Packet00Ingreso ingreso = new Packet00Ingreso("Eldesbaratamala");
+        ingreso.escribirInformacion(socketCliente);
+        ingreso.setNombre("Lamaladesbaratá");
+        ingreso.escribirInformacion(socketCliente1);
     }
 
-    public void agregarJugador(InetAddress direccion, int port){
+    public JugadorMJ agregarJugador(InetAddress direccion, int port, String nombre){
         Random random = new Random();
         int numeroAleatorio = random.nextInt(inicio.size());
         int[] casillas = inicio.get(numeroAleatorio);
-        JugadorMJ jugador = tablero.crearJugador(GUI.getBombermanComponent(), tablero, casillas,id.get(0), direccion, port);
+        JugadorMJ jugador = tablero.crearJugador(GUI.getBombermanComponent(), tablero, casillas,id.get(0), direccion, port,nombre);
         GUI.getBombermanComponent().agregarJugador(jugador);
         inicio.remove(numeroAleatorio);
         id.remove(0);
+        return jugador;
     }
     
     public void run() {
@@ -115,4 +118,68 @@ public class Bomberman implements Runnable { //Menu con modo ataque, defensa y e
         clockTimer.stop();
         GUI.dispose();
     }
+
+
+    public int getTIME_STEP() {
+        return this.TIME_STEP;
+    }
+
+
+    public Timer getClockTimer() {
+        return this.clockTimer;
+    }
+
+    public void setClockTimer(Timer clockTimer) {
+        this.clockTimer = clockTimer;
+    }
+
+    public Tablero getTablero() {
+        return this.tablero;
+    }
+
+    public void setTablero(Tablero tablero) {
+        this.tablero = tablero;
+    }
+
+    public InterfazGrafica getGUI() {
+        return this.GUI;
+    }
+
+    public void setGUI(InterfazGrafica GUI) {
+        this.GUI = GUI;
+    }
+
+    public Cliente getSocketCliente() {
+        return this.socketCliente;
+    }
+
+    public void setSocketCliente(Cliente socketCliente) {
+        this.socketCliente = socketCliente;
+    }
+
+    public Cliente getSocketCliente1() {
+        return this.socketCliente1;
+    }
+
+    public void setSocketCliente1(Cliente socketCliente1) {
+        this.socketCliente1 = socketCliente1;
+    }
+
+    public Servidor getSocketServidor() {
+        return this.socketServidor;
+    }
+
+    public void setSocketServidor(Servidor socketServidor) {
+        this.socketServidor = socketServidor;
+    }
+
+    public Thread getGameThread() {
+        return this.gameThread;
+    }
+
+    public void setGameThread(Thread gameThread) {
+        this.gameThread = gameThread;
+    }
+
+    
 }

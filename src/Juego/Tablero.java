@@ -187,8 +187,8 @@ public class Tablero {
     }
 
     public JugadorMJ crearJugador(ComponenteGrafico bombermanComponent, Tablero tablero, int[] casillas,
-		int id, InetAddress direccion, int port){
-		JugadorMJ nuevo = new JugadorMJ(bombermanComponent, tablero, casillas, id, direccion, port);
+		int id, InetAddress direccion, int port, String nombre){
+		JugadorMJ nuevo = new JugadorMJ(bombermanComponent, tablero, casillas, id, nombre, direccion, port);
 		jugadores.add(nuevo);
 		return nuevo;
     }
