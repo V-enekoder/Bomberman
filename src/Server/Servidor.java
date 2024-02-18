@@ -9,7 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import Juego.Bomberman;
-import Server.Packet.packet;
+import Juego.Packet.Packet;
+import Juego.Packet.Packet00Ingreso;
+import Juego.Packet.Packet01Desconexion;
+import Juego.Packet.Packet.packet;
+import Juego.Personaje.JugadorMJ;
 
 public class Servidor implements Runnable{
     private final int PUERTO;
@@ -19,8 +23,8 @@ public class Servidor implements Runnable{
     private List<JugadorMJ> jugadoresConectados = new ArrayList<JugadorMJ>();
     private Bomberman juego;
 
-    public Servidor(Bomberman juego){
-        this.PUERTO = 5000;
+    public Servidor(Bomberman juego, int puerto){
+        this.PUERTO = puerto;
         this.datos = new byte[1024];
         this.juego = juego;
         try {

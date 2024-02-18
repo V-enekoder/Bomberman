@@ -8,7 +8,10 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 
 import Juego.Bomberman;
-import Server.Packet.packet;
+import Juego.Packet.Packet;
+import Juego.Packet.Packet00Ingreso;
+import Juego.Packet.Packet01Desconexion;
+import Juego.Packet.Packet.packet;
 
 public class Cliente implements Runnable {
 

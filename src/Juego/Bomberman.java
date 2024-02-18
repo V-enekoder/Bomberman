@@ -2,9 +2,11 @@ package Juego;
 
 import javax.swing.*;
 
+import Juego.Packet.Packet00Ingreso;
+import Juego.Packet.Packet.packet;
 import Juego.Personaje.Jugador;
+import Juego.Personaje.JugadorMJ;
 import Server.*;
-import Server.Packet.packet;
 
 import java.awt.event.ActionEvent;
 import java.net.InetAddress;
@@ -60,7 +62,7 @@ public class Bomberman implements Runnable { //Menu con modo ataque, defensa y e
         this.gameThread = new Thread(this);
         gameThread.start();
         if (servidor) {
-            this.socketServidor = new Servidor(this);
+            this.socketServidor = new Servidor(this,5000);
             Thread servidorThread = new Thread(socketServidor);
             servidorThread.start();
         }
@@ -85,11 +87,14 @@ public class Bomberman implements Runnable { //Menu con modo ataque, defensa y e
     public void run() {
         startGame();
     }
-
+ 
     public void startGame() {
+        
+        //tablero.agregarJugador(crearJugador("Eldesbaratamala"));
+        
         Packet00Ingreso ingreso = new Packet00Ingreso("Eldesbaratamala");
-        //ingreso.escribirInformacion(socketCliente);
-        /*ingreso.setNombre("lamaladesbaratá");*/
+        ingreso.escribirInformacion(socketCliente);
+        ingreso.setNombre("lamaladesbaratá");
         ingreso.escribirInformacion(socketCliente1);
 
         Action doOneStep = new AbstractAction() {

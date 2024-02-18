@@ -2,7 +2,7 @@ package Juego.Mejora;
 
 import Juego.Personaje.Jugador;
 
-public abstract class Mejora{  //Vida extra, mas velocidad y destruir pared
+public abstract class Mejora{  
 
     protected final int SIZE = 30;
     protected int fila;

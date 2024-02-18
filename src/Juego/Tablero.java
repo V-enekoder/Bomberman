@@ -1,14 +1,13 @@
 package Juego;
 
-import java.net.InetAddress;
 import java.util.*;
 
 import Juego.Mejora.*;
 import Juego.Personaje.Enemigo;
 import Juego.Personaje.Jugador;
+import Juego.Personaje.JugadorMJ;
 import Juego.Personaje.Personaje;
 import Juego.Personaje.Personaje.Movimiento;
-import Server.JugadorMJ;
 
 public class Tablero {
     private final static double PROB_PARED = 0.4;
@@ -64,7 +63,6 @@ public class Tablero {
 			reserva.add(coordenadas.clone());
 			coordenadas[1]++;
 		}
-	
 		return reserva;
 	}
 
@@ -223,8 +221,8 @@ public class Tablero {
 					e.Movimiento(Movimiento.DERECHA);
 					break;
 			}
-			if (chocaconBloque(e) || chocaconBomba(e))
-				e.cambiarDireccion();
+			if (chocaconBloque(e) || chocaconBomba(e)) 
+				e.cambiarDireccion(); //Poner que sean aleatorias para simular movimiento inteligente
 		}
 	}
 	
@@ -450,8 +448,8 @@ public class Tablero {
     public boolean choqueconEnemigos(){
 		int x,y;
 		for (Enemigo enemy : enemigos){
-			x = enemy.getX()-ComponenteGrafico.getSquareMiddle();
-			y = enemy.getY()-ComponenteGrafico.getSquareMiddle();
+			x = enemy.getX() - ComponenteGrafico.getSquareMiddle();
+			y = enemy.getY() - ComponenteGrafico.getSquareMiddle();
 			for(Jugador jugador: jugadores){
 				if(hayChoque(jugador, x,y))
 					return true;

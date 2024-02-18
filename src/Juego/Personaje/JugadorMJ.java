@@ -1,10 +1,9 @@
-package Server;
+package Juego.Personaje;
 
 import java.net.InetAddress;
 
 import Juego.ComponenteGrafico;
 import Juego.Tablero;
-import Juego.Personaje.Jugador;
 
 public class JugadorMJ extends Jugador{
     private InetAddress direccionIP; //Encapsular

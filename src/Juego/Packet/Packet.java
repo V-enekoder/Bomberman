@@ -1,4 +1,7 @@
-package Server;
+package Juego.Packet;
+
+import Server.Cliente;
+import Server.Servidor;
 
 public abstract class Packet {
     

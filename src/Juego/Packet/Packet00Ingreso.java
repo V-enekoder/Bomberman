@@ -1,4 +1,7 @@
-package Server;
+package Juego.Packet;
+
+import Server.Cliente;
+import Server.Servidor;
 
 public class Packet00Ingreso extends Packet{
 

@@ -5,7 +5,7 @@ import javax.swing.*;
 import Juego.Mejora.Mejora;
 import Juego.Personaje.Enemigo;
 import Juego.Personaje.Jugador;
-import Server.JugadorMJ;
+import Juego.Personaje.JugadorMJ;
 
 import java.awt.*;
 import java.util.AbstractMap;

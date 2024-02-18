@@ -6,8 +6,8 @@ import Juego.Bomba;
 import Juego.Bomberman;
 import Juego.ComponenteGrafico;
 import Juego.Tablero;
-import Server.Packet01Desconexion;
-import Server.Packet.packet;
+import Juego.Packet.Packet01Desconexion;
+import Juego.Packet.Packet.packet;
 
 import java.awt.event.ActionEvent;
 
@@ -19,13 +19,13 @@ public class Jugador extends Personaje{
 	private int vidas;
 	private int duracionInmunidad;
 	private int tiempoInmunidad;
-	private boolean inmune;
+	private boolean inmune; // Pintar cuando inmmune
 	private String nombre;
 
 	public Jugador(ComponenteGrafico bombermanComponent, Tablero tablero, int[] posicion, int id, String nombre){
 		super(posicion[0],posicion[1]);
 		radioExplosion = 1;
-		bombasDisponibles = 1;
+		bombasDisponibles = 3;
 		vidas = 3;
 		this.id = id;
 		duracionInmunidad = 5*1000; //5 segundos por 1000 milisegundos
