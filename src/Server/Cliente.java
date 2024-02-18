@@ -17,6 +17,7 @@ public class Cliente implements Runnable {
     private DatagramSocket socket;
     private InetAddress direccionServidor;
     private volatile boolean running = true;
+    @SuppressWarnings("unused")
     private Bomberman juego;
 
     public Cliente(Bomberman juego){
@@ -32,39 +33,20 @@ public class Cliente implements Runnable {
     }
     @Override
     public void run() {
-        
-    //    Packet00Ingreso ingreso = new Packet00Ingreso("Eldesbaratamala");
-    //    ingreso.escribirInformacion(this);
-        
-        DatagramPacket recibido = recibir(datos);
-        analizarPacket(recibido.getData(),recibido.getAddress(),recibido.getPort());
-
-
-
-
-        //while(running){
-            // Mandar solicitud de ingreso al juego
-            //Packet00Ingreso ingreso = new Packet00Ingreso("Eldesbaratamala");
-            //ingreso.escribirInformacion(this);
-            //
-
-            /*
-            DatagramPacket recibido = recibir(datos);
-
-            String mensaje = new String(recibido.getData(), 0, recibido.getLength());
-            System.out.println("Servidor > " + mensaje);
-
-            datos = "Sigue".getBytes();
-    
-            enviar(datos);*/
-        //}
+        while(running){
+            DatagramPacket recibido = recibir();
+            analizarPacket(recibido.getData(),recibido.getAddress(),recibido.getPort());
+        }
         socket.close();
     }
+
+    
     private void analizarPacket(byte[] data, InetAddress address, int port) {
         String mensaje = new String(data).trim();
         int id = Integer.parseInt(mensaje.substring(0, 2));
         packet tipo = Packet.identificarTipo(id);
         Packet packet = null;
+        
         switch(tipo){
             default:
             case INVALIDO:
@@ -72,15 +54,20 @@ public class Cliente implements Runnable {
             case INGRESO:
                 packet = new Packet00Ingreso(data);
                 System.out.println(((Packet00Ingreso)packet).getNombre() +" ha ingresado");
-                //Segun tengo entendido, aqui es donde se debe poner null y -1
                 //juego.agregarJugador(/*address,port*/null,-1,((Packet00Ingreso)packet).getNombre());
                 break;
             case DESCONEXION:
+            packet = new Packet01Desconexion(data);
+                    
+            System.out.println("["+address.getHostAddress()+" ; "+port+" ] "
+                +((Packet01Desconexion)packet).getNombre() + " se ha ido");
+            //tablero.removerJugador(((Packet01Desconexion)packet).getNombre())
+            //Probablemente agarre por argumento al que va a agregar y listo
                 break;
         }
     }
 
-    public DatagramPacket recibir(byte[] datos){
+    public DatagramPacket recibir(){
         DatagramPacket paquete = new DatagramPacket(datos,datos.length);
         try {
             socket.receive(paquete);

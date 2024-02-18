@@ -1,19 +1,19 @@
-package Juego.Mejoras;
+package Juego.Mejora;
 
 import Juego.Personaje.Jugador;
 
-public class AumentoVelocidad extends Mejora {
+public class AumentoVidas extends Mejora{
     
-    public AumentoVelocidad(int fila, int columna) {
+    public AumentoVidas(int fila, int columna){
     	super(fila,columna);
-        nombre = "Aumento de Velocidad";
+        nombre = "Aumento de Vidas";
     }
     
     @Override
     public void agregarMejora(Jugador jugador){
-        jugador.aumentarVelocidad();
+        jugador.aumentarVidas();
     }
-
+    
     @Override
     public String getNombre(){
 	    return nombre;

@@ -7,8 +7,8 @@ import Juego.Tablero;
 import Juego.Personaje.Jugador;
 
 public class JugadorMJ extends Jugador{
-    public InetAddress direccionIP; //Encapsular
-    public int puerto;
+    private InetAddress direccionIP; //Encapsular
+    private int puerto;
 
     public JugadorMJ(ComponenteGrafico bombermanComponent, Tablero tablero, int[] posicion, int id,
         String nombre,InetAddress direccionIP ,int puerto){
@@ -16,6 +16,12 @@ public class JugadorMJ extends Jugador{
             this.direccionIP = direccionIP;
             this.puerto = puerto;
     }
+    public JugadorMJ(ComponenteGrafico bombermanComponent, Tablero tablero, int[] posicion, int id,
+        String nombre){
+            super(bombermanComponent,tablero,posicion,id, nombre);
+            this.direccionIP = null;
+            this. puerto = -1;
+        }
 
 
     public InetAddress getDireccionIP() {
@@ -33,6 +39,4 @@ public class JugadorMJ extends Jugador{
     public void setPuerto(int puerto) {
         this.puerto = puerto;
     }
-
-
 }

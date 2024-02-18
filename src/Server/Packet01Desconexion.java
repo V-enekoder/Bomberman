@@ -1,15 +1,15 @@
 package Server;
 
-public class Packet00Ingreso extends Packet{
+public class Packet01Desconexion extends Packet{
 
     private String nombre;
-    public Packet00Ingreso(byte[] datos) { //Recuperando info
-        super(00);
+    public Packet01Desconexion(byte[] datos) { //Recuperando info
+        super(01);
         this.nombre = leerInformacion(datos);
     }
 
-    public Packet00Ingreso(String nombre) { //Desde el usuario
-        super(00);
+    public Packet01Desconexion(String nombre) { //Desde el usuario
+        super(01);
         this.nombre = nombre;
     }
 
@@ -25,7 +25,7 @@ public class Packet00Ingreso extends Packet{
 
     @Override
     public byte[] getDatos() {
-        return ("00" + this.nombre).getBytes();
+        return ("01" + this.nombre).getBytes();
     }
 
     public String getNombre() {

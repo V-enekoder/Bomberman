@@ -3,7 +3,7 @@ package Juego;
 import java.net.InetAddress;
 import java.util.*;
 
-import Juego.Mejoras.*;
+import Juego.Mejora.*;
 import Juego.Personaje.Enemigo;
 import Juego.Personaje.Jugador;
 import Juego.Personaje.Personaje;
@@ -112,14 +112,16 @@ public class Tablero {
 	}
     private void crearEnemigos (int cantidadEnemigos){
 		int enemigos_generados = 0;
+		int x,y;
 		do{
 			int fila = generarNumeroAleatorio(1, alto - 1);
 			int columna = generarNumeroAleatorio(1, ancho - 1);
 
 			if(getTipoCelda(fila, columna) == Celda.PISO && !estaReservado(fila, columna)){	
-				boolean	vertical = generarNumeroAleatorio(1,100) % 2 == 0 ? true : false;
-				enemigos.add(new Enemigo(transfromarAPixel(columna) + ComponenteGrafico.getSquareMiddle(), 
-					transfromarAPixel(fila) + ComponenteGrafico.getSquareMiddle(), vertical));
+				boolean	movimientoVertical = generarNumeroAleatorio(1,100) % 2 == 0 ? true : false;
+				x = transfromarAPixel(columna) + ComponenteGrafico.getSquareMiddle();
+				y = transfromarAPixel(fila) + ComponenteGrafico.getSquareMiddle();
+				enemigos.add(new Enemigo(x, y, movimientoVertical));
 				enemigos_generados++;
 			}
 		}while(enemigos_generados != cantidadEnemigos);
@@ -186,12 +188,19 @@ public class Tablero {
 		bombas.add(bomba);
     }
 
-    public JugadorMJ crearJugador(ComponenteGrafico bombermanComponent, Tablero tablero, int[] casillas,
-		int id, InetAddress direccion, int port, String nombre){
-		JugadorMJ nuevo = new JugadorMJ(bombermanComponent, tablero, casillas, id, nombre, direccion, port);
-		jugadores.add(nuevo);
-		return nuevo;
-    }
+	public void agregarJugador(JugadorMJ jugador){
+		jugadores.add(jugador);
+	}
+
+	public void eliminarJugador(String nombre){
+		int posicion = 0;
+		for(Jugador j: jugadores){
+			if(j.getNombre().equalsIgnoreCase(nombre))
+				break;
+			posicion++;
+		}
+		jugadores.remove(posicion);
+	}
 
     public void moverEnemigos(){
 		if (enemigos.isEmpty())
@@ -363,6 +372,11 @@ public class Tablero {
 		if(celdas[fila][columna] != Celda.PARED){
 			ubicacionExplosiones.add(new Explosion(fila, columna));
 		}
+
+		for(Bomba bomba: bombas){
+			if(fila == bomba.getFila() && columna == bomba.getColumna())
+				bomba.setTiempoRestante(1);
+		}
 		return open;
 	}
 
@@ -466,7 +480,7 @@ public class Tablero {
     public boolean tieneBomba(int fila, int columna){
 		for (Bomba bomba: bombas) {
 			if(bomba.getFila() == fila && bomba.getColumna() == columna)
-			return true;
+				return true;
 		}
 		return false;
     }
@@ -478,11 +492,12 @@ public class Tablero {
 			y = transfromarAPixel(bomb.getFila());
 			for(Jugador jugador: jugadores){
 				if(!bomb.estaJugadorFuera(jugador.getID()) &&
-				!hayChoque(jugador, x, y))
-					bomb.setJugadorFuera(true,jugador.getID());
+					!hayChoque(jugador, x, y))
+						bomb.setJugadorFuera(true,jugador.getID());
 			}
 		}
 	}
+	
 	public void reducirTiempoInmunidad() {
 		for(Jugador jugador: jugadores){
 			jugador.reducirTiempoInmunidad();

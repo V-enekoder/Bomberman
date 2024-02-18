@@ -3,11 +3,15 @@ package Juego.Personaje;
 import javax.swing.*;
 
 import Juego.Bomba;
+import Juego.Bomberman;
 import Juego.ComponenteGrafico;
 import Juego.Tablero;
+import Server.Packet01Desconexion;
+import Server.Packet.packet;
 
 import java.awt.event.ActionEvent;
 
+@SuppressWarnings("unused")
 public class Jugador extends Personaje{
 	private int id;
     private int radioExplosion;
@@ -39,11 +43,11 @@ public class Jugador extends Personaje{
 			bombermanComponent.getInputMap().put(KeyStroke.getKeyStroke("DOWN"), "Bajar");
 			bombermanComponent.getInputMap().put(KeyStroke.getKeyStroke("SPACE"), "dropBomb");
 		//} else if (id == 1) {
-			bombermanComponent.getInputMap().put(KeyStroke.getKeyStroke("D"), "Derecha");
+			/*bombermanComponent.getInputMap().put(KeyStroke.getKeyStroke("D"), "Derecha");
 			bombermanComponent.getInputMap().put(KeyStroke.getKeyStroke("A"), "Izquierda");
 			bombermanComponent.getInputMap().put(KeyStroke.getKeyStroke("W"), "Subir");
 			bombermanComponent.getInputMap().put(KeyStroke.getKeyStroke("S"), "Bajar");
-			bombermanComponent.getInputMap().put(KeyStroke.getKeyStroke("Z"), "dropBomb");
+			bombermanComponent.getInputMap().put(KeyStroke.getKeyStroke("Z"), "dropBomb");*/
 		//}
 	
 		bombermanComponent.getInputMap().put(KeyStroke.getKeyStroke("Q"), "CerrarJuego");
@@ -58,8 +62,10 @@ public class Jugador extends Personaje{
 	
 	private Action cerrarJuego() {
 		return new AbstractAction() {
-			public void actionPerformed(ActionEvent e) {
-				System.exit(0); // Sale del juego
+			public void actionPerformed(ActionEvent e){
+				//Packet01Desconexion desconexion = new Packet01Desconexion(nombre);
+				//desconexion.escribirInformacion(Bomberman.socketCliente);
+				System.exit(0);
 			}
 		};
 	}

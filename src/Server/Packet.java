@@ -15,7 +15,7 @@ public abstract class Packet {
         }
     }
 
-    public byte id;
+    private byte id;
 
     public Packet(int id){
         this.id = (byte) id;
@@ -24,6 +24,15 @@ public abstract class Packet {
     public abstract void escribirInformacion(Cliente cliente); // Se manda a un cliente
     public abstract void escribirInformacion(Servidor servidor); //Se manda a toods los clientes
     public abstract byte[] getDatos();
+
+    public byte getId() {
+        return id;
+    }
+
+    public void setId(byte id) {
+        this.id = id;
+    }
+
     public String leerInformacion(byte[] datos){
         String mensaje = new String(datos).trim();
         return mensaje.substring(2);

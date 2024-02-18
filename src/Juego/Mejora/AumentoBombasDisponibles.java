@@ -1,4 +1,4 @@
-package Juego.Mejoras;
+package Juego.Mejora;
 
 import Juego.Personaje.Jugador;
 

@@ -4,12 +4,14 @@ import javax.swing.*;
 
 import Juego.Personaje.Jugador;
 import Server.*;
+import Server.Packet.packet;
 
 import java.awt.event.ActionEvent;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Random;
 
+@SuppressWarnings("unused")
 public class Bomberman implements Runnable { //Menu con modo ataque, defensa y equilibrado
 //hay que extenderlo a multijugador local
 // Agregar INPUT HANDLER
@@ -43,11 +45,11 @@ public class Bomberman implements Runnable { //Menu con modo ataque, defensa y e
         tablero.agregarSensor(GUI.getBombermanComponent());
         this.socketCliente = new Cliente(this);
         this.socketCliente1 = new Cliente(this);
-        this.socketServidor = new Servidor(this);
         //this.running = false;
     }
-
-    public static void main(String[] args){
+//Al intentar instanciar 2 veces, no se crea en el 2do servidor, sino que ingresa al primero.
+//Ni idea si esto es bueno o mallo
+    public static void main(String[] args){ 
         boolean servidor = true;
         Bomberman bomberman = new Bomberman(15, 15, 10);
         bomberman.startGameThread(servidor);
@@ -58,27 +60,25 @@ public class Bomberman implements Runnable { //Menu con modo ataque, defensa y e
         this.gameThread = new Thread(this);
         gameThread.start();
         if (servidor) {
+            this.socketServidor = new Servidor(this);
             Thread servidorThread = new Thread(socketServidor);
             servidorThread.start();
-            /*Thread clienteThread1 = new Thread(socketCliente1);
-            clienteThread1.start();*/
         }
         Thread clienteThread = new Thread(socketCliente);
         clienteThread.start();
-        Packet00Ingreso ingreso = new Packet00Ingreso("Eldesbaratamala");
-        ingreso.escribirInformacion(socketCliente);
-        ingreso.setNombre("Lamaladesbaratá");
-        ingreso.escribirInformacion(socketCliente1);
+        Thread clienteThread1 = new Thread(socketCliente1);
+        clienteThread1.start();
     }
 
-    public JugadorMJ agregarJugador(InetAddress direccion, int port, String nombre){
+    public JugadorMJ crearJugador(String nombre){ //Se crean sin port ni inetadrrss, se van a agregar en el server
         Random random = new Random();
         int numeroAleatorio = random.nextInt(inicio.size());
         int[] casillas = inicio.get(numeroAleatorio);
-        JugadorMJ jugador = tablero.crearJugador(GUI.getBombermanComponent(), tablero, casillas,id.get(0), direccion, port,nombre);
-        GUI.getBombermanComponent().agregarJugador(jugador);
+
+        JugadorMJ jugador = new JugadorMJ(GUI.getBombermanComponent(), tablero, casillas,id.get(0),nombre);
         inicio.remove(numeroAleatorio);
         id.remove(0);
+        
         return jugador;
     }
     
@@ -87,6 +87,11 @@ public class Bomberman implements Runnable { //Menu con modo ataque, defensa y e
     }
 
     public void startGame() {
+        Packet00Ingreso ingreso = new Packet00Ingreso("Eldesbaratamala");
+        //ingreso.escribirInformacion(socketCliente);
+        /*ingreso.setNombre("lamaladesbaratá");*/
+        ingreso.escribirInformacion(socketCliente1);
+
         Action doOneStep = new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 tick();
@@ -180,6 +185,4 @@ public class Bomberman implements Runnable { //Menu con modo ataque, defensa y e
     public void setGameThread(Thread gameThread) {
         this.gameThread = gameThread;
     }
-
-    
 }
