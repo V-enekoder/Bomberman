@@ -3,16 +3,16 @@ package Juego.Packet;
 import Server.UDP.Cliente;
 import Server.UDP.Servidor;
 
-public class Packet01Desconexion extends Packet{
+public class Packet02Movimiento extends Packet{
 
     private String nombre;
-    public Packet01Desconexion(byte[] datos) { //Recuperando info
-        super(01);
+    public Packet02Movimiento(byte[] datos) { //Recuperando info
+        super(02);
         this.nombre = leerInformacion(datos);
     }
 
-    public Packet01Desconexion(String nombre) { //Desde el usuario
-        super(01);
+    public Packet02Movimiento(String nombre) { //Desde el usuario
+        super(02);
         this.nombre = nombre;
     }
 
@@ -28,7 +28,7 @@ public class Packet01Desconexion extends Packet{
 
     @Override
     public byte[] getDatos() {
-        return ("01" + this.nombre).getBytes();
+        return ("02" + this.nombre).getBytes();
     }
 
     public String getNombre() {

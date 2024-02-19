@@ -1,4 +1,4 @@
-package Server;
+package Server.UDP;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -36,6 +36,10 @@ public class Cliente implements Runnable {
     }
     @Override
     public void run() {
+
+            Packet00Ingreso ingreso = new Packet00Ingreso("Eldesbaratamala");
+            ingreso.escribirInformacion(this);
+
         while(running){
             DatagramPacket recibido = recibir();
             analizarPacket(recibido.getData(),recibido.getAddress(),recibido.getPort());

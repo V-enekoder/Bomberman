@@ -35,20 +35,12 @@ public class Jugador extends Personaje{
 		configurarControles(bombermanComponent, tablero/*, id*/);
     }
 
-	protected void configurarControles(ComponenteGrafico bombermanComponent, Tablero tablero/* , int id*/) {
-		//if (id == 0) {
-			bombermanComponent.getInputMap().put(KeyStroke.getKeyStroke("RIGHT"), "Derecha");
-			bombermanComponent.getInputMap().put(KeyStroke.getKeyStroke("LEFT"), "Izquierda");
-			bombermanComponent.getInputMap().put(KeyStroke.getKeyStroke("UP"), "Subir");
-			bombermanComponent.getInputMap().put(KeyStroke.getKeyStroke("DOWN"), "Bajar");
-			bombermanComponent.getInputMap().put(KeyStroke.getKeyStroke("SPACE"), "dropBomb");
-		//} else if (id == 1) {
-			/*bombermanComponent.getInputMap().put(KeyStroke.getKeyStroke("D"), "Derecha");
-			bombermanComponent.getInputMap().put(KeyStroke.getKeyStroke("A"), "Izquierda");
-			bombermanComponent.getInputMap().put(KeyStroke.getKeyStroke("W"), "Subir");
-			bombermanComponent.getInputMap().put(KeyStroke.getKeyStroke("S"), "Bajar");
-			bombermanComponent.getInputMap().put(KeyStroke.getKeyStroke("Z"), "dropBomb");*/
-		//}
+	protected void configurarControles(ComponenteGrafico bombermanComponent, Tablero tablero) {
+		bombermanComponent.getInputMap().put(KeyStroke.getKeyStroke("RIGHT"), "Derecha");
+		bombermanComponent.getInputMap().put(KeyStroke.getKeyStroke("LEFT"), "Izquierda");
+		bombermanComponent.getInputMap().put(KeyStroke.getKeyStroke("UP"), "Subir");
+		bombermanComponent.getInputMap().put(KeyStroke.getKeyStroke("DOWN"), "Bajar");
+		bombermanComponent.getInputMap().put(KeyStroke.getKeyStroke("SPACE"), "dropBomb");
 	
 		bombermanComponent.getInputMap().put(KeyStroke.getKeyStroke("Q"), "CerrarJuego");
 	
@@ -70,7 +62,7 @@ public class Jugador extends Personaje{
 		};
 	}
 
-    /*private*/protected Action mover(Movimiento Movimiento, Tablero tablero) {
+    protected Action mover(Movimiento Movimiento, Tablero tablero) {
         return new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 moverJugador(Movimiento, tablero);
@@ -78,7 +70,7 @@ public class Jugador extends Personaje{
         };
     }
 
-    /*private*/protected Action ponerBomba(Tablero tablero) {
+    protected Action ponerBomba(Tablero tablero) {
         return new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 if (!tablero.tieneBomba(getUbicacionFila(), getUbicacionColumna()) &&

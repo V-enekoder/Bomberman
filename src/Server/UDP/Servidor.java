@@ -1,4 +1,4 @@
-package Server;
+package Server.UDP;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -7,8 +7,11 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import Juego.Bomberman;
+import Juego.InterfazGrafica;
+import Juego.Tablero;
 import Juego.Packet.Packet;
 import Juego.Packet.Packet00Ingreso;
 import Juego.Packet.Packet01Desconexion;
@@ -22,19 +25,52 @@ public class Servidor implements Runnable{
     private volatile boolean running = true;
     private List<JugadorMJ> jugadoresConectados = new ArrayList<JugadorMJ>();
     private Bomberman juego;
+    private Tablero tablero;
+    private InterfazGrafica GUI;
+	private static ArrayList<int[]> inicio = new ArrayList<>();
+    private static ArrayList<Integer> id = new ArrayList<>();
 
-    public Servidor(Bomberman juego, int puerto){
+    static {
+        inicio.add(new int[]{60, 60});
+        inicio.add(new int[]{60, 540});
+        inicio.add(new int[]{540, 60});
+        inicio.add(new int[]{540, 540});
+        for(int i = 0; i < 4; i++)
+            id.add(i);
+    }
+
+    public Tablero getTablero() {
+        return tablero;
+    }
+
+    public void setTablero(Tablero tablero) {
+        this.tablero = tablero;
+    }
+
+    public InterfazGrafica getGUI() {
+        return GUI;
+    }
+
+    public void setGUI(InterfazGrafica gUI) {
+        GUI = gUI;
+    }
+
+    public Servidor(Bomberman juego, int puerto, Tablero tablero, InterfazGrafica GUI){
         this.PUERTO = puerto;
         this.datos = new byte[1024];
         this.juego = juego;
+        this.tablero = tablero;
+        this.GUI = GUI;
         try {
             this.socket = new DatagramSocket(PUERTO);
         } catch (SocketException e) {
             e.printStackTrace();
         }
     }
+
     @Override
     public void run() {
+        System.out.println("Servidor iniciado");
         while(running){
             
             DatagramPacket recibido = recibir(datos);
@@ -57,12 +93,16 @@ public class Servidor implements Runnable{
             case INGRESO:
                 packet = new Packet00Ingreso(data);
                 nombre =  ((Packet00Ingreso)packet).getNombre();
-                System.out.println("Se ha conectado ["+address.getHostAddress()+" ; "+port+" ] "
+                System.out.println("Se ha conectado ["+address.getHostAddress()+" ; "+port+"] "
                     + nombre +" exitosamente");
-                JugadorMJ j = juego.crearJugador(nombre);
+                JugadorMJ j = crearJugador(nombre, address, port);
+                
+                /*juego.crearJugador(nombre);
                 j.setDireccionIP(address);
-                j.setPuerto(port); 
-                juego.getTablero().agregarJugador(j);
+                j.setPuerto(port); */
+                tablero.agregarJugador(j);
+
+
                 //Hay que mandar el objeto JugadorMJ en un pakcet;
                 conectarJugador(j,(Packet00Ingreso)packet);
                 break;
@@ -71,11 +111,24 @@ public class Servidor implements Runnable{
                 nombre = ((Packet00Ingreso)packet).getNombre();
                 System.out.println("Se ha desconectado ["+address.getHostAddress()+" ; "+port+" ] "
                     + nombre);
-                juego.getTablero().eliminarJugador(nombre);
+                tablero.eliminarJugador(nombre);
                 desconectarJugador((Packet01Desconexion)packet);
                 break;
         }
     }
+
+    private JugadorMJ crearJugador(String nombre, InetAddress direccionIP, int puerto){
+        Random random = new Random();
+        int numeroAleatorio = random.nextInt(inicio.size());
+        int[] casillas = inicio.get(numeroAleatorio);
+
+        JugadorMJ jugador = new JugadorMJ(GUI.getBombermanComponent(), tablero, casillas,
+            id.get(0),nombre,direccionIP,puerto);
+        inicio.remove(numeroAleatorio);
+        id.remove(0);
+        return jugador;
+    }
+
 
     public void conectarJugador(JugadorMJ jugador, Packet00Ingreso ingreso){
         boolean yaConectado = false;

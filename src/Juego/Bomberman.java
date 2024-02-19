@@ -7,6 +7,8 @@ import Juego.Packet.Packet.packet;
 import Juego.Personaje.Jugador;
 import Juego.Personaje.JugadorMJ;
 import Server.*;
+import Server.UDP.Cliente;
+import Server.UDP.Servidor;
 
 import java.awt.event.ActionEvent;
 import java.net.InetAddress;
@@ -22,84 +24,72 @@ public class Bomberman implements Runnable { //Menu con modo ataque, defensa y e
     private Tablero tablero;
     private InterfazGrafica GUI;
     //private boolean running;
-    private Cliente socketCliente;
-    private Cliente socketCliente1;
     private Servidor socketServidor;
     private Thread gameThread;
-	private static ArrayList<int[]> inicio = new ArrayList<>();
-    private static ArrayList<Integer> id = new ArrayList<>();
+    /*private boolean servidor;
 
-	static {
-        inicio.add(new int[]{60, 60});
-        inicio.add(new int[]{60, 540});
-        inicio.add(new int[]{540, 60});
-        inicio.add(new int[]{540, 540});
-        for(int i = 0; i < 4; i++){
-            id.add(i);
-        }
+	public boolean isServidor() {
+        return servidor;
     }
+    public void setServidor(boolean servidor) {
+        this.servidor = servidor;
+    }*/
 
-    public Bomberman(int ancho, int alto, int enemigos) {
-        this.tablero = new Tablero(ancho, alto, enemigos);
+    public Bomberman(/*int ancho, int alto, int enemigos*/) {
+        /*this.tablero = new Tablero(ancho, alto, enemigos);
         this.GUI = new InterfazGrafica("Bomberman", tablero);
         GUI.setLocationRelativeTo(null);
         GUI.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        tablero.agregarSensor(GUI.getBombermanComponent());
-        this.socketCliente = new Cliente(this);
-        this.socketCliente1 = new Cliente(this);
+        tablero.agregarSensor(GUI.getBombermanComponent());*/
+        //this.servidor = true;
         //this.running = false;
     }
 //Al intentar instanciar 2 veces, no se crea en el 2do servidor, sino que ingresa al primero.
 //Ni idea si esto es bueno o mallo
-    public static void main(String[] args){ 
-        boolean servidor = true;
-        Bomberman bomberman = new Bomberman(15, 15, 10);
-        bomberman.startGameThread(servidor);
-    }
 
-    public synchronized void startGameThread(boolean servidor) {
-        //running = true;
-        this.gameThread = new Thread(this);
-        gameThread.start();
-        if (servidor) {
-            this.socketServidor = new Servidor(this,5000);
-            Thread servidorThread = new Thread(socketServidor);
-            servidorThread.start();
-        }
-        Thread clienteThread = new Thread(socketCliente);
-        clienteThread.start();
-        Thread clienteThread1 = new Thread(socketCliente1);
-        clienteThread1.start();
-    }
 
-    public JugadorMJ crearJugador(String nombre){ //Se crean sin port ni inetadrrss, se van a agregar en el server
-        Random random = new Random();
-        int numeroAleatorio = random.nextInt(inicio.size());
-        int[] casillas = inicio.get(numeroAleatorio);
+    public static void main(String[] args) {
+        Bomberman bomberman = new Bomberman();
+        if(true)
+            bomberman.startServer();
 
-        JugadorMJ jugador = new JugadorMJ(GUI.getBombermanComponent(), tablero, casillas,id.get(0),nombre);
-        inicio.remove(numeroAleatorio);
-        id.remove(0);
+        bomberman.startGameThread(bomberman.socketServidor.getTablero(),bomberman.socketServidor.getGUI());
+        bomberman.startClient();
+        bomberman.startClient();
         
-        return jugador;
+    }
+
+    public void startServer(){
+        Tablero tablero = new Tablero(15,15,15);
+        InterfazGrafica GUI = new InterfazGrafica("Bomberman", tablero);
+        GUI.setLocationRelativeTo(null);
+        GUI.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        tablero.agregarSensor(GUI.getBombermanComponent());
+        this.socketServidor = new Servidor(this,5000, tablero,GUI);
+        Thread servidorThread = new Thread(socketServidor);
+        servidorThread.start();
+    }
+
+    public void startClient() {
+        Cliente cliente = new Cliente(this);
+        Thread clienteThread = new Thread(cliente);
+        clienteThread.start();
+    }
+    
+    public synchronized void startGameThread(Tablero tablero, InterfazGrafica GUI) {
+        this.gameThread = new Thread(() -> startGame(tablero, GUI));
+        gameThread.start();
     }
     
     public void run() {
-        startGame();
+        startGame(tablero, GUI);
     }
  
-    public void startGame() {
-        
-        //tablero.agregarJugador(crearJugador("Eldesbaratamala"));
-        
-        Packet00Ingreso ingreso = new Packet00Ingreso("Eldesbaratamala");
-        ingreso.escribirInformacion(socketCliente);
-        ingreso.setNombre("lamaladesbaratá");
-        ingreso.escribirInformacion(socketCliente1);
+    public void startGame(Tablero tablero, InterfazGrafica GUI) {
 
         Action doOneStep = new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
-                tick();
+                tick(tablero,GUI);
             }
         };
 
@@ -108,9 +98,9 @@ public class Bomberman implements Runnable { //Menu con modo ataque, defensa y e
         clockTimer.start();
     }
 
-    private void tick() {
+    private void tick(Tablero tablero, InterfazGrafica GUI) {
         if (tablero.isGameOver())
-            gameOver();
+            gameOver(GUI);
 
         tablero.moverEnemigos();
         tablero.avanzarCuentaRegresiva();
@@ -124,7 +114,7 @@ public class Bomberman implements Runnable { //Menu con modo ataque, defensa y e
         tablero.reducirTiempoInmunidad();
     }
 
-    private void gameOver(){
+    private void gameOver(InterfazGrafica GUI){
         clockTimer.stop();
         GUI.dispose();
     }
@@ -157,30 +147,6 @@ public class Bomberman implements Runnable { //Menu con modo ataque, defensa y e
 
     public void setGUI(InterfazGrafica GUI) {
         this.GUI = GUI;
-    }
-
-    public Cliente getSocketCliente() {
-        return this.socketCliente;
-    }
-
-    public void setSocketCliente(Cliente socketCliente) {
-        this.socketCliente = socketCliente;
-    }
-
-    public Cliente getSocketCliente1() {
-        return this.socketCliente1;
-    }
-
-    public void setSocketCliente1(Cliente socketCliente1) {
-        this.socketCliente1 = socketCliente1;
-    }
-
-    public Servidor getSocketServidor() {
-        return this.socketServidor;
-    }
-
-    public void setSocketServidor(Servidor socketServidor) {
-        this.socketServidor = socketServidor;
     }
 
     public Thread getGameThread() {

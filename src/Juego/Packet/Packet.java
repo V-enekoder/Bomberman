@@ -1,7 +1,7 @@
 package Juego.Packet;
 
-import Server.Cliente;
-import Server.Servidor;
+import Server.UDP.Cliente;
+import Server.UDP.Servidor;
 
 public abstract class Packet {
     
