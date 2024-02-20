@@ -1,4 +1,4 @@
 1. Descripción:
-Cada lciente cuenta con una interfaz
+Ya se transmiten los movimientos
 2. Siguiente Objetivo:
-Hacer las interfaces jugables
+Configurar para que el juego se acabe sólo cuando quede un jugador

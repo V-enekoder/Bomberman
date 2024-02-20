@@ -13,8 +13,8 @@ public class Bomba{
         this.fila = fila;
         this.columna = columna;
         this.radioExplosion = radioExplosion;
-        jugadorFuera = new boolean[2];
-        for(int i = 0; i < 2; i++)
+        jugadorFuera = new boolean[4];
+        for(int i = 0; i < 4; i++)
             this.jugadorFuera[i] = false;
     }
 

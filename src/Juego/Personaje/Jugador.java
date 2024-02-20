@@ -14,35 +14,25 @@ import java.awt.event.ActionEvent;
 
 @SuppressWarnings("unused")
 public class Jugador extends Personaje{
-	private int id;
-    private int radioExplosion;
-    private int bombasDisponibles;
-	private int vidas;
-	private int duracionInmunidad;
-	private int tiempoInmunidad;
-	private boolean inmune; // Pintar cuando inmmune
-	private String nombre;
-	private InterfazGrafica GUI;
-
-	public InterfazGrafica getGUI() {
-		return GUI;
-	}
-
-	public void setGUI(InterfazGrafica gUI) {
-		GUI = gUI;
-	}
+	protected int id;
+    protected int radioExplosion;
+    protected int bombasDisponibles;
+	protected int vidas;
+	protected int duracionInmunidad;
+	protected int tiempoInmunidad;
+	protected boolean inmune; // Pintar cuando inmmune
+	protected String nombre;
 
 	public Jugador(InterfazGrafica GUI, Tablero tablero, int[] posicion, int id, String nombre){
 		super(posicion[0],posicion[1]);
 		radioExplosion = 1;
-		bombasDisponibles = 3;
-		vidas = 3;
+		bombasDisponibles = 1;
+		vidas = 5;
 		this.id = id;
 		duracionInmunidad = 5*1000; //5 segundos por 1000 milisegundos
 		tiempoInmunidad = duracionInmunidad;
 		inmune = false; 
 		this.nombre = nombre;
-		this.GUI = GUI;
 		configurarControles(GUI.getBombermanComponent(), tablero);
     }
 
@@ -181,10 +171,13 @@ public class Jugador extends Personaje{
 
 	public void chocaConEnemigo(Tablero tablero){
 		if(tablero.choqueconEnemigos() && !inmune){
-			reducirVidas();
+			vidas--;
 			inmune = true;
-			if(vidas == 0)
+			if(vidas == 0){
+				//tablero.getJugadores().remove(this);
 				tablero.setGameOver(true);
+				System.out.println("Ha muerto el jugador "+ id);
+			}
 		}
 	}
 }

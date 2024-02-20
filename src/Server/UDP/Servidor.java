@@ -78,6 +78,7 @@ public class Servidor implements Runnable{
     @Override
     public void run() {
         System.out.println("Servidor iniciado");
+        juego.startGame(tablero, GUI);
         while(running){
             
             DatagramPacket recibido = recibir(datos);
@@ -103,13 +104,12 @@ public class Servidor implements Runnable{
                 System.out.println("Se ha conectado ["+address.getHostAddress()+" ; "+port+"] "
                     + nombre +" exitosamente");
                 JugadorMJ j = crearJugador(nombre, address, port);
-                j.getGUI().setVisible(true);
                 tablero.agregarJugador(j);
 
                 //Hay que mandar el objeto JugadorMJ en un pakcet;
                 conectarJugador(j,(Packet00Ingreso)packet);
                 break;
-            case DESCONEXION:
+            case DESCONEXION: // Se debe mandar un paquete de desconexión cuando un usuario muera?
                 packet = new Packet01Desconexion(data);
                 nombre = ((Packet00Ingreso)packet).getNombre();
                 System.out.println("Se ha desconectado ["+address.getHostAddress()+" ; "+port+" ] "
@@ -130,7 +130,7 @@ public class Servidor implements Runnable{
         jugadorGUI.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         jugadorGUI.setVisible(true);
         tablero.agregarSensor(jugadorGUI.getBombermanComponent());
-        JugadorMJ jugador = new JugadorMJ(jugadorGUI /*GUI*/, tablero, casillas,
+        JugadorMJ jugador = new JugadorMJ(jugadorGUI, tablero, casillas,
             id.get(0),nombre,direccionIP,puerto);
 
         inicio.remove(numeroAleatorio);
@@ -162,6 +162,15 @@ public class Servidor implements Runnable{
         packet.escribirInformacion(this);
 
     }
+
+/*public void desconectarJugador(Packet01Desconexion packet) {
+    int posicion = getPosicion(packet.getNombre());
+    jugadoresConectados.remove(posicion);
+    packet.escribirInformacion(this);
+    // Además de escribir información, asegúrate de eliminar la representación gráfica del jugador muerto
+    GUI.dispose(); // O realiza la operación necesaria para eliminar la ventana de la interfaz gráfica
+}
+ */
 
     public int getPosicion(String nombre){
         int posicion = 0;

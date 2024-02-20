@@ -8,19 +8,18 @@ public class JugadorMJ extends Jugador{
     private InetAddress direccionIP;
     private int puerto;
 
-    
     public JugadorMJ(InterfazGrafica GUI, Tablero tablero, int[] posicion, int id,
         String nombre,InetAddress direccionIP ,int puerto){
             super(GUI,tablero,posicion,id, nombre);
             this.direccionIP = direccionIP;
             this.puerto = puerto;
     }
-    public JugadorMJ(InterfazGrafica GUI, Tablero tablero, int[] posicion, int id,
+    /*public JugadorMJ(InterfazGrafica GUI, Tablero tablero, int[] posicion, int id,
         String nombre){
             super(GUI,tablero,posicion,id, nombre);
             this.direccionIP = null;
             this. puerto = -1;
-        }
+        }*/
 
 
     public InetAddress getDireccionIP() {

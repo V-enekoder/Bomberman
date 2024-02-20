@@ -2,7 +2,7 @@ package Juego.Mejora;
 
 import Juego.Personaje.Jugador;
 
-public class AumentoVidas extends Mejora{
+public class AumentoVidas extends Mejora{ //Mostrar aumento de vida. Una mini animación
     
     public AumentoVidas(int fila, int columna){
     	super(fila,columna);

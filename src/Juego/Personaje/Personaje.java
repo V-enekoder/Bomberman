@@ -2,14 +2,14 @@ package Juego.Personaje;
 
 import Juego.Tablero;
 
-public abstract class Personaje{ //Verificar atributos pasados por herencia
+public abstract class Personaje{
     
-  private int SIZE = 30;
-  private int x;
-  private int y;
+  protected int SIZE = 30;
+  protected int x;
+  protected int y;
   protected int velocidad;
 
-  protected Personaje(int x, int y) {
+  protected Personaje(int x, int y){ //Preguntar a la profe por este constructor y su privacidad
     this.x = x;
     this.y = y;
     this.velocidad = this instanceof Jugador ? 4 : 1;
