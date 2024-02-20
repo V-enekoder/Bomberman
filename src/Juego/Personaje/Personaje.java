@@ -2,7 +2,7 @@ package Juego.Personaje;
 
 import Juego.Tablero;
 
-public abstract class Personaje{
+public abstract class Personaje{ //Verificar atributos pasados por herencia
     
   private int SIZE = 30;
   private int x;

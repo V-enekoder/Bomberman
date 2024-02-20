@@ -1,23 +1,23 @@
 package Juego.Personaje;
 
 import java.net.InetAddress;
-
-import Juego.ComponenteGrafico;
+import Juego.InterfazGrafica;
 import Juego.Tablero;
 
 public class JugadorMJ extends Jugador{
-    private InetAddress direccionIP; //Encapsular
+    private InetAddress direccionIP;
     private int puerto;
 
-    public JugadorMJ(ComponenteGrafico bombermanComponent, Tablero tablero, int[] posicion, int id,
+    
+    public JugadorMJ(InterfazGrafica GUI, Tablero tablero, int[] posicion, int id,
         String nombre,InetAddress direccionIP ,int puerto){
-            super(bombermanComponent,tablero,posicion,id, nombre);
+            super(GUI,tablero,posicion,id, nombre);
             this.direccionIP = direccionIP;
             this.puerto = puerto;
     }
-    public JugadorMJ(ComponenteGrafico bombermanComponent, Tablero tablero, int[] posicion, int id,
+    public JugadorMJ(InterfazGrafica GUI, Tablero tablero, int[] posicion, int id,
         String nombre){
-            super(bombermanComponent,tablero,posicion,id, nombre);
+            super(GUI,tablero,posicion,id, nombre);
             this.direccionIP = null;
             this. puerto = -1;
         }

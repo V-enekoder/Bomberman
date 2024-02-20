@@ -5,6 +5,7 @@ import javax.swing.*;
 import Juego.Bomba;
 import Juego.Bomberman;
 import Juego.ComponenteGrafico;
+import Juego.InterfazGrafica;
 import Juego.Tablero;
 import Juego.Packet.Packet01Desconexion;
 import Juego.Packet.Packet.packet;
@@ -21,8 +22,17 @@ public class Jugador extends Personaje{
 	private int tiempoInmunidad;
 	private boolean inmune; // Pintar cuando inmmune
 	private String nombre;
+	private InterfazGrafica GUI;
 
-	public Jugador(ComponenteGrafico bombermanComponent, Tablero tablero, int[] posicion, int id, String nombre){
+	public InterfazGrafica getGUI() {
+		return GUI;
+	}
+
+	public void setGUI(InterfazGrafica gUI) {
+		GUI = gUI;
+	}
+
+	public Jugador(InterfazGrafica GUI, Tablero tablero, int[] posicion, int id, String nombre){
 		super(posicion[0],posicion[1]);
 		radioExplosion = 1;
 		bombasDisponibles = 3;
@@ -32,7 +42,8 @@ public class Jugador extends Personaje{
 		tiempoInmunidad = duracionInmunidad;
 		inmune = false; 
 		this.nombre = nombre;
-		configurarControles(bombermanComponent, tablero/*, id*/);
+		this.GUI = GUI;
+		configurarControles(GUI.getBombermanComponent(), tablero);
     }
 
 	protected void configurarControles(ComponenteGrafico bombermanComponent, Tablero tablero) {

@@ -1,6 +1,5 @@
 package Juego;
 
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -18,7 +17,7 @@ public class InterfazGrafica extends JFrame{
 		this.setLayout(new BorderLayout());
 		this.add(bombermanComponent, BorderLayout.CENTER);
 		this.pack();
-		this.setVisible(true);
+		//this.setVisible(true);
     }
 
     public ComponenteGrafico getBombermanComponent() {

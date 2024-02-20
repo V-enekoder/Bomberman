@@ -26,37 +26,25 @@ public class Bomberman implements Runnable { //Menu con modo ataque, defensa y e
     //private boolean running;
     private Servidor socketServidor;
     private Thread gameThread;
-    /*private boolean servidor;
 
-	public boolean isServidor() {
-        return servidor;
-    }
-    public void setServidor(boolean servidor) {
-        this.servidor = servidor;
-    }*/
 
-    public Bomberman(/*int ancho, int alto, int enemigos*/) {
-        /*this.tablero = new Tablero(ancho, alto, enemigos);
-        this.GUI = new InterfazGrafica("Bomberman", tablero);
-        GUI.setLocationRelativeTo(null);
-        GUI.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        tablero.agregarSensor(GUI.getBombermanComponent());*/
-        //this.servidor = true;
-        //this.running = false;
+    public Bomberman() {
     }
+
 //Al intentar instanciar 2 veces, no se crea en el 2do servidor, sino que ingresa al primero.
 //Ni idea si esto es bueno o mallo
 
-
     public static void main(String[] args) {
         Bomberman bomberman = new Bomberman();
-        if(true)
+        if(!true){
             bomberman.startServer();
-
-        bomberman.startGameThread(bomberman.socketServidor.getTablero(),bomberman.socketServidor.getGUI());
-        bomberman.startClient();
-        bomberman.startClient();
+            for(int i = 0; i < 1; i++)     
+                bomberman.startClient();
+        }
+        else 
+            bomberman.startClient();
         
+        bomberman.startGame(bomberman.socketServidor.getTablero(),bomberman.socketServidor.getGUI());
     }
 
     public void startServer(){
@@ -65,7 +53,7 @@ public class Bomberman implements Runnable { //Menu con modo ataque, defensa y e
         GUI.setLocationRelativeTo(null);
         GUI.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         tablero.agregarSensor(GUI.getBombermanComponent());
-        this.socketServidor = new Servidor(this,5000, tablero,GUI);
+        this.socketServidor = new Servidor(this,5000);
         Thread servidorThread = new Thread(socketServidor);
         servidorThread.start();
     }
@@ -124,7 +112,6 @@ public class Bomberman implements Runnable { //Menu con modo ataque, defensa y e
         return this.TIME_STEP;
     }
 
-
     public Timer getClockTimer() {
         return this.clockTimer;
     }
@@ -147,13 +134,5 @@ public class Bomberman implements Runnable { //Menu con modo ataque, defensa y e
 
     public void setGUI(InterfazGrafica GUI) {
         this.GUI = GUI;
-    }
-
-    public Thread getGameThread() {
-        return this.gameThread;
-    }
-
-    public void setGameThread(Thread gameThread) {
-        this.gameThread = gameThread;
     }
 }

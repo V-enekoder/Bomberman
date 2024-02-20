@@ -1,0 +1,4 @@
+1. Descripción:
+Cada lciente cuenta con una interfaz
+2. Siguiente Objetivo:
+Hacer las interfaces jugables

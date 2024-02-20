@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import javax.swing.JFrame;
+
 import Juego.Bomberman;
 import Juego.InterfazGrafica;
 import Juego.Tablero;
@@ -55,12 +57,17 @@ public class Servidor implements Runnable{
         GUI = gUI;
     }
 
-    public Servidor(Bomberman juego, int puerto, Tablero tablero, InterfazGrafica GUI){
+    public Servidor(Bomberman juego, int puerto){
         this.PUERTO = puerto;
         this.datos = new byte[1024];
         this.juego = juego;
-        this.tablero = tablero;
-        this.GUI = GUI;
+
+        this.tablero = new Tablero(15,15,15);
+        this.GUI = new InterfazGrafica("Bomberman Principal", tablero);
+        GUI.setLocationRelativeTo(null);
+        GUI.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        tablero.agregarSensor(GUI.getBombermanComponent());
+        
         try {
             this.socket = new DatagramSocket(PUERTO);
         } catch (SocketException e) {
@@ -96,12 +103,8 @@ public class Servidor implements Runnable{
                 System.out.println("Se ha conectado ["+address.getHostAddress()+" ; "+port+"] "
                     + nombre +" exitosamente");
                 JugadorMJ j = crearJugador(nombre, address, port);
-                
-                /*juego.crearJugador(nombre);
-                j.setDireccionIP(address);
-                j.setPuerto(port); */
+                j.getGUI().setVisible(true);
                 tablero.agregarJugador(j);
-
 
                 //Hay que mandar el objeto JugadorMJ en un pakcet;
                 conectarJugador(j,(Packet00Ingreso)packet);
@@ -122,8 +125,14 @@ public class Servidor implements Runnable{
         int numeroAleatorio = random.nextInt(inicio.size());
         int[] casillas = inicio.get(numeroAleatorio);
 
-        JugadorMJ jugador = new JugadorMJ(GUI.getBombermanComponent(), tablero, casillas,
+        InterfazGrafica jugadorGUI = new InterfazGrafica(nombre, tablero);
+        jugadorGUI.setLocationRelativeTo(null);
+        jugadorGUI.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        jugadorGUI.setVisible(true);
+        tablero.agregarSensor(jugadorGUI.getBombermanComponent());
+        JugadorMJ jugador = new JugadorMJ(jugadorGUI /*GUI*/, tablero, casillas,
             id.get(0),nombre,direccionIP,puerto);
+
         inicio.remove(numeroAleatorio);
         id.remove(0);
         return jugador;
