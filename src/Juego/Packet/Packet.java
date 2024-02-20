@@ -6,7 +6,7 @@ import Server.UDP.Servidor;
 public abstract class Packet {
     
     public static enum packet{
-        INVALIDO(-1), INGRESO(00), DESCONEXION(01);
+        INVALIDO(-1), INGRESO(00), DESCONEXION(01),DERROTA(02);
         
         private int id;
 
@@ -18,15 +18,26 @@ public abstract class Packet {
         }
     }
 
-    private byte id;
+    protected byte id;
+    protected String nombre;
 
     public Packet(int id){
         this.id = (byte) id;
+        this.nombre = "";
     }
 
-    public abstract void escribirInformacion(Cliente cliente); // Se manda a un cliente
-    public abstract void escribirInformacion(Servidor servidor); //Se manda a toods los clientes
-    public abstract byte[] getDatos();
+    public void enviar(Cliente cliente){ // Desde un cliente al servidor
+        cliente.enviarServidor(getDatos());
+    } 
+
+    public void enviar(Servidor servidor){ //Se manda a toods los clientes desde el servidor
+        servidor.enviarTodosLosClientes(getDatos());
+    }
+
+    public byte[] getDatos() {
+        String datos = String.format("%02d%s", id, getNombre()); // Formato: ID + Nombre
+        return datos.getBytes();
+    }
 
     public byte getId() {
         return id;
@@ -34,6 +45,14 @@ public abstract class Packet {
 
     public void setId(byte id) {
         this.id = id;
+    }
+
+    public String getNombre() {
+        return this.nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 
     public String leerInformacion(byte[] datos){
@@ -48,13 +67,4 @@ public abstract class Packet {
         }
         return packet.INVALIDO;
     }
-
-    public static packet buscarPacket(int id){
-        try{
-            return identificarTipo(id);
-        }catch(NumberFormatException e){
-            return packet.INVALIDO;
-        }
-    }
-
 }

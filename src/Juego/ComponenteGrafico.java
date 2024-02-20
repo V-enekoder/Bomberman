@@ -163,8 +163,8 @@ public class ComponenteGrafico extends JComponent implements Sensor{
 		columna*DIMENSION_CELDA+DIMENSION_CELDA, fila*DIMENSION_CELDA+DIMENSION_CELDA);
     }
 
-	private void pintarJugador(ArrayList<Jugador> jugadores, Graphics g2d){
-		for(Jugador jugador: jugadores){
+	private void pintarJugador(ArrayList<JugadorMJ> jugadores, Graphics g2d){
+		for(JugadorMJ jugador: jugadores){
 			// Paint hat
 			g2d.setColor(Color.BLUE);
 			g2d.fillOval(jugador.getX()-CHARACTER_ADJUSTMENT_FOR_PAINT+PAINT_PARAMETER_15,

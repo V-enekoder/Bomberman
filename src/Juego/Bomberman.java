@@ -16,15 +16,11 @@ import java.util.ArrayList;
 import java.util.Random;
 
 @SuppressWarnings("unused")
-public class Bomberman/*implements Runnable*/ { //Menu con modo ataque, defensa y equilibrado
+public class Bomberman{ //Menu con modo ataque, defensa y equilibrado
 
     private final int TIME_STEP = 30;
     private Timer clockTimer;
-    private Tablero tablero;
-    private InterfazGrafica GUI;
-    //private boolean running;
     private Servidor socketServidor;
-
 
     public Bomberman() {
     }
@@ -40,7 +36,6 @@ public class Bomberman/*implements Runnable*/ { //Menu con modo ataque, defensa 
         }
         else 
             bomberman.startClient();
-        
     }
 
     public void startServer(){
@@ -54,15 +49,6 @@ public class Bomberman/*implements Runnable*/ { //Menu con modo ataque, defensa 
         Thread clienteThread = new Thread(cliente);
         clienteThread.start();
     }
-    
- /* public synchronized void startGameThread(Tablero tablero, InterfazGrafica GUI) {
-        Thread gameThread = new Thread(() -> startGame(tablero, GUI));
-        gameThread.start();
-    }
-    
-    public void run() {
-        startGame(tablero, GUI);
-    }*/
  
     public void startGame(Tablero tablero, InterfazGrafica GUI) {
 
@@ -87,18 +73,16 @@ public class Bomberman/*implements Runnable*/ { //Menu con modo ataque, defensa 
         tablero.generarExplosion();
         tablero.aplicarExplosion();
         tablero.informarSensores();
-
-        for(Jugador jugador: tablero.getJugadores())
-            jugador.chocaConEnemigo(tablero);
-        
-        tablero.reducirTiempoInmunidad();
+        tablero.choqueconEnemigos();
+        for(JugadorMJ jugador: tablero.getJugadores())
+            if(jugador.isInmune())
+                tablero.reducirTiempoInmunidad();
     }
 
     private void gameOver(InterfazGrafica GUI){
         clockTimer.stop();
         GUI.dispose();
     }
-
 
     public int getTIME_STEP() {
         return this.TIME_STEP;
@@ -110,21 +94,5 @@ public class Bomberman/*implements Runnable*/ { //Menu con modo ataque, defensa 
 
     public void setClockTimer(Timer clockTimer) {
         this.clockTimer = clockTimer;
-    }
-
-    public Tablero getTablero() {
-        return this.tablero;
-    }
-
-    public void setTablero(Tablero tablero) {
-        this.tablero = tablero;
-    }
-
-    public InterfazGrafica getGUI() {
-        return this.GUI;
-    }
-
-    public void setGUI(InterfazGrafica GUI) {
-        this.GUI = GUI;
     }
 }

@@ -1,17 +1,15 @@
 package Server.UDP;
 
-import java.awt.Frame;
+import Juego.Packet.Packet00Ingreso;
+import Juego.Packet.Packet01Desconexion;
+import Juego.Packet.Packet02Derrota;
+import Juego.Packet.Packet.packet;
 
 public class Prueba {
     
     public static void main(String[] args) {
-        Frame frame = new Frame("Ejemplo de dispose()");
-        frame.setSize(400, 300);
-        frame.setVisible(true);
-
-        // Realizar alguna operación...
-
-        // Llamar a dispose() para cerrar la ventana
-        frame.dispose();
+        Packet02Derrota prueba = new Packet02Derrota("Victor");
+        String mensaje = new String(prueba.getDatos());
+        System.out.println(mensaje);
     }
 }

@@ -29,7 +29,7 @@ public class Jugador extends Personaje{
 		bombasDisponibles = 1;
 		vidas = 5;
 		this.id = id;
-		duracionInmunidad = 5*1000; //5 segundos por 1000 milisegundos
+		duracionInmunidad = 3000; //1 segundo = 1000 milisegundos
 		tiempoInmunidad = duracionInmunidad;
 		inmune = false; 
 		this.nombre = nombre;
@@ -103,7 +103,7 @@ public class Jugador extends Personaje{
 	}
 
 	public void reducirTiempoInmunidad(){
-		this.tiempoInmunidad -= 125;
+		this.tiempoInmunidad -= 30;
 	}
 
 	public boolean isInmune() {
@@ -169,7 +169,7 @@ public class Jugador extends Personaje{
 		tablero.informarSensores();
     }
 
-	public void chocaConEnemigo(Tablero tablero){
+	/*public void chocaConEnemigo(Tablero tablero){
 		if(tablero.choqueconEnemigos() && !inmune){
 			vidas--;
 			inmune = true;
@@ -179,7 +179,7 @@ public class Jugador extends Personaje{
 				System.out.println("Ha muerto el jugador "+ id);
 			}
 		}
-	}
+	}*/
 }
 /*
 Claro, aquí tienes un ejemplo simplificado de cómo podrías modificar el código para permitir que dos jugadores se muevan simultáneamente. En este ejemplo, cada jugador tiene sus propios controles y su propio `ComponenteGrafico`.

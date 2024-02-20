@@ -19,7 +19,7 @@ public class Tablero {
     private int ancho;
     private int alto;
     private Collection<Sensor> sensores = new ArrayList<>();
-	private ArrayList<Jugador> jugadores = new ArrayList<>();
+	private ArrayList<JugadorMJ> jugadores = new ArrayList<>();
     private Collection<Enemigo> enemigos = new ArrayList<>();
     private List<Bomba> bombas = new ArrayList<>();
     private Collection<Mejora> mejoras = new ArrayList<>();
@@ -150,7 +150,7 @@ public class Tablero {
 		return alto;
     }
 
-	public ArrayList<Jugador> getJugadores(){
+	public ArrayList<JugadorMJ> getJugadores(){
 		return jugadores;
 	}
 
@@ -264,7 +264,6 @@ public class Tablero {
 		else
 			return true;
     }
-
 
     public boolean chocaconBomba(Jugador jugador){ 
 		int x,y;
@@ -425,7 +424,7 @@ public class Tablero {
 		}
     }
 
-    public void aplicarExplosionJugador(){
+    /*public void aplicarExplosionJugador(){
 		int x,y;
 		for (Explosion explosion:ubicacionExplosiones){
 			x = transfromarAPixel(explosion.getColumna());
@@ -457,7 +456,7 @@ public class Tablero {
 			for (Enemigo e:enemigosporEliminar ) 
 				enemigos.remove(e);
 		}
-    }
+    }*/
 
     public void informarSensores(){
 		for (Sensor b : sensores){
@@ -469,17 +468,23 @@ public class Tablero {
 		sensores.add(sensor);
     }
 
-    public boolean choqueconEnemigos(){
+    public void choqueconEnemigos(){
 		int x,y;
 		for (Enemigo enemy : enemigos){
 			x = enemy.getX() - ComponenteGrafico.getSquareMiddle();
 			y = enemy.getY() - ComponenteGrafico.getSquareMiddle();
 			for(Jugador jugador: jugadores){
-				if(hayChoque(jugador, x,y))
-					return true;
+				if(hayChoque(jugador, x,y) && !jugador.isInmune()){
+					jugador.reducirVidas();
+					jugador.setInmune(true);
+					if(jugador.getVidas() == 0){
+						GameOver = true;
+						System.out.println("Ha muerto el jugador "+ jugador.getID());
+					}
+				}
+					
 			}
 		}
-		return false;
     }
 
 	public void choqueconMejora(){

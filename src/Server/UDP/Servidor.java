@@ -17,6 +17,7 @@ import Juego.Tablero;
 import Juego.Packet.Packet;
 import Juego.Packet.Packet00Ingreso;
 import Juego.Packet.Packet01Desconexion;
+import Juego.Packet.Packet02Derrota;
 import Juego.Packet.Packet.packet;
 import Juego.Personaje.JugadorMJ;
 
@@ -80,9 +81,7 @@ public class Servidor implements Runnable{
         System.out.println("Servidor iniciado");
         juego.startGame(tablero, GUI);
         while(running){
-            
             DatagramPacket recibido = recibir(datos);
-
             analizarPacket(recibido.getData(),recibido.getAddress(),recibido.getPort());
         }
         socket.close();
@@ -92,9 +91,9 @@ public class Servidor implements Runnable{
         String mensaje = new String(data).trim();
         String nombre;
         int id = Integer.parseInt(mensaje.substring(0, 2));
-        packet tipo = Packet.identificarTipo(id);
+        //packet tipo = Packet.identificarTipo(id);
         Packet packet = null;
-        switch(tipo){
+        switch(Packet.identificarTipo(id)/*tipo*/){
             default:
             case INVALIDO:
                 break;
@@ -105,20 +104,37 @@ public class Servidor implements Runnable{
                     + nombre +" exitosamente");
                 JugadorMJ j = crearJugador(nombre, address, port);
                 tablero.agregarJugador(j);
-
-                //Hay que mandar el objeto JugadorMJ en un pakcet;
                 conectarJugador(j,(Packet00Ingreso)packet);
                 break;
             case DESCONEXION: // Se debe mandar un paquete de desconexión cuando un usuario muera?
                 packet = new Packet01Desconexion(data);
-                nombre = ((Packet00Ingreso)packet).getNombre();
+                nombre = ((Packet01Desconexion)packet).getNombre();
                 System.out.println("Se ha desconectado ["+address.getHostAddress()+" ; "+port+" ] "
                     + nombre);
                 tablero.eliminarJugador(nombre);
                 desconectarJugador((Packet01Desconexion)packet);
                 break;
+            case DERROTA:
+                packet = new Packet02Derrota(data);
+                nombre = ((Packet02Derrota)packet).getNombre();
+                System.out.println(nombre + " ha perdido. ["+address.getHostAddress()+" ; "+port+"]");
+                tablero.eliminarJugador(nombre);
+                desconectarJugador((Packet02Derrota)packet);
+                break;
         }
     }
+    
+    private void desconectarJugador(Packet packet) {
+        int posicion = getPosicion(packet.getNombre());
+        jugadoresConectados.remove(posicion);
+        packet.enviar(this);
+    }
+
+    /*private void desconectarJugador(Packet02Derrota packet) {
+        int posicion = getPosicion(packet.getNombre());
+        jugadoresConectados.remove(posicion);
+        packet.enviar(this);
+    }*/
 
     private JugadorMJ crearJugador(String nombre, InetAddress direccionIP, int puerto){
         Random random = new Random();
@@ -129,6 +145,7 @@ public class Servidor implements Runnable{
         jugadorGUI.setLocationRelativeTo(null);
         jugadorGUI.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         jugadorGUI.setVisible(true);
+
         tablero.agregarSensor(jugadorGUI.getBombermanComponent());
         JugadorMJ jugador = new JugadorMJ(jugadorGUI, tablero, casillas,
             id.get(0),nombre,direccionIP,puerto);
@@ -142,13 +159,8 @@ public class Servidor implements Runnable{
     public void conectarJugador(JugadorMJ jugador, Packet00Ingreso ingreso){
         boolean yaConectado = false;
         for(JugadorMJ j: jugadoresConectados){
-            if(j.getNombre().equalsIgnoreCase(jugador.getNombre())){
-                /*if(j.direccionIP == null)
-                    j.direccionIP = address;
-                if(j.puerto == -1)
-                    j.puerto = port;*/
+            if(j.getNombre().equalsIgnoreCase(jugador.getNombre()))
                 yaConectado = true;
-           }
            else
                 enviar(ingreso.getDatos(),j.getDireccionIP(),j.getPuerto());
         }
@@ -156,12 +168,11 @@ public class Servidor implements Runnable{
             this.jugadoresConectados.add(jugador);
     }
 
-    public void desconectarJugador(Packet01Desconexion packet) {
+    /*public void desconectarJugador(Packet01Desconexion packet) {
         int posicion = getPosicion(packet.getNombre());
         jugadoresConectados.remove(posicion);
-        packet.escribirInformacion(this);
-
-    }
+        packet.enviar(this);
+    }*/
 
 /*public void desconectarJugador(Packet01Desconexion packet) {
     int posicion = getPosicion(packet.getNombre());

@@ -24,11 +24,6 @@ public class InterfazGrafica extends JFrame{
 		return bombermanComponent;
     }
 
-    /*private boolean askUser(String question) {
-		return JOptionPane.showConfirmDialog(null, question, ""
-			, JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
-    }*/
-
     private void setKeyStrokes() {
 
 		KeyStroke stroke = KeyStroke.getKeyStroke(KeyEvent.VK_W, 

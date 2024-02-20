@@ -11,6 +11,7 @@ import Juego.Bomberman;
 import Juego.Packet.Packet;
 import Juego.Packet.Packet00Ingreso;
 import Juego.Packet.Packet01Desconexion;
+import Juego.Packet.Packet02Derrota;
 import Juego.Packet.Packet.packet;
 
 public class Cliente implements Runnable {
@@ -37,8 +38,8 @@ public class Cliente implements Runnable {
     @Override
     public void run() {
 
-            Packet00Ingreso ingreso = new Packet00Ingreso("Eldesbaratamala");
-            ingreso.escribirInformacion(this);
+        Packet00Ingreso ingreso = new Packet00Ingreso("Eldesbaratamala");
+        ingreso.enviar(this);
 
         while(running){
             DatagramPacket recibido = recibir();
@@ -53,7 +54,7 @@ public class Cliente implements Runnable {
         int id = Integer.parseInt(mensaje.substring(0, 2));
         packet tipo = Packet.identificarTipo(id);
         Packet packet = null;
-        
+        String nombre;
         switch(tipo){
             default:
             case INVALIDO:
@@ -61,15 +62,17 @@ public class Cliente implements Runnable {
             case INGRESO:
                 packet = new Packet00Ingreso(data);
                 System.out.println(((Packet00Ingreso)packet).getNombre() +" ha ingresado");
-                //juego.agregarJugador(/*address,port*/null,-1,((Packet00Ingreso)packet).getNombre());
                 break;
             case DESCONEXION:
             packet = new Packet01Desconexion(data);
                     
             System.out.println("["+address.getHostAddress()+" ; "+port+" ] "
                 +((Packet01Desconexion)packet).getNombre() + " se ha ido");
-            //tablero.removerJugador(((Packet01Desconexion)packet).getNombre())
-            //Probablemente agarre por argumento al que va a agregar y listo
+                break;
+            case DERROTA:
+                packet = new Packet02Derrota(data);
+                nombre = ((Packet02Derrota)packet).getNombre();
+                System.out.println(nombre + " ha perdido. ["+address.getHostAddress()+" ; "+port+"]");
                 break;
         }
     }
@@ -84,7 +87,7 @@ public class Cliente implements Runnable {
         return paquete;
     }
 
-    public void enviar(byte[] datos){
+    public void enviarServidor(byte[] datos){
         DatagramPacket respuesta = new DatagramPacket(datos, datos.length,direccionServidor,PUERTO_SERVIDOR);
         try {
             socket.send(respuesta);
