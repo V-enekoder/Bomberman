@@ -8,6 +8,7 @@ import Juego.ComponenteGrafico;
 import Juego.InterfazGrafica;
 import Juego.Tablero;
 import Juego.Packet.Packet01Desconexion;
+import Server.UDP.Cliente;
 import Juego.Packet.Packet.packet;
 
 import java.awt.event.ActionEvent;
@@ -27,7 +28,7 @@ public class Jugador extends Personaje{
 		super(posicion[0],posicion[1]);
 		radioExplosion = 1;
 		bombasDisponibles = 1;
-		vidas = 5;
+		vidas = 1;
 		this.id = id;
 		duracionInmunidad = 3000; //1 segundo = 1000 milisegundos
 		tiempoInmunidad = duracionInmunidad;
@@ -56,9 +57,9 @@ public class Jugador extends Personaje{
 	private Action cerrarJuego() {
 		return new AbstractAction() {
 			public void actionPerformed(ActionEvent e){
-				//Packet01Desconexion desconexion = new Packet01Desconexion(nombre);
-				//desconexion.escribirInformacion(Bomberman.socketCliente);
-				System.exit(0);
+				Cliente socket = new Cliente();
+				Packet01Desconexion desconexion = new Packet01Desconexion(nombre);
+				desconexion.enviar(socket);
 			}
 		};
 	}
@@ -168,106 +169,4 @@ public class Jugador extends Personaje{
 		tablero.choqueconMejora();
 		tablero.informarSensores();
     }
-
-	/*public void chocaConEnemigo(Tablero tablero){
-		if(tablero.choqueconEnemigos() && !inmune){
-			vidas--;
-			inmune = true;
-			if(vidas == 0){
-				//tablero.getJugadores().remove(this);
-				tablero.setGameOver(true);
-				System.out.println("Ha muerto el jugador "+ id);
-			}
-		}
-	}*/
 }
-/*
-Claro, aquí tienes un ejemplo simplificado de cómo podrías modificar el código para permitir que dos jugadores se muevan simultáneamente. En este ejemplo, cada jugador tiene sus propios controles y su propio `ComponenteGrafico`.
-
-Primero, modificaríamos la clase `ComponenteGrafico` para manejar múltiples jugadores y sus controles:
-
-```java
-import javax.swing.*;
-import java.awt.*;
-import java.util.ArrayList;
-
-public class ComponenteGrafico extends JComponent {
-    private final Tablero tablero;
-    private final ArrayList<Jugador> jugadores;
-
-    public ComponenteGrafico(Tablero tablero, ArrayList<Jugador> jugadores) {
-        this.tablero = tablero;
-        this.jugadores = jugadores;
-    }
-
-    public void configurarControles() {
-        for (int i = 0; i < jugadores.size(); i++) {
-            Jugador jugador = jugadores.get(i);
-            InputMap inputMap = getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
-            ActionMap actionMap = getActionMap();
-            
-            String rightKey = (i == 0) ? "Derecha" : "D";
-            String leftKey = (i == 0) ? "Izquierda" : "A";
-            String upKey = (i == 0) ? "Subir" : "W";
-            String downKey = (i == 0) ? "Bajar" : "S";
-            String bombKey = (i == 0) ? "dropBomb" : "Z";
-
-            inputMap.put(KeyStroke.getKeyStroke("RIGHT"), rightKey);
-            inputMap.put(KeyStroke.getKeyStroke("LEFT"), leftKey);
-            inputMap.put(KeyStroke.getKeyStroke("UP"), upKey);
-            inputMap.put(KeyStroke.getKeyStroke("DOWN"), downKey);
-            inputMap.put(KeyStroke.getKeyStroke("SPACE"), bombKey);
-
-            actionMap.put(rightKey, jugador.mover(Movimiento.DERECHA, tablero));
-            actionMap.put(leftKey, jugador.mover(Movimiento.IZQUIERDA, tablero));
-            actionMap.put(upKey, jugador.mover(Movimiento.ARRIBA, tablero));
-            actionMap.put(downKey, jugador.mover(Movimiento.ABAJO, tablero));
-            actionMap.put(bombKey, jugador.ponerBomba(tablero));
-        }
-    }
-
-    // Resto del código...
-}
-```
-
-Luego, en la clase `Jugador`, haríamos algunas modificaciones para manejar los controles:
-
-```java
-import javax.swing.*;
-import java.awt.event.ActionEvent;
-
-public class Jugador extends Personaje {
-    private int id;
-    private int radioExplosion;
-    private int bombasDisponibles;
-    // Otros atributos...
-
-    public Jugador(ComponenteGrafico bombermanComponent, Tablero tablero, int[] posicion, int id) {
-        super(posicion[0], posicion[1]);
-        // Inicialización de atributos...
-        this.id = id;
-        // Otros atributos...
-    }
-
-    public Action mover(Movimiento movimiento, Tablero tablero) {
-        return new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-                moverJugador(movimiento, tablero);
-            }
-        };
-    }
-
-    public Action ponerBomba(Tablero tablero) {
-        return new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-                // Lógica para poner la bomba...
-            }
-        };
-    }
-
-    // Otro código de la clase...
-}
-```
-
-Con estos cambios, ahora deberías ser capaz de controlar a dos jugadores simultáneamente en el juego. Asegúrate de instanciar los jugadores y el componente gráfico correctamente y de llamar a `configurarControles()` después de crear todos los jugadores.
- */

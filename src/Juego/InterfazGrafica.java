@@ -17,7 +17,6 @@ public class InterfazGrafica extends JFrame{
 		this.setLayout(new BorderLayout());
 		this.add(bombermanComponent, BorderLayout.CENTER);
 		this.pack();
-		//this.setVisible(true);
     }
 
     public ComponenteGrafico getBombermanComponent() {

@@ -3,11 +3,10 @@ package Juego;
 import java.util.*;
 
 import Juego.Mejora.*;
-import Juego.Personaje.Enemigo;
-import Juego.Personaje.Jugador;
-import Juego.Personaje.JugadorMJ;
-import Juego.Personaje.Personaje;
+import Juego.Packet.Packet02Derrota;
+import Juego.Personaje.*;
 import Juego.Personaje.Personaje.Movimiento;
+import Server.UDP.Cliente;
 
 public class Tablero {
     private final static double PROB_PARED = 0.4;
@@ -27,12 +26,14 @@ public class Tablero {
     private Collection<Explosion> ubicacionExplosiones= new ArrayList<>();
     private boolean GameOver = false;
 	ArrayList<int[]> reserva;
+	//private Cliente socket;
 
     public Tablero(int ancho, int alto, int enemigos){
 		this.ancho = ancho;
 		this.alto = alto;
 		this.celdas = new Celda[alto][ancho];
 		this.reserva = reservarCasillas();
+		//this.socket = new Cliente();
 		definirCasillas();
 		crearEnemigos(enemigos);
 	}
@@ -201,8 +202,8 @@ public class Tablero {
 	}
 
     public void moverEnemigos(){
-		if (enemigos.isEmpty())
-			GameOver = true; //En revision
+		//if (enemigos.isEmpty())
+			//GameOver = true; //En revision
 
 		for (Enemigo e : enemigos) {
 			Movimiento direccion = e.getDireccion();
@@ -222,7 +223,7 @@ public class Tablero {
 					break;
 			}
 			if (chocaconBloque(e) || chocaconBomba(e)) 
-				e.cambiarDireccion(); //Poner que sean aleatorias para simular movimiento inteligente
+				e.cambiarDireccion();
 		}
 	}
 	
@@ -408,9 +409,10 @@ public class Tablero {
 					jugador.reducirVidas();
 					jugador.setInmune(true);
 					if(jugador.getVidas() == 0){
-						//jugadores.remove(jugador);
-						GameOver = true;
-						System.out.println("Ha muerto el jugador "+ jugador.getID());
+						Cliente socket = new Cliente();
+						Packet02Derrota packet = new Packet02Derrota(jugador.getNombre());
+						packet.enviar(socket);
+						//GameOver = true;
 					}
 				}
 			}
@@ -423,40 +425,6 @@ public class Tablero {
 				enemigos.remove(e);
 		}
     }
-
-    /*public void aplicarExplosionJugador(){
-		int x,y;
-		for (Explosion explosion:ubicacionExplosiones){
-			x = transfromarAPixel(explosion.getColumna());
-			y =  transfromarAPixel(explosion.getFila());
-			for(Jugador jugador: jugadores){
-				if(hayChoque(jugador,x,y) && !jugador.isInmune()){
-					jugador.reducirVidas();
-					jugador.setInmune(true);
-					if(jugador.getVidas() == 0){
-						//jugadores.remove(jugador);
-						GameOver = true;
-						System.out.println("Ha muerto el jugador "+ jugador.getID());
-					}
-				}
-			}
-		}
-    }
-	
-    public void aplicarExplosionEnemigo(){
-		int x,y;
-		for (Explosion exp:ubicacionExplosiones){
-			x = transfromarAPixel(exp.getColumna());
-			y = transfromarAPixel(exp.getFila());
-			Collection<Enemigo>enemigosporEliminar = new ArrayList<>();
-				for (Enemigo e : enemigos) {
-					if(hayChoque(e, x, y))
-						enemigosporEliminar.add(e);
-				}
-			for (Enemigo e:enemigosporEliminar ) 
-				enemigos.remove(e);
-		}
-    }*/
 
     public void informarSensores(){
 		for (Sensor b : sensores){
@@ -478,11 +446,13 @@ public class Tablero {
 					jugador.reducirVidas();
 					jugador.setInmune(true);
 					if(jugador.getVidas() == 0){
-						GameOver = true;
+						Cliente socket = new Cliente();
+						Packet02Derrota packet = new Packet02Derrota(jugador.getNombre());
+						packet.enviar(socket);
+						//GameOver = true;
 						System.out.println("Ha muerto el jugador "+ jugador.getID());
 					}
 				}
-					
 			}
 		}
     }

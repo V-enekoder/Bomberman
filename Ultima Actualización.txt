@@ -2,3 +2,10 @@
 Ya se transmiten los movimientos
 2. Siguiente Objetivo:
 Configurar para que el juego se acabe sólo cuando quede un jugador
+
+1. Descripción:
+Se logró que el juego no crashee cuando un juegador se muera. 
+Aun no voy a meter que se acabe cuando un solo jugador quede. eso lo dejo a cuando llegue francisco a hacer una 
+pantalla de final de juego.
+2. Siguiente Objetivo:
+investigar como jugar online

@@ -45,16 +45,16 @@ public class Bomberman{ //Menu con modo ataque, defensa y equilibrado
     }
 
     public void startClient() {
-        Cliente cliente = new Cliente(this);
+        Cliente cliente = new Cliente();
         Thread clienteThread = new Thread(cliente);
         clienteThread.start();
     }
  
-    public void startGame(Tablero tablero, InterfazGrafica GUI) {
+    public void startGame(Tablero tablero/*, InterfazGrafica GUI*/) {
 
         Action doOneStep = new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
-                tick(tablero,GUI);
+                tick(tablero/*,GUI*/);
             }
         };
 
@@ -63,9 +63,9 @@ public class Bomberman{ //Menu con modo ataque, defensa y equilibrado
         clockTimer.start();
     }
 
-    private void tick(Tablero tablero, InterfazGrafica GUI) {
-        if (tablero.isGameOver())
-            SwingUtilities.invokeLater(() -> gameOver(GUI));    
+    private void tick(Tablero tablero/*, InterfazGrafica GUI*/) {
+        //if (tablero.isGameOver())
+        //    SwingUtilities.invokeLater(() -> gameOver(GUI));    
         //gameOver(GUI);
 
         tablero.moverEnemigos();

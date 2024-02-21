@@ -21,23 +21,6 @@ public class Enemigo extends Personaje{
     }
 
     public void cambiarDireccion() {
-        
-        /*Random random = new Random();
-        int numeroAleatorio = random.nextInt(4);
-        switch (numeroAleatorio) {
-            case 0:
-                direccion = Movimiento.ARRIBA;
-                break;
-            case 1:
-                direccion = Movimiento.ABAJO;
-                break;
-            case 2:
-                direccion = Movimiento.DERECHA;
-                break;
-            case 3:
-                direccion = Movimiento.IZQUIERDA;
-                break;
-        }*/
         switch (direccion) {
             case Movimiento.ABAJO:
                 direccion = Movimiento.ARRIBA;

@@ -6,19 +6,17 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
-
 import javax.swing.JFrame;
+import java.util.Map;
+
 
 import Juego.Bomberman;
 import Juego.InterfazGrafica;
 import Juego.Tablero;
-import Juego.Packet.Packet;
-import Juego.Packet.Packet00Ingreso;
-import Juego.Packet.Packet01Desconexion;
-import Juego.Packet.Packet02Derrota;
-import Juego.Packet.Packet.packet;
+import Juego.Packet.*;
 import Juego.Personaje.JugadorMJ;
 
 public class Servidor implements Runnable{
@@ -29,10 +27,10 @@ public class Servidor implements Runnable{
     private List<JugadorMJ> jugadoresConectados = new ArrayList<JugadorMJ>();
     private Bomberman juego;
     private Tablero tablero;
-    private InterfazGrafica GUI;
+    //private InterfazGrafica GUI;
 	private static ArrayList<int[]> inicio = new ArrayList<>();
     private static ArrayList<Integer> id = new ArrayList<>();
-
+    private Map<String, InterfazGrafica> interfaces = new HashMap<>();
     static {
         inicio.add(new int[]{60, 60});
         inicio.add(new int[]{60, 540});
@@ -50,24 +48,16 @@ public class Servidor implements Runnable{
         this.tablero = tablero;
     }
 
-    public InterfazGrafica getGUI() {
-        return GUI;
-    }
-
-    public void setGUI(InterfazGrafica gUI) {
-        GUI = gUI;
-    }
-
     public Servidor(Bomberman juego, int puerto){
         this.PUERTO = puerto;
         this.datos = new byte[1024];
         this.juego = juego;
 
         this.tablero = new Tablero(15,15,15);
-        this.GUI = new InterfazGrafica("Bomberman Principal", tablero);
-        GUI.setLocationRelativeTo(null);
+        //this.GUI = new InterfazGrafica("", tablero);
+        /*GUI.setLocationRelativeTo(null);
         GUI.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        tablero.agregarSensor(GUI.getBombermanComponent());
+        tablero.agregarSensor(GUI.getBombermanComponent());*/
         
         try {
             this.socket = new DatagramSocket(PUERTO);
@@ -79,10 +69,12 @@ public class Servidor implements Runnable{
     @Override
     public void run() {
         System.out.println("Servidor iniciado");
-        juego.startGame(tablero, GUI);
+        juego.startGame(tablero/*, GUI*/);
         while(running){
             DatagramPacket recibido = recibir(datos);
             analizarPacket(recibido.getData(),recibido.getAddress(),recibido.getPort());
+            if(jugadoresConectados.isEmpty())
+                System.exit(0);
         }
         socket.close();
     }
@@ -91,50 +83,53 @@ public class Servidor implements Runnable{
         String mensaje = new String(data).trim();
         String nombre;
         int id = Integer.parseInt(mensaje.substring(0, 2));
-        //packet tipo = Packet.identificarTipo(id);
-        Packet packet = null;
-        switch(Packet.identificarTipo(id)/*tipo*/){
+
+        switch(Packet.identificarTipo(id)){
             default:
             case INVALIDO:
                 break;
             case INGRESO:
-                packet = new Packet00Ingreso(data);
-                nombre =  ((Packet00Ingreso)packet).getNombre();
+                Packet00Ingreso ingreso = new Packet00Ingreso(data);
+                nombre = ingreso.getNombre();
                 System.out.println("Se ha conectado ["+address.getHostAddress()+" ; "+port+"] "
                     + nombre +" exitosamente");
                 JugadorMJ j = crearJugador(nombre, address, port);
                 tablero.agregarJugador(j);
-                conectarJugador(j,(Packet00Ingreso)packet);
+                conectarJugador(j,ingreso);
                 break;
             case DESCONEXION: // Se debe mandar un paquete de desconexión cuando un usuario muera?
-                packet = new Packet01Desconexion(data);
-                nombre = ((Packet01Desconexion)packet).getNombre();
+                Packet01Desconexion desconexion = new Packet01Desconexion(data);
+                nombre = desconexion.getNombre();
                 System.out.println("Se ha desconectado ["+address.getHostAddress()+" ; "+port+" ] "
                     + nombre);
                 tablero.eliminarJugador(nombre);
-                desconectarJugador((Packet01Desconexion)packet);
+                desconectarJugador(desconexion);
+                eliminarGUI(nombre);
                 break;
             case DERROTA:
-                packet = new Packet02Derrota(data);
-                nombre = ((Packet02Derrota)packet).getNombre();
+                Packet02Derrota derrota = new Packet02Derrota(data);
+                nombre = derrota.getNombre();
                 System.out.println(nombre + " ha perdido. ["+address.getHostAddress()+" ; "+port+"]");
                 tablero.eliminarJugador(nombre);
-                desconectarJugador((Packet02Derrota)packet);
+                desconectarJugador(derrota);
+                eliminarGUI(nombre);
                 break;
         }
     }
     
+    private void eliminarGUI(String nombre) {
+        InterfazGrafica interfaz = interfaces.get(nombre);
+        if (interfaz != null) {
+            interfaz.dispose();
+            interfaces.remove(nombre);
+        }
+    }
+
     private void desconectarJugador(Packet packet) {
         int posicion = getPosicion(packet.getNombre());
         jugadoresConectados.remove(posicion);
         packet.enviar(this);
     }
-
-    /*private void desconectarJugador(Packet02Derrota packet) {
-        int posicion = getPosicion(packet.getNombre());
-        jugadoresConectados.remove(posicion);
-        packet.enviar(this);
-    }*/
 
     private JugadorMJ crearJugador(String nombre, InetAddress direccionIP, int puerto){
         Random random = new Random();
@@ -152,6 +147,7 @@ public class Servidor implements Runnable{
 
         inicio.remove(numeroAleatorio);
         id.remove(0);
+        interfaces.put(nombre, jugadorGUI);
         return jugador;
     }
 
@@ -168,21 +164,6 @@ public class Servidor implements Runnable{
             this.jugadoresConectados.add(jugador);
     }
 
-    /*public void desconectarJugador(Packet01Desconexion packet) {
-        int posicion = getPosicion(packet.getNombre());
-        jugadoresConectados.remove(posicion);
-        packet.enviar(this);
-    }*/
-
-/*public void desconectarJugador(Packet01Desconexion packet) {
-    int posicion = getPosicion(packet.getNombre());
-    jugadoresConectados.remove(posicion);
-    packet.escribirInformacion(this);
-    // Además de escribir información, asegúrate de eliminar la representación gráfica del jugador muerto
-    GUI.dispose(); // O realiza la operación necesaria para eliminar la ventana de la interfaz gráfica
-}
- */
-
     public int getPosicion(String nombre){
         int posicion = 0;
         for(JugadorMJ j: jugadoresConectados){
@@ -193,6 +174,13 @@ public class Servidor implements Runnable{
         return posicion;
     }
 
+    public JugadorMJ getJugador(String nombre){
+        for(JugadorMJ jugador: jugadoresConectados){
+            if(jugador.getNombre().equals(nombre))
+                return jugador;
+        }
+        return null; //Manejar excepcion
+    }
 
     public DatagramPacket recibir(byte[] datos){
         DatagramPacket paquete = new DatagramPacket(datos,datos.length);
