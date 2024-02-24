@@ -23,6 +23,15 @@ public class Jugador extends Personaje{
 	protected int tiempoInmunidad;
 	protected boolean inmune; // Pintar cuando inmmune
 	protected String nombre;
+	protected boolean fantasma;
+
+	public boolean isFantasma() {
+		return fantasma;
+	}
+
+	public void setFantasma(boolean fantasma) {
+		this.fantasma = fantasma;
+	}
 
 	public Jugador(InterfazGrafica GUI, Tablero tablero, int[] posicion, int id, String nombre){
 		super(posicion[0],posicion[1]);
@@ -34,6 +43,7 @@ public class Jugador extends Personaje{
 		tiempoInmunidad = duracionInmunidad;
 		inmune = false; 
 		this.nombre = nombre;
+		fantasma = false;
 		configurarControles(GUI.getBombermanComponent(), tablero);
     }
 
@@ -76,7 +86,7 @@ public class Jugador extends Personaje{
         return new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 if (!tablero.tieneBomba(getUbicacionFila(), getUbicacionColumna()) &&
-                        tablero.getCantidadBombas() < getbombasDisponibles())
+                        tablero.getCantidadBombas() < getbombasDisponibles() && !fantasma)
                     tablero.agregarBomba(new Bomba(getUbicacionFila(), getUbicacionColumna(), getRadioExplosion()));
                 tablero.informarSensores();
             }

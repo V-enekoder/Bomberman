@@ -9,6 +9,8 @@ import Juego.Personaje.JugadorMJ;
 import Server.*;
 import Server.UDP.Cliente;
 import Server.UDP.Servidor;
+import graficos.MenuLogueo;
+import graficos.MenuPrincipal;
 
 import java.awt.event.ActionEvent;
 import java.net.InetAddress;
@@ -21,21 +23,22 @@ public class Bomberman{ //Menu con modo ataque, defensa y equilibrado
     private final int TIME_STEP = 30;
     private Timer clockTimer;
     private Servidor socketServidor;
-
+    private static int contador_mejoras = 100*20;
+    
     public Bomberman() {
     }
 
     public static void main(String[] args) {
-        Bomberman bomberman = new Bomberman();
+        /*Bomberman bomberman = new Bomberman();
         if(true){
             bomberman.startServer();
             for(int i = 0; i < 1; i++)     
                 bomberman.startClient();
-            //bomberman.startGame(bomberman.socketServidor.getTablero(),bomberman.socketServidor.getGUI());
-            //Se puede hacer aquí o en el server. preguntar a la profe a ver is hay diferencia
         }
         else 
-            bomberman.startClient();
+            bomberman.startClient();*/
+
+            MenuPrincipal v1 = new MenuPrincipal();
     }
 
     public void startServer(){
@@ -67,6 +70,11 @@ public class Bomberman{ //Menu con modo ataque, defensa y equilibrado
         //if (tablero.isGameOver())
         //    SwingUtilities.invokeLater(() -> gameOver(GUI));    
         //gameOver(GUI);
+        contador_mejoras -= 30;
+        if(contador_mejoras <= 0){
+            tablero.generarMejoraAleatoria();
+            contador_mejoras = 1000;
+        }
 
         tablero.moverEnemigos();
         tablero.avanzarCuentaRegresiva();

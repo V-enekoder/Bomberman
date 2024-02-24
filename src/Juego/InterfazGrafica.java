@@ -26,9 +26,9 @@ public class InterfazGrafica extends JFrame{
     private void setKeyStrokes() {
 
 		KeyStroke stroke = KeyStroke.getKeyStroke(KeyEvent.VK_W, 
-			Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx());
-		bombermanComponent.getInputMap().put(stroke, "q");
-		bombermanComponent.getActionMap().put("q", quit);
+		Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
+	bombermanComponent.getInputMap().put(stroke, "q");
+	bombermanComponent.getActionMap().put("q", quit);
     }
     private final Action quit = new AbstractAction(){
 		public void actionPerformed(ActionEvent e) {

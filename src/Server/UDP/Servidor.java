@@ -54,11 +54,7 @@ public class Servidor implements Runnable{
         this.juego = juego;
 
         this.tablero = new Tablero(15,15,15);
-        //this.GUI = new InterfazGrafica("", tablero);
-        /*GUI.setLocationRelativeTo(null);
-        GUI.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        tablero.agregarSensor(GUI.getBombermanComponent());*/
-        
+
         try {
             this.socket = new DatagramSocket(PUERTO);
         } catch (SocketException e) {
@@ -110,9 +106,9 @@ public class Servidor implements Runnable{
                 Packet02Derrota derrota = new Packet02Derrota(data);
                 nombre = derrota.getNombre();
                 System.out.println(nombre + " ha perdido. ["+address.getHostAddress()+" ; "+port+"]");
-                tablero.eliminarJugador(nombre);
-                desconectarJugador(derrota);
-                eliminarGUI(nombre);
+                //tablero.eliminarJugador(nombre);
+                //desconectarJugador(derrota);
+                //eliminarGUI(nombre);
                 break;
         }
     }

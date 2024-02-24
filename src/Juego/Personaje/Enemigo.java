@@ -22,16 +22,16 @@ public class Enemigo extends Personaje{
 
     public void cambiarDireccion() {
         switch (direccion) {
-            case Movimiento.ABAJO:
+            case ABAJO:
                 direccion = Movimiento.ARRIBA;
                 break;
-            case Movimiento.ARRIBA:
+            case ARRIBA:
                 direccion = Movimiento.ABAJO;
                 break;
-            case Movimiento.IZQUIERDA:
+            case IZQUIERDA:
                 direccion = Movimiento.DERECHA;
                 break;
-            case Movimiento.DERECHA:
+            case DERECHA:
                 direccion = Movimiento.IZQUIERDA;
                 break;        
         }

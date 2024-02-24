@@ -117,10 +117,10 @@ public class Tablero {
 			int columna = generarNumeroAleatorio(1, ancho - 1);
 
 			if(getTipoCelda(fila, columna) == Celda.PISO && !estaReservado(fila, columna)){	
-				boolean	movimientoVertical = generarNumeroAleatorio(1,100) % 2 == 0 ? true : false;
+				boolean	vertical = generarNumeroAleatorio(1,100) % 2 == 0 ? true : false;
 				x = transfromarAPixel(columna) + ComponenteGrafico.getSquareMiddle();
 				y = transfromarAPixel(fila) + ComponenteGrafico.getSquareMiddle();
-				enemigos.add(new Enemigo(x, y, movimientoVertical));
+				enemigos.add(new Enemigo(x, y, vertical));
 				enemigos_generados++;
 			}
 		}while(enemigos_generados != cantidadEnemigos);
@@ -202,8 +202,6 @@ public class Tablero {
 	}
 
     public void moverEnemigos(){
-		//if (enemigos.isEmpty())
-			//GameOver = true; //En revision
 
 		for (Enemigo e : enemigos) {
 			Movimiento direccion = e.getDireccion();
@@ -227,15 +225,30 @@ public class Tablero {
 		}
 	}
 	
-	public boolean chocaconBloque(Personaje personaje){ // Preguntar
-		int fila = personaje.getUbicacionFila();  
-		int columna = personaje.getUbicacionColumna();
-
+	public boolean chocaconBloque(Enemigo e){
+		int fila = e.getUbicacionFila();  
+		int columna = e.getUbicacionColumna();
 		for (int i = fila - 1; i <= fila + 1; i++) {
 			for (int j = columna - 1; j <= columna+ 1; j++){
 				if (estaEnTablero(i,j) && getTipoCelda(i, j) != Celda.PISO 
-					&& hayInteraccion(personaje,i, j)) {
+					&& hayInteraccion(e,i, j)) {
 						return true;
+				}
+			}
+		}
+		return false;
+    }
+	
+	public boolean chocaconBloque(Jugador jugador){
+		int fila = jugador.getUbicacionFila();  
+		int columna = jugador.getUbicacionColumna();
+
+		for (int i = fila - 1; i <= fila + 1; i++) {
+			for (int j = columna - 1; j <= columna+ 1; j++){
+				if(estaEnTablero(i,j) && hayInteraccion(jugador,i,j)){
+					if(!jugador.isFantasma() && getTipoCelda(i,j) != Celda.PISO
+						||(jugador.isFantasma() && esBorde(i,j))) 
+							return true;	
 				}
 			}
 		}
@@ -272,7 +285,7 @@ public class Tablero {
 			boolean exteriorBomba = bomb.estaJugadorFuera(jugador.getID());
 			x = transfromarAPixel(bomb.getColumna());
 			y = transfromarAPixel(bomb.getFila());
-			if(exteriorBomba && hayChoque(jugador,x,y))
+			if(exteriorBomba && hayChoque(jugador,x,y) && !jugador.isFantasma())
 					return true;
 		}
 		return false;
@@ -399,6 +412,33 @@ public class Tablero {
 		}
 	}
 
+	public void generarMejoraAleatoria(){
+		int fila,columna;
+		do{
+			fila = generarNumeroAleatorio(1, 13);
+			columna = generarNumeroAleatorio(1, 13);
+		}while(getTipoCelda(fila, columna) != Celda.PISO);
+		
+		int mejora = generarNumeroAleatorio(1, 10);
+		int squareMiddle = ComponenteGrafico.getSquareMiddle();
+		int x = transfromarAPixel(fila) + squareMiddle;
+		int y = transfromarAPixel(columna) + squareMiddle;
+		switch (mejora) {
+			case 1:
+			mejoras.add(new AumentoRadioExplosion(x, y));
+				break;
+			case 2:
+			mejoras.add(new AumentoBombasDisponibles(x, y));
+				break;
+			case 3:
+			mejoras.add(new AumentoVelocidad(x,y));
+				break;
+			case 4:
+			mejoras.add(new AumentoVidas(x,y));
+				break;
+		}
+	}
+
 	public void aplicarExplosion(){
 		int x,y;
 		for (Explosion explosion:ubicacionExplosiones){
@@ -412,6 +452,7 @@ public class Tablero {
 						Cliente socket = new Cliente();
 						Packet02Derrota packet = new Packet02Derrota(jugador.getNombre());
 						packet.enviar(socket);
+						jugador.setFantasma(true);
 						//GameOver = true;
 					}
 				}
@@ -441,15 +482,15 @@ public class Tablero {
 		for (Enemigo enemy : enemigos){
 			x = enemy.getX() - ComponenteGrafico.getSquareMiddle();
 			y = enemy.getY() - ComponenteGrafico.getSquareMiddle();
-			for(Jugador jugador: jugadores){
-				if(hayChoque(jugador, x,y) && !jugador.isInmune()){
+			for(JugadorMJ jugador: jugadores){
+				if(hayChoque(jugador, x,y) && !jugador.isInmune() && !jugador.isFantasma()){
 					jugador.reducirVidas();
 					jugador.setInmune(true);
 					if(jugador.getVidas() == 0){
 						Cliente socket = new Cliente();
 						Packet02Derrota packet = new Packet02Derrota(jugador.getNombre());
 						packet.enviar(socket);
-						//GameOver = true;
+						jugador.setFantasma(true);
 						System.out.println("Ha muerto el jugador "+ jugador.getID());
 					}
 				}
@@ -465,7 +506,7 @@ public class Tablero {
 			x = powerup.getColumna() - ComponenteGrafico.getSquareMiddle();
 			y = powerup.getFila() - ComponenteGrafico.getSquareMiddle();
 			for (Jugador jugador : jugadores) {
-				if (hayChoque(jugador, x, y)){
+				if (hayChoque(jugador, x, y) && !jugador.isFantasma()){
 					powerup.agregarMejora(jugador);
 					iteradorMejoras.remove();
 					break;
