@@ -18,33 +18,36 @@ import java.util.ArrayList;
 import java.util.Random;
 
 @SuppressWarnings("unused")
-public class Bomberman{ //Menu con modo ataque, defensa y equilibrado
+public class Bomberman{
 
     private final int TIME_STEP = 30;
     private Timer clockTimer;
     private Servidor socketServidor;
     private static int contador_mejoras = 100*20;
-    
+    private static boolean inicio=false;
+
+    public static boolean getInicio() {
+        return inicio;
+    }
+
+    public static void setInicio(boolean inicio) {
+        Bomberman.inicio = inicio;
+    }
+
     public Bomberman() {
     }
 
     public static void main(String[] args) {
-        /*Bomberman bomberman = new Bomberman();
-        if(true){
-            bomberman.startServer();
-            for(int i = 0; i < 1; i++)     
-                bomberman.startClient();
-        }
-        else 
-            bomberman.startClient();*/
-
-            MenuPrincipal v1 = new MenuPrincipal();
+        Bomberman juego = new Bomberman();
+        //juego.startServer();
+        MenuPrincipal v1 = new MenuPrincipal();
     }
 
     public void startServer(){
-        this.socketServidor = new Servidor(this,5000);
+        this.socketServidor = new Servidor(5000);
         Thread servidorThread = new Thread(socketServidor);
         servidorThread.start();
+
     }
 
     public void startClient() {

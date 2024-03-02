@@ -24,6 +24,8 @@ public class Jugador extends Personaje{
 	protected boolean inmune; // Pintar cuando inmmune
 	protected String nombre;
 	protected boolean fantasma;
+	protected static int color = 0; // 1 blanco, 2 negro, 3 rojo, 4 azul, 5 verde
+	public static int setColor;
 
 	public boolean isFantasma() {
 		return fantasma;
@@ -179,4 +181,48 @@ public class Jugador extends Personaje{
 		tablero.choqueconMejora();
 		tablero.informarSensores();
     }
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public void setRadioExplosion(int radioExplosion) {
+		this.radioExplosion = radioExplosion;
+	}
+
+	public int getBombasDisponibles() {
+		return bombasDisponibles;
+	}
+
+	public void setBombasDisponibles(int bombasDisponibles) {
+		this.bombasDisponibles = bombasDisponibles;
+	}
+
+	public void setVidas(int vidas) {
+		this.vidas = vidas;
+	}
+
+	public int getDuracionInmunidad() {
+		return duracionInmunidad;
+	}
+
+	public void setDuracionInmunidad(int duracionInmunidad) {
+		this.duracionInmunidad = duracionInmunidad;
+	}
+
+	public void setTiempoInmunidad(int tiempoInmunidad) {
+		this.tiempoInmunidad = tiempoInmunidad;
+	}
+
+	public static int getColor() {
+		return color;
+	}
+
+	public static void setColor(int color) {
+		Jugador.color = color;
+	}
 }
