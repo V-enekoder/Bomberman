@@ -23,28 +23,23 @@ public class Bomberman{ //Menu con modo ataque, defensa y equilibrado
     private final int TIME_STEP = 30;
     private Timer clockTimer;
     private Servidor socketServidor;
-    private static int contador_mejoras = 100*20;
-    
-    public Bomberman() {
+    private int contador_mejoras = 1000*20;
+    private  boolean inicio = false;
+
+    public Bomberman(){
     }
 
     public static void main(String[] args) {
-        /*Bomberman bomberman = new Bomberman();
-        if(true){
-            bomberman.startServer();
-            for(int i = 0; i < 1; i++)     
-                bomberman.startClient();
-        }
-        else 
-            bomberman.startClient();*/
-
-            MenuPrincipal v1 = new MenuPrincipal();
+        Bomberman juego = new Bomberman();
+        //juego.startServer();
+        MenuPrincipal v1 = new MenuPrincipal();
     }
 
     public void startServer(){
-        this.socketServidor = new Servidor(this,5000);
+        this.socketServidor = new Servidor(5000);
         Thread servidorThread = new Thread(socketServidor);
         servidorThread.start();
+
     }
 
     public void startClient() {
@@ -73,7 +68,7 @@ public class Bomberman{ //Menu con modo ataque, defensa y equilibrado
         contador_mejoras -= 30;
         if(contador_mejoras <= 0){
             tablero.generarMejoraAleatoria();
-            contador_mejoras = 1000;
+            contador_mejoras = 1000 * 20;
         }
 
         tablero.moverEnemigos();
@@ -103,4 +98,13 @@ public class Bomberman{ //Menu con modo ataque, defensa y equilibrado
     public void setClockTimer(Timer clockTimer) {
         this.clockTimer = clockTimer;
     }
+
+    /*public static boolean getInicio() {
+        return inicio;
+    }
+
+    public static void setInicio(boolean inicio) {
+        Bomberman.inicio = inicio;
+    }*/
+
 }

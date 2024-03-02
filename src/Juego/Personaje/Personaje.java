@@ -4,7 +4,7 @@ import Juego.Tablero;
 
 public abstract class Personaje{
     
-  protected int SIZE = 30;
+  protected int SIZE = 30 - 5;
   protected int x;
   protected int y;
   protected int velocidad;

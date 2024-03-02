@@ -25,12 +25,15 @@ public class Servidor implements Runnable{
     private DatagramSocket socket;
     private volatile boolean running = true;
     private List<JugadorMJ> jugadoresConectados = new ArrayList<JugadorMJ>();
-    private Bomberman juego;
+    Map<JugadorMJ, Packet00Ingreso> ingresosPendientes = new HashMap<>();
+    private boolean juegoIniciado;
     private Tablero tablero;
     //private InterfazGrafica GUI;
 	private static ArrayList<int[]> inicio = new ArrayList<>();
     private static ArrayList<Integer> id = new ArrayList<>();
     private Map<String, InterfazGrafica> interfaces = new HashMap<>();
+
+
     static {
         inicio.add(new int[]{60, 60});
         inicio.add(new int[]{60, 540});
@@ -40,21 +43,13 @@ public class Servidor implements Runnable{
             id.add(i);
     }
 
-    public Tablero getTablero() {
-        return tablero;
-    }
+    public Servidor(int puerto){
 
-    public void setTablero(Tablero tablero) {
-        this.tablero = tablero;
-    }
-
-    public Servidor(Bomberman juego, int puerto){
         this.PUERTO = puerto;
         this.datos = new byte[1024];
-        this.juego = juego;
 
         this.tablero = new Tablero(15,15,15);
-
+        juegoIniciado = false;
         try {
             this.socket = new DatagramSocket(PUERTO);
         } catch (SocketException e) {
@@ -64,13 +59,17 @@ public class Servidor implements Runnable{
 
     @Override
     public void run() {
-        System.out.println("Servidor iniciado");
-        juego.startGame(tablero/*, GUI*/);
+        System.out.println("Servidor iniciado en el servidor");
+        Bomberman juego = new Bomberman();
         while(running){
             DatagramPacket recibido = recibir(datos);
             analizarPacket(recibido.getData(),recibido.getAddress(),recibido.getPort());
-            if(jugadoresConectados.isEmpty())
-                System.exit(0);
+            if(ingresosPendientes.size() == 2){
+                juego.startGame(tablero);
+                ingresosPendientes.clear();
+            }
+            //if(jugadoresConectados.isEmpty())
+            //    System.exit(0);
         }
         socket.close();
     }
@@ -90,8 +89,25 @@ public class Servidor implements Runnable{
                 System.out.println("Se ha conectado ["+address.getHostAddress()+" ; "+port+"] "
                     + nombre +" exitosamente");
                 JugadorMJ j = crearJugador(nombre, address, port);
-                tablero.agregarJugador(j);
-                conectarJugador(j,ingreso);
+
+                ingresosPendientes.put(j, ingreso);
+
+                if(ingresosPendientes.size() == 2 && !juegoIniciado){
+                    for (Map.Entry<JugadorMJ, Packet00Ingreso> entrada : ingresosPendientes.entrySet()) {
+                        tablero.agregarJugador(entrada.getKey());
+                        conectarJugador(entrada.getKey(),entrada.getValue());
+                    }
+                    //ingresosPendientes.clear();
+                }
+
+                else if(juegoIniciado){
+                    for (Map.Entry<JugadorMJ, Packet00Ingreso> entrada : ingresosPendientes.entrySet()) {
+                        tablero.agregarJugador(entrada.getKey());
+                        conectarJugador(entrada.getKey(),entrada.getValue());
+                    }
+                    ingresosPendientes.clear();
+                }
+
                 break;
             case DESCONEXION: // Se debe mandar un paquete de desconexión cuando un usuario muera?
                 Packet01Desconexion desconexion = new Packet01Desconexion(data);
@@ -100,7 +116,6 @@ public class Servidor implements Runnable{
                     + nombre);
                 tablero.eliminarJugador(nombre);
                 desconectarJugador(desconexion);
-                eliminarGUI(nombre);
                 break;
             case DERROTA:
                 Packet02Derrota derrota = new Packet02Derrota(data);
@@ -108,16 +123,7 @@ public class Servidor implements Runnable{
                 System.out.println(nombre + " ha perdido. ["+address.getHostAddress()+" ; "+port+"]");
                 //tablero.eliminarJugador(nombre);
                 //desconectarJugador(derrota);
-                //eliminarGUI(nombre);
                 break;
-        }
-    }
-    
-    private void eliminarGUI(String nombre) {
-        InterfazGrafica interfaz = interfaces.get(nombre);
-        if (interfaz != null) {
-            interfaz.dispose();
-            interfaces.remove(nombre);
         }
     }
 
@@ -203,5 +209,17 @@ public class Servidor implements Runnable{
         for(JugadorMJ jugador: jugadoresConectados){
             enviar(datos,jugador.getDireccionIP(), jugador.getPuerto());
         }
+    }
+
+    public Tablero getTablero() {
+        return tablero;
+    }
+
+    public void setTablero(Tablero tablero) {
+        this.tablero = tablero;
+    }
+    
+    public boolean isRunning() {
+        return running;
     }
 }

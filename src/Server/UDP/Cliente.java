@@ -24,10 +24,9 @@ public class Cliente implements Runnable {
     @SuppressWarnings("unused")
     private Bomberman juego;
 
-    public Cliente(/*Bomberman juego*/){
+    public Cliente(){
         this.PUERTO_SERVIDOR = 5000;
         this.datos = new byte[1024];
-        //this.juego = juego;
         try {
             this.socket = new DatagramSocket();
             this.direccionServidor = InetAddress.getByName("localhost");

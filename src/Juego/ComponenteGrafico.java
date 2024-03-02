@@ -103,17 +103,22 @@ public class ComponenteGrafico extends JComponent implements Sensor{
 		}
 	}
 
-	private void pintarPiso(int fila, int columna, Graphics g2d){
-		g2d.setColor(Color.white);
-		g2d.fillRect(columna * DIMENSION_CELDA, fila * DIMENSION_CELDA, DIMENSION_CELDA, DIMENSION_CELDA);
-		g2d.setColor(Color.CYAN);
-		g2d.drawLine(columna* DIMENSION_CELDA+5, fila*DIMENSION_CELDA+10,
-			columna * DIMENSION_CELDA + 10, fila * DIMENSION_CELDA + 5);
-		g2d.drawLine(columna* DIMENSION_CELDA+5, fila*DIMENSION_CELDA+MITAD_CELDA,
-			columna * DIMENSION_CELDA + MITAD_CELDA, fila * DIMENSION_CELDA + 5);
-		g2d.drawLine(columna* DIMENSION_CELDA+5, fila*DIMENSION_CELDA + MITAD_CELDA+10,
-			columna * DIMENSION_CELDA + MITAD_CELDA + 10, fila * DIMENSION_CELDA + 5);
-    }
+	private void pintarPiso(int fila, int columna, Graphics g2d) {
+		Image piso1 = new ImageIcon("res_piso.png").getImage();
+		Image piso2 = new ImageIcon("res_piso2.png").getImage();
+	
+		// Calcular el índice de la celda de piso
+		int indicePiso = (fila / DIMENSION_CELDA + columna / DIMENSION_CELDA) % 2;
+	
+		// Alternar entre piso1 y piso2 basado en el índice de la celda
+		if (indicePiso == 0) {
+			// Pintar piso1
+			g2d.drawImage(piso1, columna * DIMENSION_CELDA, fila * DIMENSION_CELDA, null);
+		} else {
+			// Pintar piso2
+			g2d.drawImage(piso2, columna * DIMENSION_CELDA, fila * DIMENSION_CELDA, null);
+		}
+	}
 
     private void pintarBloque(int fila, int columna, Graphics g2d){
 		g2d.setColor(Color.lightGray);
@@ -149,51 +154,43 @@ public class ComponenteGrafico extends JComponent implements Sensor{
 			columna*DIMENSION_CELDA+MITAD_CELDA+1, fila*DIMENSION_CELDA+DIMENSION_CELDA);
     }
 
-    private void pintarPared(int fila, int columna, Graphics g2d){
-	g2d.fillRect(columna * DIMENSION_CELDA, fila * DIMENSION_CELDA,
-		DIMENSION_CELDA, DIMENSION_CELDA);
-	g2d.setColor(Color.DARK_GRAY);
-	g2d.drawLine(columna* DIMENSION_CELDA, fila*DIMENSION_CELDA,
-		columna*DIMENSION_CELDA+DIMENSION_CELDA, fila*DIMENSION_CELDA);
-	g2d.drawLine(columna* DIMENSION_CELDA, fila*DIMENSION_CELDA+DIMENSION_CELDA,
-		columna*DIMENSION_CELDA+DIMENSION_CELDA, fila*DIMENSION_CELDA+DIMENSION_CELDA);
-	g2d.drawLine(columna* DIMENSION_CELDA, fila*DIMENSION_CELDA, columna*DIMENSION_CELDA,
-		fila*DIMENSION_CELDA+DIMENSION_CELDA);
-	g2d.drawLine(columna* DIMENSION_CELDA+DIMENSION_CELDA, fila*DIMENSION_CELDA, 
-		columna*DIMENSION_CELDA+DIMENSION_CELDA, fila*DIMENSION_CELDA+DIMENSION_CELDA);
-    }
+	private void pintarPared(int fila, int columna, Graphics g2d) {
+		Image imagen = new ImageIcon("res_muroColision.png").getImage();
+	
+		// Dibujar la imagen de la pared en la posición específica
+		g2d.drawImage(imagen, columna * DIMENSION_CELDA, fila * DIMENSION_CELDA, null);
+	}
 
-	private void pintarJugador(ArrayList<JugadorMJ> jugadores, Graphics g2d){
-		for(JugadorMJ jugador: jugadores){
-			// Paint hat
-			g2d.setColor(Color.BLUE);
-			g2d.fillOval(jugador.getX()-CHARACTER_ADJUSTMENT_FOR_PAINT+PAINT_PARAMETER_15,
-				jugador.getY()-CHARACTER_ADJUSTMENT_FOR_PAINT-2, PAINT_PARAMETER_15, PAINT_PARAMETER_15);
-			
-			// Paint body
-			g2d.setColor(Color.LIGHT_GRAY);
-			g2d.fillOval(jugador.getX()-CHARACTER_ADJUSTMENT_FOR_PAINT,
-				jugador.getY()-CHARACTER_ADJUSTMENT_FOR_PAINT, jugador.getSize(), jugador.getSize());
-			
-			// Paint face
-			g2d.setColor(Color.PINK);
-			g2d.fillOval(jugador.getX()-CHARACTER_ADJUSTMENT_FOR_PAINT+3,
-				jugador.getY()-CHARACTER_ADJUSTMENT_FOR_PAINT+3, jugador.getSize()-6, jugador.getSize()-6);
-			
-			// Paint eyes
-			g2d.setColor(Color.BLACK);
-			
-			g2d.drawLine(jugador.getX()-CHARACTER_ADJUSTMENT_FOR_PAINT+10,
-				jugador.getY()-CHARACTER_ADJUSTMENT_FOR_PAINT+10,
-					jugador.getX()-CHARACTER_ADJUSTMENT_FOR_PAINT+10,
-						jugador.getY()-CHARACTER_ADJUSTMENT_FOR_PAINT+PAINT_PARAMETER_18);
-			
-						g2d.drawLine(jugador.getX()-CHARACTER_ADJUSTMENT_FOR_PAINT+PAINT_PARAMETER_20,
-				jugador.getY()-CHARACTER_ADJUSTMENT_FOR_PAINT+10,
-					jugador.getX()-CHARACTER_ADJUSTMENT_FOR_PAINT+PAINT_PARAMETER_20,
-						jugador.getY()-CHARACTER_ADJUSTMENT_FOR_PAINT+PAINT_PARAMETER_18);
+	private void pintarJugador(ArrayList<JugadorMJ> jugadores, Graphics g2d) {
+		for (JugadorMJ jugador : jugadores) {
+			Image imagen = null;
+	
+			// Seleccionar la imagen según el color del jugador
+			switch (jugador.getColor()) {
+				case 1:
+					imagen = new ImageIcon("p_white_estatico.png").getImage();
+					break;
+				case 2:
+					imagen = new ImageIcon("p_black_estatico.png").getImage();
+					break;
+				case 3:
+					imagen = new ImageIcon("p_red_estatico.png").getImage();
+					break;
+				case 4:
+					imagen = new ImageIcon("p_blue_estatico.png").getImage();
+					break;
+				case 5:
+					imagen = new ImageIcon("p_green_estatico.png").getImage();
+					break;
+			}
+	
+			// Dibujar la imagen del jugador en la posición específica
+			g2d.drawImage(imagen, jugador.getX() - CHARACTER_ADJUSTMENT_FOR_PAINT,
+					jugador.getY() - CHARACTER_ADJUSTMENT_FOR_PAINT, null);
+	
+			// Puedes agregar aquí el código adicional para pintar otras partes del jugador si es necesario
 		}
-    }
+	}
 
     private void pintarEnemigo(Enemigo e, Graphics g2d){
 		// Paint body
@@ -218,37 +215,56 @@ public class ComponenteGrafico extends JComponent implements Sensor{
 			e.getY()-CHARACTER_ADJUSTMENT_FOR_PAINT+10, 5, 5);
     }
 
-	private void pintarMejora(Mejora mejora,Graphics g2d){
-		switch (mejora.getNombre()){
+	private void pintarMejora(Mejora mejora, Graphics g2d) {
+		Image imagen = null;
+	
+		// Seleccionar la imagen según el nombre de la mejora
+		switch (mejora.getNombre()) {
 			case "Aumento de Bombas Disponibles":
-				g2d.setColor(Color.BLACK);
+				imagen = new ImageIcon("power_bomb.png").getImage();
 				break;
 			case "Aumento de Radio de Explosion":
-				g2d.setColor(Color.RED);
+				imagen = new ImageIcon("power_fire.png").getImage();
 				break;
 			case "Aumento de Velocidad":
-				g2d.setColor(Color.BLUE);
+				imagen = new ImageIcon("power_speed.png").getImage();
 				break;
 			case "Aumento de Vidas":
-				g2d.setColor(Color.PINK);
-				break;	
+				imagen = new ImageIcon("power_life.png").getImage();
+				break;
 		}
-		g2d.fillOval(mejora.getColumna()-CHARACTER_ADJUSTMENT_FOR_PAINT,
-			mejora.getFila()-CHARACTER_ADJUSTMENT_FOR_PAINT, mejora.getPowerupSize(), mejora.getPowerupSize());
+	
+		// Obtener las coordenadas de la mejora
+		int mejoraX = mejora.getColumna() - CHARACTER_ADJUSTMENT_FOR_PAINT;
+		int mejoraY = mejora.getFila() - CHARACTER_ADJUSTMENT_FOR_PAINT;
+	
+		// Dibujar la imagen de la mejora en la posición específica
+		g2d.drawImage(imagen, mejoraX, mejoraY, null);
 	}
 
-	private void pintarBomba(Bomba bomba, Graphics g2d){
-		g2d.setColor(Color.RED);
+	private void pintarBomba(Bomba bomba, Graphics g2d) {
+		// Cargar la imagen desde el archivo "bomba.png"
+		ImageIcon icono = new ImageIcon("icon_bomb.png");
+		Image imagen = icono.getImage();
+	
+		// Obtener las coordenadas de la bomba
 		int bombX = tablero.transfromarAPixel(bomba.getColumna());
 		int bombY = tablero.transfromarAPixel(bomba.getFila());
-		g2d.fillOval(bombX + BOMB_ADJUSTMENT_1, bombY + BOMB_ADJUSTMENT_1, Bomba.getSIZE(), Bomba.getSIZE());
-		g2d.setColor(Color.ORANGE);
-		g2d.fillOval(bombX + BOMB_ADJUSTMENT_2, bombY + BOMB_ADJUSTMENT_1, BOMB_ADJUSTMENT_1, BOMB_ADJUSTMENT_2);
+	
+		// Dibujar la imagen de la bomba en la posición específica
+		g2d.drawImage(imagen, bombX, bombY, null);
 	}
 
-	private void pintarExplosion(Explosion explosion, Graphics2D g2d){
-		g2d.fillOval(tablero.transfromarAPixel(explosion.getColumna()) + BOMB_ADJUSTMENT_1,
-			tablero.transfromarAPixel(explosion.getFila())
-				+ BOMB_ADJUSTMENT_1, Bomba.getSIZE(), Bomba.getSIZE());
+	private void pintarExplosion(Explosion explosion, Graphics2D g2d) {
+		// Cargar la imagen desde el archivo "fuego.png"
+		ImageIcon icono = new ImageIcon("icon_firebomb.png");
+		Image imagen = icono.getImage();
+	
+		// Obtener las coordenadas de la explosión
+		int explosionX = tablero.transfromarAPixel(explosion.getColumna());
+		int explosionY = tablero.transfromarAPixel(explosion.getFila());
+	
+		// Dibujar la imagen de la explosión en la posición específica
+		g2d.drawImage(imagen, explosionX, explosionY, null);
 	}
 }

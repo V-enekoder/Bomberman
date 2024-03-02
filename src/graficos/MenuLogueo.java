@@ -9,8 +9,13 @@ public class MenuLogueo extends Menu{
 
     private JLabel verificacion;
     private JButton botonCancelar, botonLoguearse;
-    private JTextField ingresarUsuario;
-    private String verificacionNombre = "Francisco";
+    JTextField ingresarUsuario;
+    private static String textoIngresado;
+    private static String verificacionNombre = "Francisco";
+
+    public static String getTextoIngresado() {
+        return textoIngresado;
+    }
 
     public MenuLogueo(){
         panel = new JPanel();
@@ -36,11 +41,21 @@ public class MenuLogueo extends Menu{
     }
 
     void colocarEtiquetas(){
+
         background=new JLabel();
         background.setIcon(new ImageIcon("menuLogin.png"));
         background.setBounds(0, 0, 600, 600);
         background.setOpaque(false);
         panel.add(background);
+
+        verificacion = new JLabel();
+        verificacion.setBounds(90,380,500,14);
+        verificacion.setFont(new Font("Arial",1,14));
+        verificacion.setOpaque(false);
+        verificacion.setForeground(Color.WHITE);
+        //verificacion.setHorizontalAlignment(SwingConstants.CENTER); // centrar texto
+        panel.add(verificacion);
+        panel.setComponentZOrder(verificacion, 0);
 
     }
 
@@ -67,13 +82,6 @@ public class MenuLogueo extends Menu{
         panel.add(botonLoguearse);
         botonLoguearse.setVisible(true);
 
-        verificacion = new JLabel();
-        verificacion.setBounds(75,460,500,16);
-        verificacion.setFont(new Font("Arial",1,16));
-        verificacion.setOpaque(true);
-        verificacion.setForeground(Color.BLACK);
-        panel.add(verificacion);
-
         // Cancelar (vuelvo al menu principal)
         botonCancelar.addActionListener(backToMain);
         botonLoguearse.addActionListener(verificacionUsuario);
@@ -87,24 +95,16 @@ public class MenuLogueo extends Menu{
         retornar();
     };
 
-    void verificarDatos(){
-
-        //Logica de archivos para verificar datos, hare un ejemplo con variables equis...
-
-    }
-
-    void retornar(){
-        MenuPrincipal mainToBack=new MenuPrincipal();
-        this.dispose();
-    }
     ActionListener verificacionUsuario = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent ae) {
-            String textoIngresado = ingresarUsuario.getText();
+            textoIngresado = ingresarUsuario.getText();
     
             if (verificacionNombre.equals(textoIngresado)) {
                 System.out.println("Nombre verificado");
-                verificacion.setText("El usuario: "+ingresarUsuario.getText()+" ha sido verificado/creado con exito.");
+                verificacion.setText("El usuario: "+ingresarUsuario.getText()+" ha sido verificado con exito.");
+                panel.remove(botonLoguearse);
+                panel.remove(botonCancelar);
                 // esperar 5 segundos antes de llamar a menuBatalla para mostrar mensaje de verificacion
                 Timer timer = new Timer(1000*1, new ActionListener() {
                     @Override
@@ -116,6 +116,9 @@ public class MenuLogueo extends Menu{
             }
             else{
                 //Registrar usuario.
+                panel.remove(botonLoguearse);
+                panel.remove(botonCancelar);
+                verificacion.setText("El usuario: "+ingresarUsuario.getText()+" ha sido creado con exito.");
                 Timer timer = new Timer(1000*1, new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
@@ -126,8 +129,21 @@ public class MenuLogueo extends Menu{
             }
         }
     };
+
+
+    void retornar(){
+        new MenuPrincipal();
+        this.dispose();
+    }
+    
+    void verificarDatos(){
+
+        //Logica de archivos para verificar datos, hare un ejemplo con variables equis...
+
+    }
+
     void menuBatalla(){
-        MenuBatalla batallaMenu=new MenuBatalla();
+        new MenuBatalla();
         this.dispose();
     }
 }

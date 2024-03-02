@@ -26,14 +26,14 @@ public class Tablero {
     private Collection<Explosion> ubicacionExplosiones= new ArrayList<>();
     private boolean GameOver = false;
 	ArrayList<int[]> reserva;
-	//private Cliente socket;
+	private Cliente socket;
 
     public Tablero(int ancho, int alto, int enemigos){
 		this.ancho = ancho;
 		this.alto = alto;
 		this.celdas = new Celda[alto][ancho];
 		this.reserva = reservarCasillas();
-		//this.socket = new Cliente();
+		this.socket = new Cliente();
 		definirCasillas();
 		crearEnemigos(enemigos);
 	}
@@ -449,11 +449,9 @@ public class Tablero {
 					jugador.reducirVidas();
 					jugador.setInmune(true);
 					if(jugador.getVidas() == 0){
-						Cliente socket = new Cliente();
 						Packet02Derrota packet = new Packet02Derrota(jugador.getNombre());
 						packet.enviar(socket);
 						jugador.setFantasma(true);
-						//GameOver = true;
 					}
 				}
 			}
@@ -487,7 +485,6 @@ public class Tablero {
 					jugador.reducirVidas();
 					jugador.setInmune(true);
 					if(jugador.getVidas() == 0){
-						Cliente socket = new Cliente();
 						Packet02Derrota packet = new Packet02Derrota(jugador.getNombre());
 						packet.enviar(socket);
 						jugador.setFantasma(true);

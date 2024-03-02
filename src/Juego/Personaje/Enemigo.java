@@ -5,6 +5,7 @@ public class Enemigo extends Personaje{
 
     public Enemigo(int x, int y, boolean vertical) {
         super(x, y);
+        SIZE = 30;
         direccion = asignarDireccion(vertical);
     }
 
