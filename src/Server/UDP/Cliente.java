@@ -1,18 +1,22 @@
 package Server.UDP;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 
-import Juego.Bomberman;
 import Juego.Packet.Packet;
 import Juego.Packet.Packet00Ingreso;
 import Juego.Packet.Packet01Desconexion;
 import Juego.Packet.Packet02Derrota;
-import Juego.Packet.Packet.packet;
+import Juego.Packet.Packet03Informacion;
+import graficos.*;
+
 
 public class Cliente implements Runnable {
 
@@ -21,13 +25,26 @@ public class Cliente implements Runnable {
     private DatagramSocket socket;
     private InetAddress direccionServidor;
     private volatile boolean running = true;
-    @SuppressWarnings("unused")
-    private Bomberman juego;
+    private ArrayList<Integer> coloresDisponibles = new ArrayList<>();
+    private String nombre;
+    private int color;
 
-    public Cliente(/*Bomberman juego*/){
+    public Cliente(){
         this.PUERTO_SERVIDOR = 5000;
         this.datos = new byte[1024];
-        //this.juego = juego;
+        try {
+            this.socket = new DatagramSocket();
+            this.direccionServidor = InetAddress.getByName("localhost");
+        } catch (SocketException | UnknownHostException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Cliente(String nombre, int colorSeleccionado){
+        this.PUERTO_SERVIDOR = 5000;
+        this.datos = new byte[1024];
+        this.nombre = nombre;
+        color = colorSeleccionado;
         try {
             this.socket = new DatagramSocket();
             this.direccionServidor = InetAddress.getByName("localhost");
@@ -37,10 +54,20 @@ public class Cliente implements Runnable {
     }
     @Override
     public void run() {
+        MenuPrincipal v1 = new MenuPrincipal();
+        
+       // Espera hasta que la selección haya ocurrido
+       while (!MenuBatalla.isSeleccion()) {
+            try {
+                Thread.sleep(1000); // Espera 1 segundo antes de verificar nuevamente
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
 
-        Packet00Ingreso ingreso = new Packet00Ingreso("Eldesbaratamala");
+        Packet00Ingreso ingreso = new Packet00Ingreso(MenuLogueo.getTextoIngresado(),MenuBatalla.getColorSeleccionado());
         ingreso.enviar(this);
-
+        
         while(running){
             DatagramPacket recibido = recibir();
             analizarPacket(recibido.getData(),recibido.getAddress(),recibido.getPort());
@@ -48,33 +75,43 @@ public class Cliente implements Runnable {
         socket.close();
     }
 
-    
-    private void analizarPacket(byte[] data, InetAddress address, int port) {
+    public void analizarPacket(byte[] data, InetAddress address, int port) {
         String mensaje = new String(data).trim();
         int id = Integer.parseInt(mensaje.substring(0, 2));
-        packet tipo = Packet.identificarTipo(id);
-        Packet packet = null;
         String nombre;
-        switch(tipo){
+        switch(Packet.identificarTipo(id)){
             default:
             case INVALIDO:
                 break;
             case INGRESO:
-                packet = new Packet00Ingreso(data);
-                System.out.println(((Packet00Ingreso)packet).getNombre() +" ha ingresado");
+                Packet00Ingreso ingreso = new Packet00Ingreso(data);
+                System.out.println(ingreso.getNombre() +" ha ingresado");
                 break;
             case DESCONEXION:
-            packet = new Packet01Desconexion(data);
+                Packet01Desconexion desconexion = new Packet01Desconexion(data);
                     
             System.out.println("["+address.getHostAddress()+" ; "+port+" ] "
-                +((Packet01Desconexion)packet).getNombre() + " se ha ido");
+                + desconexion.getNombre() + " se ha ido");
                 break;
             case DERROTA:
-                packet = new Packet02Derrota(data);
-                nombre = ((Packet02Derrota)packet).getNombre();
+                Packet02Derrota derrota = new Packet02Derrota(data);
+                nombre = derrota.getNombre();
                 System.out.println(nombre + " ha perdido. ["+address.getHostAddress()+" ; "+port+"]");
                 break;
+            case INFORMACION:
+                Packet03Informacion info = new Packet03Informacion(data);
+                for (char caracter : info.getColores().toCharArray())
+                    this.coloresDisponibles.add(Character.getNumericValue(caracter));
+                break;
         }
+    }
+
+    public ArrayList<Integer> getColoresDisponibles() {
+        return this.coloresDisponibles;
+    }
+
+    public void setColoresDisponibles(ArrayList<Integer> coloresDisponibles) {
+        this.coloresDisponibles = coloresDisponibles;
     }
 
     public DatagramPacket recibir(){

@@ -6,7 +6,8 @@ import Server.UDP.Servidor;
 public abstract class Packet {
     
     public static enum packet{
-        INVALIDO(-1), INGRESO(00), DESCONEXION(01),DERROTA(02);
+        INVALIDO(-1), INGRESO(00), DESCONEXION(01),DERROTA(02), 
+        INFORMACION(03), ACTUALIZACION(04);
         
         private int id;
 
@@ -57,7 +58,7 @@ public abstract class Packet {
 
     public String leerInformacion(byte[] datos){
         String mensaje = new String(datos).trim();
-        return mensaje.substring(2);
+        return mensaje.substring(3);
     }
 
     public static packet identificarTipo(int id){

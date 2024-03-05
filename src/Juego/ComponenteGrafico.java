@@ -166,7 +166,7 @@ public class ComponenteGrafico extends JComponent implements Sensor{
 			Image imagen = null;
 	
 			// Seleccionar la imagen según el color del jugador
-			switch (Jugador.getColor()) {
+			switch (jugador.getColor()) {
 				case 0:
 					imagen = new ImageIcon("p_white_estatico.png").getImage();
 					break;

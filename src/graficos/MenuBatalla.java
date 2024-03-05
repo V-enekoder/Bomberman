@@ -3,11 +3,16 @@ package graficos;
 import javax.swing.*;
 
 import Juego.Bomberman;
+import Juego.Packet.Packet03Informacion;
+import Juego.Packet.Packet04Actualizacion;
 import Juego.Personaje.Jugador;
+import Server.UDP.Cliente;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.DatagramPacket;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,6 +21,10 @@ public class MenuBatalla extends Menu {
     private JButton confirmar, cancelar;
     private JButton[] botones = new JButton[5];
     private JLabel jugador, eleccion;
+    private String nombre;
+    private static int colorSeleccionado;
+    private static boolean seleccion = false;
+    private ArrayList<Integer> colores = new ArrayList<>();
 
     public MenuBatalla() {
         panel = new JPanel();
@@ -30,6 +39,19 @@ public class MenuBatalla extends Menu {
         setResizable(false);
         iniciarComponentes();
         setVisible(true);
+
+        colorSeleccionado = 0;
+        recibirColores();
+    }
+
+    private void recibirColores(){
+        this.colores.clear();
+        Cliente c = new Cliente();
+        Packet03Informacion informacion = new Packet03Informacion();
+        informacion.enviar(c);
+        DatagramPacket recibido = c.recibir();
+        c.analizarPacket(recibido.getData(),recibido.getAddress(),recibido.getPort());
+        this.colores = c.getColoresDisponibles();
     }
 
     @Override
@@ -41,7 +63,7 @@ public class MenuBatalla extends Menu {
     void iniciarEtiquetas(){
         String color = "";
 
-        switch (Jugador.getColor()) {
+        switch (colorSeleccionado) {
             case 0:
                 color = "Blanco";
                 break;
@@ -64,7 +86,6 @@ public class MenuBatalla extends Menu {
         background.setBounds(0, 0, 600, 600);
         panel.add(background);
 
-        
         jugador = new JLabel(MenuLogueo.getTextoIngresado());
         jugador.setBounds(90, 125, 200, 16);
         jugador.setOpaque(false);
@@ -86,7 +107,6 @@ public class MenuBatalla extends Menu {
     }
 
     void iniciarBotones(){
-        System.out.println(Jugador.getColor());
         Map<Integer, BotonConfiguracion> botonesConfiguracion = obtenerConfiguracionBotones();
         
         for(int i = 0; i < 5; i++){
@@ -119,7 +139,12 @@ public class MenuBatalla extends Menu {
         JButton boton = new JButton();
         boton.setBounds(config.getX(), 314, 110, 101);
         boton.setEnabled(true);
-        String imagen = Jugador.getColor() == i ? config.getColorDisponible() : config.getColorNoDisponible();
+        String imagen;
+        if(!colores.contains(i))
+            imagen = config.getColorDisponible();
+        else
+            imagen = colorSeleccionado == i ? config.getColorDisponible(): 
+                config.getColorNoDisponible();
         boton.setIcon(new ImageIcon(imagen));
         boton.addActionListener(cambiarColor);
         return boton;
@@ -136,12 +161,15 @@ public class MenuBatalla extends Menu {
                     break;
                 }
             }
-            Jugador.setColor(nuevoColor);
-            for (int i = 0; i < botones.length; i++) {
-                if (i == nuevoColor)
-                    panel.remove(botones[i]);
-                else
-                    panel.add(botones[i]);
+
+            if(colores.contains(nuevoColor)){
+                colorSeleccionado = nuevoColor;
+                for (int i = 0; i < botones.length; i++) {
+                    if (i == nuevoColor)
+                        panel.remove(botones[i]);
+                    else
+                        panel.add(botones[i]);
+                }
             }
             repintar();
         }
@@ -178,8 +206,42 @@ public class MenuBatalla extends Menu {
     }
 
     void confirmar(){
-        Bomberman bomberman = new Bomberman();
-        bomberman.startClient();
+        enviarColores();
+        seleccion = true;
         this.dispose();
     }
+
+    private void enviarColores(){
+        this.colores.remove(colorSeleccionado + 1);
+
+        String datos = "";
+        for (Integer c : colores)
+            datos += String.valueOf(c);
+        
+        Cliente c = new Cliente();
+        Packet04Actualizacion actualizacion = new Packet04Actualizacion(datos);
+        actualizacion.enviar(c);
+        try {
+            Thread.sleep(1000); // Espera 1 segundo antes de verificar nuevamente
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static boolean isSeleccion() {
+        return seleccion;
+    }
+
+    public static void setSeleccion(boolean seleccion) {
+        MenuBatalla.seleccion = seleccion;
+    }
+
+    public static int getColorSeleccionado() {
+        return colorSeleccionado;
+    }
+
+    public static void setColorSeleccionado(int colorSeleccionado) {
+        MenuBatalla.colorSeleccionado = colorSeleccionado;
+    }
+
 }

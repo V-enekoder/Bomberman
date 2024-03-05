@@ -9,8 +9,8 @@ public class JugadorMJ extends Jugador{
     private int puerto;
 
     public JugadorMJ(InterfazGrafica GUI, Tablero tablero, int[] posicion, int id,
-        String nombre,InetAddress direccionIP ,int puerto){
-            super(GUI,tablero,posicion,id, nombre);
+        String nombre,InetAddress direccionIP ,int puerto, int color){
+            super(GUI,tablero,posicion,id, nombre,color);
             this.direccionIP = direccionIP;
             this.puerto = puerto;
     }

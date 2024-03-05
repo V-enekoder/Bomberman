@@ -13,7 +13,6 @@ import Juego.Packet.Packet.packet;
 
 import java.awt.event.ActionEvent;
 
-@SuppressWarnings("unused")
 public class Jugador extends Personaje{
 	protected int id;
     protected int radioExplosion;
@@ -24,8 +23,7 @@ public class Jugador extends Personaje{
 	protected boolean inmune; // Pintar cuando inmmune
 	protected String nombre;
 	protected boolean fantasma;
-	protected static int color = 0; // 1 blanco, 2 negro, 3 rojo, 4 azul, 5 verde
-	public static int setColor;
+	protected int color;
 
 	public boolean isFantasma() {
 		return fantasma;
@@ -35,17 +33,18 @@ public class Jugador extends Personaje{
 		this.fantasma = fantasma;
 	}
 
-	public Jugador(InterfazGrafica GUI, Tablero tablero, int[] posicion, int id, String nombre){
+	public Jugador(InterfazGrafica GUI, Tablero tablero, int[] posicion, int id, String nombre, int color){
 		super(posicion[0],posicion[1]);
 		radioExplosion = 1;
 		bombasDisponibles = 1;
-		vidas = 1;
+		vidas = 3;
 		this.id = id;
-		duracionInmunidad = 3000; //1 segundo = 1000 milisegundos
+		duracionInmunidad = 5000; //1 segundo = 1000 milisegundos
 		tiempoInmunidad = duracionInmunidad;
 		inmune = false; 
 		this.nombre = nombre;
 		fantasma = false;
+		this.color = color;
 		configurarControles(GUI.getBombermanComponent(), tablero);
     }
 
@@ -218,11 +217,11 @@ public class Jugador extends Personaje{
 		this.tiempoInmunidad = tiempoInmunidad;
 	}
 
-	public static int getColor() {
+	public int getColor() {
 		return color;
 	}
 
-	public static void setColor(int color) {
-		Jugador.color = color;
+	public void setColor(int color) {
+		this.color = color;
 	}
 }

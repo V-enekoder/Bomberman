@@ -96,7 +96,6 @@ public class MenuLogueo extends Menu{
         botonCancelar.setVisible(false);
         botonLoguearse.setVisible(false);
         background.setVisible(false);
-        System.out.println("game.log_cancelLogueo");
         retornar();
     };
 
