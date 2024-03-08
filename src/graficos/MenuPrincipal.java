@@ -83,6 +83,7 @@ public class MenuPrincipal extends Menu{
         // Iniciar menu batalla (llamo al servidor)
         botonbatalla.addActionListener(iniciarBatalla);
         botonestadisticas.addActionListener(verEstadisticas);
+        botoninfo.addActionListener(verInfo);
 
     }
 
@@ -111,7 +112,7 @@ public class MenuPrincipal extends Menu{
             botonestadisticas.setVisible(false);
             botoninfo.setVisible(false);
             background.setVisible(false);
-            System.out.println("game.log_startLogueo");
+            System.out.println("game.log_viewStats");
             MenuEstadisticas();
         }
     };
@@ -120,7 +121,21 @@ public class MenuPrincipal extends Menu{
         new MenuEstadisticas();
         this.dispose();
     }
-    void menuInfo(){
 
+    ActionListener verInfo = new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            botonbatalla.setVisible(false);
+            botonestadisticas.setVisible(false);
+            botoninfo.setVisible(false);
+            background.setVisible(false);
+            System.out.println("game.log_viewInfo");
+            menuInfo();
+        }
+    };
+
+    void menuInfo(){
+        new MenuInfo();
+        this.dispose();
     }
 }

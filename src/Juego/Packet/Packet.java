@@ -7,7 +7,7 @@ public abstract class Packet {
     
     public static enum packet{
         INVALIDO(-1), INGRESO(00), DESCONEXION(01),DERROTA(02), 
-        INFORMACION(03), ACTUALIZACION(04);
+        INFORMACION(03), ACTUALIZACION(04), GAMEOVER(05);
         
         private int id;
 

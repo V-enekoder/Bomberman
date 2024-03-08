@@ -7,6 +7,7 @@ import Juego.Packet.Packet03Informacion;
 import Juego.Packet.Packet04Actualizacion;
 import Juego.Personaje.Jugador;
 import Server.UDP.Cliente;
+//import Juego.Estadisticas;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -25,8 +26,10 @@ public class MenuBatalla extends Menu {
     private static int colorSeleccionado;
     private static boolean seleccion = false;
     private ArrayList<Integer> colores = new ArrayList<>();
+    //private Estadisticas estadisticas = new Estadisticas();
 
-    public MenuBatalla() {
+    public MenuBatalla(String nombre) {
+        this.nombre=nombre;
         panel = new JPanel();
         panel.removeAll();
         panel.setLayout(null);
@@ -206,14 +209,21 @@ public class MenuBatalla extends Menu {
     }
 
     void confirmar(){
+        //estadisticas.aumentarPartidasJugadas();
+        //estadisticas.guardar(nombre+".txt"/*+"_estadisticas.txt"*/);
         enviarColores();
         seleccion = true;
         this.dispose();
     }
 
     private void enviarColores(){
-        this.colores.remove(colorSeleccionado + 1);
-
+        for(Integer i: colores){
+            if(i == colorSeleccionado){
+                colores.remove(i);  
+                break;
+            } 
+        }
+        
         String datos = "";
         for (Integer c : colores)
             datos += String.valueOf(c);

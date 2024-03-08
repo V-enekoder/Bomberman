@@ -1,8 +1,6 @@
 package Server.UDP;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -85,18 +83,18 @@ public class Cliente implements Runnable {
                 break;
             case INGRESO:
                 Packet00Ingreso ingreso = new Packet00Ingreso(data);
-                System.out.println(ingreso.getNombre() +" ha ingresado");
+                //System.out.println(ingreso.getNombre() +" ha ingresado");
                 break;
             case DESCONEXION:
                 Packet01Desconexion desconexion = new Packet01Desconexion(data);
                     
-            System.out.println("["+address.getHostAddress()+" ; "+port+" ] "
-                + desconexion.getNombre() + " se ha ido");
+            //System.out.println("["+address.getHostAddress()+" ; "+port+" ] "
+            //    + desconexion.getNombre() + " se ha ido");
                 break;
             case DERROTA:
                 Packet02Derrota derrota = new Packet02Derrota(data);
                 nombre = derrota.getNombre();
-                System.out.println(nombre + " ha perdido. ["+address.getHostAddress()+" ; "+port+"]");
+            //    System.out.println(nombre + " ha perdido. ["+address.getHostAddress()+" ; "+port+"]");
                 break;
             case INFORMACION:
                 Packet03Informacion info = new Packet03Informacion(data);

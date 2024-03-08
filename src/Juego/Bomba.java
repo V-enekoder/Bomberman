@@ -8,11 +8,13 @@ public class Bomba{
     private int columna;
     private int radioExplosion;
     private boolean[] jugadorFuera;
+    private int idJugador;
 
-    public Bomba(final int fila, final int columna, int radioExplosion){
+    public Bomba(final int fila, final int columna, int radioExplosion,int idJugador){
         this.fila = fila;
         this.columna = columna;
         this.radioExplosion = radioExplosion;
+        this.idJugador = idJugador;
         jugadorFuera = new boolean[4];
         for(int i = 0; i < 4; i++)
             this.jugadorFuera[i] = false;
@@ -53,4 +55,13 @@ public class Bomba{
     public void reducirTiempoExplosion(){
         tiempoRestante--;
     }
+
+    public int getIdJugador() {
+        return idJugador;
+    }
+
+    public void setIdJugador(int idJugador) {
+        this.idJugador = idJugador;
+    }
+
 }

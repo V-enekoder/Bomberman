@@ -10,15 +10,11 @@ import Server.UDP.Cliente;
 
 public class Tablero {
     private final static double PROB_PARED = 0.4;
-    /*private final static double PROB_AUMENTO_RADIO = 0.25;
-    private final static double PROB_AUMENTO_BOMBAS = 0.25;
-	private final static double PROB_AUMENTO_VELOCIDAD = 0.25;
-	private final static double PROB_AUMENTO_VIDAS = 0.25;*/
     private final Celda[][] celdas;
     private int ancho;
     private int alto;
     private Collection<Sensor> sensores = new ArrayList<>();
-	private ArrayList<JugadorMJ> jugadores = new ArrayList<>();
+	private ArrayList<Jugador> jugadores = new ArrayList<>();
     private Collection<Enemigo> enemigos = new ArrayList<>();
     private List<Bomba> bombas = new ArrayList<>();
     private Collection<Mejora> mejoras = new ArrayList<>();
@@ -95,7 +91,7 @@ public class Tablero {
 		celdas[13][2] = Celda.PISO;
 		celdas[12][13] = Celda.PISO;
 	}
-
+	
 	private boolean esBorde(int fila, int columna){
 		if ((fila == 0) || (columna == 0) || (fila == alto - 1) || (columna == ancho - 1))
 			return true;
@@ -151,7 +147,7 @@ public class Tablero {
 		return alto;
     }
 
-	public ArrayList<JugadorMJ> getJugadores(){
+	public ArrayList<Jugador> getJugadores(){
 		return jugadores;
 	}
 
@@ -187,7 +183,7 @@ public class Tablero {
 		bombas.add(bomba);
     }
 
-	public void agregarJugador(JugadorMJ jugador){
+	public void agregarJugador(Jugador jugador){
 		jugadores.add(jugador);
 	}
 
@@ -200,6 +196,11 @@ public class Tablero {
 		}
 		jugadores.remove(posicion);
 	}
+
+	public void eliminarJugador(Jugador jugador){
+		jugadores.remove(jugador);
+	}
+
 
     public void moverEnemigos(){
 
@@ -282,7 +283,7 @@ public class Tablero {
     public boolean chocaconBomba(Jugador jugador){ 
 		int x,y;
 		for (Bomba bomb : bombas) {
-			boolean exteriorBomba = bomb.estaJugadorFuera(jugador.getID());
+			boolean exteriorBomba = bomb.estaJugadorFuera(jugador.getId());
 			x = transfromarAPixel(bomb.getColumna());
 			y = transfromarAPixel(bomb.getFila());
 			if(exteriorBomba && hayChoque(jugador,x,y) && !jugador.isFantasma())
@@ -449,11 +450,12 @@ public class Tablero {
 					jugador.reducirVidas();
 					jugador.setInmune(true);
 					if(jugador.getVidas() == 0){
-						Cliente socket = new Cliente();
-						Packet02Derrota packet = new Packet02Derrota(jugador.getNombre());
-						packet.enviar(socket);
+						jugador.getDatos().aumentarPartidasPerdidas();
+						jugador.getDatos().guardar();
 						jugador.setFantasma(true);
-						//GameOver = true;
+						Cliente socket = new Cliente();
+						Packet02Derrota packet = new Packet02Derrota(jugador.getNombre(),jugador.getId());
+						packet.enviar(socket);
 					}
 				}
 			}
@@ -465,6 +467,8 @@ public class Tablero {
 			for (Enemigo e:enemigosporEliminar ) 
 				enemigos.remove(e);
 		}
+		/*if(enemigos.isEmpty())
+			GameOver = true;*/
     }
 
     public void informarSensores(){
@@ -482,16 +486,16 @@ public class Tablero {
 		for (Enemigo enemy : enemigos){
 			x = enemy.getX() - ComponenteGrafico.getSquareMiddle();
 			y = enemy.getY() - ComponenteGrafico.getSquareMiddle();
-			for(JugadorMJ jugador: jugadores){
+			for(Jugador jugador: jugadores){
 				if(hayChoque(jugador, x,y) && !jugador.isInmune() && !jugador.isFantasma()){
 					jugador.reducirVidas();
 					jugador.setInmune(true);
 					if(jugador.getVidas() == 0){
 						Cliente socket = new Cliente();
-						Packet02Derrota packet = new Packet02Derrota(jugador.getNombre());
+						Packet02Derrota packet = new Packet02Derrota(jugador.getNombre(),jugador.getId());
 						packet.enviar(socket);
 						jugador.setFantasma(true);
-						System.out.println("Ha muerto el jugador "+ jugador.getID());
+						System.out.println("Ha muerto el jugador "+ jugador.getId());
 					}
 				}
 			}
@@ -529,9 +533,9 @@ public class Tablero {
 			x = transfromarAPixel(bomb.getColumna());
 			y = transfromarAPixel(bomb.getFila());
 			for(Jugador jugador: jugadores){
-				if(!bomb.estaJugadorFuera(jugador.getID()) &&
+				if(!bomb.estaJugadorFuera(jugador.getId()) &&
 					!hayChoque(jugador, x, y))
-						bomb.setJugadorFuera(true,jugador.getID());
+						bomb.setJugadorFuera(true,jugador.getId());
 			}
 		}
 	}
@@ -545,4 +549,24 @@ public class Tablero {
 			}
 		}
 	}
+
+	public void comprobarVictoria(){
+		int fantasmas = 0;
+		for(Jugador jugador: jugadores){
+			if(jugador.isFantasma())
+				fantasmas++;
+		}
+		if(fantasmas == jugadores.size() - 1 && jugadores.size() != 1)
+			GameOver = true;
+	}
+
+    public int getCantidadBombas(int id){
+		int bombasPuestas = 0;
+		for(Bomba b: bombas){
+			if(b.getIdJugador() == id)
+				bombasPuestas++;
+		}
+		return bombasPuestas;
+    }
+
 }

@@ -5,26 +5,29 @@ import javax.swing.*;
 import Juego.Mejora.Mejora;
 import Juego.Personaje.Enemigo;
 import Juego.Personaje.Jugador;
-import Juego.Personaje.JugadorMJ;
+import Juego.Personaje.Jugador;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @SuppressWarnings("unused")
 public class ComponenteGrafico extends JComponent implements Sensor{
     // Constants are static by definition.
     private final static int DIMENSION_CELDA = 40;
-    private final static int CHARACTER_ADJUSTMENT_FOR_PAINT = 15;
+    private final static int CHARACTER_ADJUSTMENT_FOR_PAINT = 20;
     private final static int MITAD_CELDA = DIMENSION_CELDA/2;
     private final static int BOMB_ADJUSTMENT_1 =5;
     private final static int BOMB_ADJUSTMENT_2 =10;
     // Defining painting parameters
     //private final static int PAINT_PARAMETER_13 = 13;
-    private final static int PAINT_PARAMETER_15 = 15;
+    private final static int PAINT_PARAMETER_15 = 20;
     //private final static int PAINT_PARAMETER_17 = 17;
     private final static int PAINT_PARAMETER_18 = 18;
     private final static int PAINT_PARAMETER_19 = 19;
@@ -32,6 +35,7 @@ public class ComponenteGrafico extends JComponent implements Sensor{
     //private final static int PAINT_PARAMETER_24 = 24;
     private final Tablero tablero;
     private final AbstractMap<Celda, Color> mapaColores;
+	private final Map<Jugador, JLabel> vidasLabels = new HashMap<>();
 
     public ComponenteGrafico(Tablero tablero) {
 		this.tablero = tablero;
@@ -81,6 +85,11 @@ public class ComponenteGrafico extends JComponent implements Sensor{
 		g2d.setColor(Color.ORANGE);
 		for (Explosion explosion: tablero.getUbicacionExplosiones())
 			pintarExplosion(explosion, g2d);
+
+		for (Jugador jugador : tablero.getJugadores()) {
+			pintarVidasJugador(jugador, g2d);
+		}
+
     }
 
 	private void pintarCeldas(Graphics2D g2d ){
@@ -104,13 +113,12 @@ public class ComponenteGrafico extends JComponent implements Sensor{
 	}
 
 	private void pintarPiso(int fila, int columna, Graphics g2d) {
-		Image piso1 = new ImageIcon("res_piso.png").getImage();
-		Image piso2 = new ImageIcon("res_piso2.png").getImage();
+		Image piso1 = new ImageIcon("zres_piso.png").getImage();
+		Image piso2 = new ImageIcon("zres_piso2.png").getImage();
 	
 		// Calcular el índice de la celda de piso
-		int indicePiso = (fila / DIMENSION_CELDA + columna / DIMENSION_CELDA) % 2;
+		int indicePiso = (fila + columna) % 2;
 	
-		// Alternar entre piso1 y piso2 basado en el índice de la celda
 		if (indicePiso == 0) {
 			// Pintar piso1
 			g2d.drawImage(piso1, columna * DIMENSION_CELDA, fila * DIMENSION_CELDA, null);
@@ -120,52 +128,38 @@ public class ComponenteGrafico extends JComponent implements Sensor{
 		}
 	}
 
-    private void pintarBloque(int fila, int columna, Graphics g2d){
-		g2d.setColor(Color.lightGray);
-		g2d.fillRect(columna * DIMENSION_CELDA, fila * DIMENSION_CELDA, DIMENSION_CELDA, DIMENSION_CELDA);
-		g2d.setColor(Color.BLUE);
-		g2d.drawLine(columna* DIMENSION_CELDA+1, fila*DIMENSION_CELDA+10,
-			columna*DIMENSION_CELDA+DIMENSION_CELDA, fila*DIMENSION_CELDA+10);
-		g2d.drawLine(columna* DIMENSION_CELDA+1, fila*DIMENSION_CELDA+MITAD_CELDA,
-			columna*DIMENSION_CELDA+DIMENSION_CELDA, fila*DIMENSION_CELDA+MITAD_CELDA);
-		g2d.drawLine(columna* DIMENSION_CELDA+1, fila*DIMENSION_CELDA+MITAD_CELDA+10,
-			columna*DIMENSION_CELDA+DIMENSION_CELDA, fila*DIMENSION_CELDA+MITAD_CELDA+10);
-		g2d.drawLine(columna* DIMENSION_CELDA+1, fila*DIMENSION_CELDA+DIMENSION_CELDA,
-			columna*DIMENSION_CELDA+DIMENSION_CELDA, fila*DIMENSION_CELDA+DIMENSION_CELDA);
-
-		g2d.drawLine(columna* DIMENSION_CELDA+10, fila*DIMENSION_CELDA+1,
-			columna*DIMENSION_CELDA+10, fila*DIMENSION_CELDA+10);
-		g2d.drawLine(columna* DIMENSION_CELDA+MITAD_CELDA+10, fila*DIMENSION_CELDA+1,
-			columna*DIMENSION_CELDA+MITAD_CELDA+10, fila*DIMENSION_CELDA+10);
-
-		g2d.drawLine(columna* DIMENSION_CELDA+1, fila*DIMENSION_CELDA+10, columna*DIMENSION_CELDA+1, 
-			fila*DIMENSION_CELDA+MITAD_CELDA);
-		g2d.drawLine(columna* DIMENSION_CELDA+MITAD_CELDA+1, fila*DIMENSION_CELDA+10,
-			columna*DIMENSION_CELDA+MITAD_CELDA+1, fila*DIMENSION_CELDA+MITAD_CELDA);
-
-		g2d.drawLine(columna* DIMENSION_CELDA+10, fila*DIMENSION_CELDA+1+MITAD_CELDA,
-			columna*DIMENSION_CELDA+10, fila*DIMENSION_CELDA+MITAD_CELDA+10);
-		g2d.drawLine(columna* DIMENSION_CELDA+MITAD_CELDA+10, fila*DIMENSION_CELDA+1+MITAD_CELDA,
-			columna*DIMENSION_CELDA+MITAD_CELDA+10, fila*DIMENSION_CELDA+MITAD_CELDA+10);
-
-		g2d.drawLine(columna* DIMENSION_CELDA+1, fila*DIMENSION_CELDA+MITAD_CELDA+10, 
-			columna*DIMENSION_CELDA+1, fila*DIMENSION_CELDA+DIMENSION_CELDA);
-		g2d.drawLine(columna* DIMENSION_CELDA+MITAD_CELDA+1, fila*DIMENSION_CELDA+MITAD_CELDA+10, 
-			columna*DIMENSION_CELDA+MITAD_CELDA+1, fila*DIMENSION_CELDA+DIMENSION_CELDA);
-    }
-
-	private void pintarPared(int fila, int columna, Graphics g2d) {
-		Image imagen = new ImageIcon("res_muroColision.png").getImage();
-	
-		// Dibujar la imagen de la pared en la posición específica
-		g2d.drawImage(imagen, columna * DIMENSION_CELDA, fila * DIMENSION_CELDA, null);
+	private void pintarBloque(int fila, int columna, Graphics2D g2d) {
+		try {
+			Image imagen = new ImageIcon("bloqueExtra.png").getImage();
+			g2d.drawImage(imagen, columna * DIMENSION_CELDA, fila * DIMENSION_CELDA, DIMENSION_CELDA, DIMENSION_CELDA, null);
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("error en el archivo o direccion");
+		}
 	}
 
-	private void pintarJugador(ArrayList<JugadorMJ> jugadores, Graphics g2d) {
-		for (JugadorMJ jugador : jugadores) {
-			Image imagen = null;
+	private void pintarPared(int fila, int columna, Graphics g2d) {
+		// Verificar si es una pared del borde
+		if (esParedDelBorde(fila, columna)) {
+			Image imagenBorde = new ImageIcon("extraBloq.png").getImage();
+			g2d.drawImage(imagenBorde, columna * DIMENSION_CELDA, fila * DIMENSION_CELDA, null);
+		} else {
+			// Es una pared dentro del juego
+			Image imagenColision = new ImageIcon("res_muroColision2.png").getImage();
+			g2d.drawImage(imagenColision, columna * DIMENSION_CELDA, fila * DIMENSION_CELDA, null);
+		}
+	}
 	
-			// Seleccionar la imagen según el color del jugador
+	// Método auxiliar para verificar si es una pared del borde
+	private boolean esParedDelBorde(int fila, int columna) {
+		return fila == 0 || fila == tablero.getAlto() - 1 || columna == 0 || columna == tablero.getAncho() - 1;
+	}
+
+	private void pintarJugador(ArrayList<Jugador> jugadores, Graphics g2d) {
+
+		for (Jugador jugador : jugadores) {
+			Image imagen = null;
+			
 			switch (jugador.getColor()) {
 				case 0:
 					imagen = new ImageIcon("p_white_estatico.png").getImage();
@@ -184,36 +178,38 @@ public class ComponenteGrafico extends JComponent implements Sensor{
 					break;
 			}
 	
-			// Dibujar la imagen del jugador en la posición específica
-			g2d.drawImage(imagen, jugador.getX() - CHARACTER_ADJUSTMENT_FOR_PAINT,
-					jugador.getY() - CHARACTER_ADJUSTMENT_FOR_PAINT, null);
+			// Definir el nuevo tamaño con valores decimales
+			double factorEscala = 1.5;  // Puedes ajustar el factor de escala según sea necesario
+			double nuevoAnchoDouble = imagen.getWidth(null) * factorEscala;
+			double nuevoAltoDouble = imagen.getHeight(null) * factorEscala;
 	
-			// Puedes agregar aquí el código adicional para pintar otras partes del jugador si es necesario
+			// Convertir los valores decimales a enteros
+			int nuevoAncho = (int) nuevoAnchoDouble;
+			int nuevoAlto = (int) nuevoAltoDouble;
+	
+			// Crear una imagen compatible con transparencia
+			BufferedImage imagenCompatible = new BufferedImage(nuevoAncho, nuevoAlto, BufferedImage.TYPE_INT_ARGB);
+			Graphics2D g2dImagen = imagenCompatible.createGraphics();
+	
+			// Redimensionar la imagen y dibujarla en la imagen compatible
+			g2dImagen.drawImage(imagen, 0, 0, nuevoAncho, nuevoAlto, null);
+			g2dImagen.dispose();
+	
+			// Dibujar la imagen del jugador en la posición específica
+			g2d.drawImage(imagenCompatible, jugador.getX() - CHARACTER_ADJUSTMENT_FOR_PAINT+8,
+					jugador.getY() - CHARACTER_ADJUSTMENT_FOR_PAINT-8, null);
+
 		}
 	}
 
-    private void pintarEnemigo(Enemigo e, Graphics g2d){
-		// Paint body
-		g2d.setColor(Color.orange);
-		g2d.fillOval(e.getX()-CHARACTER_ADJUSTMENT_FOR_PAINT, e.getY()-CHARACTER_ADJUSTMENT_FOR_PAINT,
-			 e.getSize(), e.getSize());
-		// Paint brows
-		g2d.setColor(Color.BLACK);
-		// Paint eyes
-		g2d.fillOval(e.getX()-CHARACTER_ADJUSTMENT_FOR_PAINT+4, 
-			e.getY()-CHARACTER_ADJUSTMENT_FOR_PAINT+9, 7, 7);
-		g2d.fillOval(e.getX()-CHARACTER_ADJUSTMENT_FOR_PAINT+PAINT_PARAMETER_19,
-			e.getY()-CHARACTER_ADJUSTMENT_FOR_PAINT+9, 7, 7);
-		// Paint mouth
-		g2d.fillOval(e.getX()-CHARACTER_ADJUSTMENT_FOR_PAINT+5, 
-			e.getY()-CHARACTER_ADJUSTMENT_FOR_PAINT+PAINT_PARAMETER_20, PAINT_PARAMETER_20, 2);
-		// Fill eyes
-		g2d.setColor(Color.RED);
-		g2d.fillOval(e.getX()-CHARACTER_ADJUSTMENT_FOR_PAINT+5,
-			e.getY()-CHARACTER_ADJUSTMENT_FOR_PAINT+10, 5, 5);
-		g2d.fillOval(e.getX()-CHARACTER_ADJUSTMENT_FOR_PAINT+PAINT_PARAMETER_20,
-			e.getY()-CHARACTER_ADJUSTMENT_FOR_PAINT+10, 5, 5);
-    }
+	private void pintarEnemigo(Enemigo e, Graphics g2d) {
+		// Cargar el GIF del enemigo
+		ImageIcon gifIcon = new ImageIcon("spritegif.gif");
+		Image gifImage = gifIcon.getImage();
+		
+		// Dibujar el GIF en la posición del enemigo
+		g2d.drawImage(gifImage, e.getX() - CHARACTER_ADJUSTMENT_FOR_PAINT, e.getY() - CHARACTER_ADJUSTMENT_FOR_PAINT, null);
+	}
 
 	private void pintarMejora(Mejora mejora, Graphics g2d) {
 		Image imagen = null;
@@ -266,5 +262,54 @@ public class ComponenteGrafico extends JComponent implements Sensor{
 	
 		// Dibujar la imagen de la explosión en la posición específica
 		g2d.drawImage(imagen, explosionX, explosionY, null);
+	}
+
+	private void pintarVidasJugador(Jugador jugador, Graphics2D g2d) {
+		// Remove the specific vidasLabel associated with the current player
+		JLabel vidasLabel = vidasLabels.remove(jugador);
+		if (vidasLabel != null) {
+			this.remove(vidasLabel);
+		}
+	
+		// Configurar el JLabel con la cantidad de vidas
+		vidasLabel = new JLabel("Vidas: " + jugador.getVidas());
+		vidasLabel.setForeground(Color.WHITE);
+		vidasLabel.setFont(new Font("Arial", Font.BOLD, 12));
+	
+		int jugadorX = jugador.getX() - CHARACTER_ADJUSTMENT_FOR_PAINT + 2;
+		int jugadorY = jugador.getY() - CHARACTER_ADJUSTMENT_FOR_PAINT - 20;
+	
+		// Establecer la posición del JLabel en el componente gráfico
+		vidasLabel.setBounds(jugadorX, jugadorY, 60, 20);
+	
+		// Agregar el JLabel al componente gráfico
+		this.add(vidasLabel);
+	
+		// Actualizar el mapeo de vidasLabels
+		vidasLabels.put(jugador, vidasLabel);
+	}
+
+
+	private void actualizarVidasLabel(Jugador jugador) {
+		JLabel vidasLabel = vidasLabels.get(jugador);
+	
+		if (vidasLabel == null) {
+			// Si el JLabel no existe, crear uno nuevo
+			vidasLabel = new JLabel();
+			vidasLabels.put(jugador, vidasLabel);
+			this.add(vidasLabel);
+		}
+	
+		// Configurar el JLabel con la cantidad de vidas
+		vidasLabel.setText("Vidas: " + jugador.getVidas());
+		vidasLabel.setForeground(Color.WHITE); // Configura el color del texto
+		vidasLabel.setFont(new Font("Arial", Font.BOLD, 12)); // Configura la fuente del texto
+	
+		int jugadorX = jugador.getX() - CHARACTER_ADJUSTMENT_FOR_PAINT + 2;
+		int jugadorY = jugador.getY() - CHARACTER_ADJUSTMENT_FOR_PAINT - 20;
+	
+		// Establecer la posición del JLabel en el componente gráfico
+		vidasLabel.setLocation(jugadorX, jugadorY); // Actualiza la posición directamente
+		vidasLabel.setSize(60, 20); // Ajusta el tamaño según sea necesario
 	}
 }

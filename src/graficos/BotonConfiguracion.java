@@ -1,6 +1,6 @@
 package graficos;
 
-public class BotonConfiguracion { //Evaluar si convertir en clase interna
+public class BotonConfiguracion {
     private String colorDisponible;
     private String colorNoDisponible;
     private int x;
