@@ -49,6 +49,7 @@ public class Bomberman {
         if (true)
             // juego.startServer();
             juego.startClient();
+
     }
 
     /**
@@ -58,7 +59,6 @@ public class Bomberman {
         Servidor socketServidor = new Servidor(5000);
         Thread servidorThread = new Thread(socketServidor);
         servidorThread.start();
-
     }
 
     /**
