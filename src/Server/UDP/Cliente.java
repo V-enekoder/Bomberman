@@ -18,7 +18,8 @@ import graficos.MenuLogueo;
 import graficos.MenuPrincipal;
 
 /**
- * La clase Cliente representa un cliente UDP que puede enviar y recibir paquetes desde un servidor.
+ * La clase Cliente representa un cliente UDP que puede enviar y recibir
+ * paquetes desde un servidor.
  * Implementa la interfaz Runnable para ejecutar el cliente en un hilo separado.
  */
 public class Cliente implements Runnable {
@@ -35,9 +36,10 @@ public class Cliente implements Runnable {
     /**
      * Constructor de la clase Cliente sin parámetros.
      * Configura el puerto del servidor y el tamaño del buffer de datos.
-     * Crea un nuevo socket DatagramSocket y obtiene la dirección del servidor local.
+     * Crea un nuevo socket DatagramSocket y obtiene la dirección del servidor
+     * local.
      */
-    public Cliente(){
+    public Cliente() {
         this.PUERTO_SERVIDOR = 5000;
         this.datos = new byte[1024];
         try {
@@ -51,11 +53,13 @@ public class Cliente implements Runnable {
     /**
      * Constructor de la clase Cliente con nombre y color seleccionado.
      * Configura el puerto del servidor y el tamaño del buffer de datos.
-     * Crea un nuevo socket DatagramSocket y obtiene la dirección del servidor local.
-     * @param nombre El nombre del cliente.
+     * Crea un nuevo socket DatagramSocket y obtiene la dirección del servidor
+     * local.
+     * 
+     * @param nombre            El nombre del cliente.
      * @param colorSeleccionado El color seleccionado por el cliente.
      */
-    public Cliente(String nombre, int colorSeleccionado){
+    public Cliente(String nombre, int colorSeleccionado) {
         this.PUERTO_SERVIDOR = 5000;
         this.datos = new byte[1024];
         this.nombre = nombre;
@@ -70,13 +74,14 @@ public class Cliente implements Runnable {
 
     /**
      * Implementación del método run de la interfaz Runnable.
-     * Inicia el cliente y realiza el proceso de registro y comunicación con el servidor.
+     * Inicia el cliente y realiza el proceso de registro y comunicación con el
+     * servidor.
      */
     @Override
     public void run() {
         // Código para la interfaz gráfica de usuario
         MenuPrincipal v1 = new MenuPrincipal();
-        
+
         // Espera hasta que la selección haya ocurrido
         while (!MenuBatalla.isSeleccion()) {
             try {
@@ -86,10 +91,11 @@ public class Cliente implements Runnable {
             }
         }
 
-        Packet00Ingreso ingreso = new Packet00Ingreso(MenuLogueo.getTextoIngresado(), MenuBatalla.getColorSeleccionado());
+        Packet00Ingreso ingreso = new Packet00Ingreso(MenuLogueo.getTextoIngresado(),
+                MenuBatalla.getColorSeleccionado());
         ingreso.enviar(this);
-        
-        while(running){
+
+        while (running) {
             DatagramPacket recibido = recibir();
             analizarPacket(recibido.getData(), recibido.getAddress(), recibido.getPort());
         }
@@ -98,15 +104,16 @@ public class Cliente implements Runnable {
 
     /**
      * Analiza el paquete recibido y toma acciones según su tipo.
-     * @param data Los datos contenidos en el paquete.
+     * 
+     * @param data    Los datos contenidos en el paquete.
      * @param address La dirección IP del remitente del paquete.
-     * @param port El puerto del remitente del paquete.
+     * @param port    El puerto del remitente del paquete.
      */
     public void analizarPacket(byte[] data, InetAddress address, int port) {
         String mensaje = new String(data).trim();
         int id = Integer.parseInt(mensaje.substring(0, 2));
         String nombre;
-        switch(Packet.identificarTipo(id)){
+        switch (Packet.identificarTipo(id)) {
             default:
             case INVALIDO:
                 break;
@@ -130,6 +137,7 @@ public class Cliente implements Runnable {
 
     /**
      * Devuelve la lista de colores disponibles.
+     * 
      * @return La lista de colores disponibles.
      */
     public ArrayList<Integer> getColoresDisponibles() {
@@ -138,6 +146,7 @@ public class Cliente implements Runnable {
 
     /**
      * Establece la lista de colores disponibles.
+     * 
      * @param coloresDisponibles La lista de colores disponibles a establecer.
      */
     public void setColoresDisponibles(ArrayList<Integer> coloresDisponibles) {
@@ -146,10 +155,11 @@ public class Cliente implements Runnable {
 
     /**
      * Recibe un paquete del servidor.
+     * 
      * @return El paquete recibido.
      */
-    public DatagramPacket recibir(){
-        DatagramPacket paquete = new DatagramPacket(datos,datos.length);
+    public DatagramPacket recibir() {
+        DatagramPacket paquete = new DatagramPacket(datos, datos.length);
         try {
             socket.receive(paquete);
         } catch (IOException e) {
@@ -160,9 +170,10 @@ public class Cliente implements Runnable {
 
     /**
      * Envía datos al servidor.
+     * 
      * @param datos Los datos a enviar.
      */
-    public void enviarServidor(byte[] datos){
+    public void enviarServidor(byte[] datos) {
         DatagramPacket respuesta = new DatagramPacket(datos, datos.length, direccionServidor, PUERTO_SERVIDOR);
         try {
             socket.send(respuesta);
@@ -178,4 +189,3 @@ public class Cliente implements Runnable {
         running = false;
     }
 }
-

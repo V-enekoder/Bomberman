@@ -11,10 +11,11 @@ import javax.sound.sampled.Clip;
 
 /**
  * Esta clase representa el menú principal del juego Bomberman.
- * Desde este menú, los usuarios pueden acceder a otras funciones como iniciar una batalla, ver estadísticas o ver información.
+ * Desde este menú, los usuarios pueden acceder a otras funciones como iniciar
+ * una batalla, ver estadísticas o ver información.
  */
 
-public class MenuPrincipal extends Menu{
+public class MenuPrincipal extends Menu {
 
     private JLabel boton_estadisticas, boton_info;
     private JButton botonbatalla, botoninfo, botonestadisticas;
@@ -25,76 +26,81 @@ public class MenuPrincipal extends Menu{
      * Configura y muestra la ventana del menú principal del juego.
      */
 
-    public MenuPrincipal(){
+    public MenuPrincipal() {
         setSize(616, 639);
         setTitle("Bomberman");
         setLocationRelativeTo(null); // La locacion en el centro
         setResizable(false); // Se puede o no se puede cambiar el tamaño o no de la ventana
-        setMinimumSize(new Dimension(200,200)); // Establezco tamaño minimo
+        setMinimumSize(new Dimension(200, 200)); // Establezco tamaño minimo
         getContentPane().setBackground(Color.white);// Establecemos el color de la ventana.
         iniciarComponentes();
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setVisible(true);
         respuesta = 0;
         respuestaEstablecida = false;
+        respuesta = 0;
+        respuestaEstablecida = false;
     }
 
     @Override
-    protected void iniciarComponentes(){
+    protected void iniciarComponentes() {
         colocarPanel();
         colocarEtiquetas();
         colocarBotones();
     }
-    
-    private void colocarPanel(){
+
+    private void colocarPanel() {
         panel = new JPanel();
         panel.setLayout(null);
         panel.setBackground(Color.white);
         this.getContentPane().add(panel);
     }
-    
-    private void colocarEtiquetas(){
+
+    private void colocarEtiquetas() {
 
         background = new JLabel();
         background.setIcon(new ImageIcon("background.png"));
         background.setBounds(0, 0, 600, 600);
         panel.add(background);
-        
-        boton_info=new JLabel();
+
+        boton_info = new JLabel();
         boton_info.setIcon(new ImageIcon("boton_info.png"));
         boton_info.setBounds(528, 19, 52, 52);
         panel.add(boton_info);
-        
-        boton_estadisticas=new JLabel();
+
+        boton_estadisticas = new JLabel();
         boton_estadisticas.setIcon(new ImageIcon("boton_info.png"));
         boton_estadisticas.setBounds(528, 80, 52, 52);
         panel.add(boton_estadisticas);
-        
+
     }
-    
-    private void colocarBotones(){
-        
+
+    private void colocarBotones() {
+
+        botonbatalla = new JButton();
         botonbatalla = new JButton();
         botonbatalla.setBounds(38, 255, 178, 161);
         botonbatalla.setEnabled(true); // Me deja o no pinchar el boton
         botonbatalla.setIcon(new ImageIcon("boton_batalla.png"));
         panel.add(botonbatalla);
         botonbatalla.setVisible(true);
-        
+
+        botonestadisticas = new JButton();
         botonestadisticas = new JButton();
         botonestadisticas.setBounds(528, 80, 52, 52);
         botonestadisticas.setEnabled(true); // Me deja o no pinchar el boton
         botonestadisticas.setIcon(new ImageIcon("boton_estadisticas.png"));
         panel.add(botonestadisticas);
         botonestadisticas.setVisible(true);
-        
+
+        botoninfo = new JButton();
         botoninfo = new JButton();
         botoninfo.setBounds(528, 19, 52, 52);
         botoninfo.setEnabled(true); // Me deja o no pinchar el boton
         botoninfo.setIcon(new ImageIcon("boton_info.png"));
         panel.add(botoninfo);
         botoninfo.setVisible(true);
-                
+
         // Iniciar menu batalla (llamo al servidor)
         botonbatalla.addActionListener(iniciarBatalla);
         botonestadisticas.addActionListener(verEstadisticas);
@@ -105,8 +111,8 @@ public class MenuPrincipal extends Menu{
     /**
      * ActionListener para iniciar una batalla en el juego.
      */
-    
-     ActionListener iniciarBatalla = new ActionListener() {
+
+    ActionListener iniciarBatalla = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
             botonbatalla.setVisible(false);
@@ -125,7 +131,7 @@ public class MenuPrincipal extends Menu{
      * Abre el menú de logueo del juego.
      */
 
-    void MenuLogueo(){
+    void MenuLogueo() {
         new MenuLogueo();
         this.dispose();
     }
@@ -133,7 +139,7 @@ public class MenuPrincipal extends Menu{
     /**
      * ActionListener para ver las estadísticas del juego.
      */
-    
+
     ActionListener verEstadisticas = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -152,8 +158,8 @@ public class MenuPrincipal extends Menu{
      * 
      * @param ruta La ruta del archivo de sonido a reproducir.
      */
-    
-     private void reproducirSonido(String ruta) {
+
+    private void reproducirSonido(String ruta) {
         try {
             File archivoSonido = new File(ruta);
             clip = AudioSystem.getClip();
@@ -163,11 +169,12 @@ public class MenuPrincipal extends Menu{
             e.printStackTrace();
         }
     }
-    
-    void MenuEstadisticas(){
+
+    void MenuEstadisticas() {
         new MenuEstadisticas();
         this.dispose();
     }
+
     /**
      * ActionListener para ver la información del juego.
      */
@@ -183,7 +190,8 @@ public class MenuPrincipal extends Menu{
             menuInfo();
         }
     };
-    void menuInfo(){
+
+    void menuInfo() {
         new MenuInfo();
         this.dispose();
     }

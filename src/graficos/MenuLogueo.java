@@ -16,7 +16,7 @@ import javax.sound.sampled.*;
  * Permite a los usuarios ingresar y verificar sus credenciales.
  */
 
- public class MenuLogueo extends Menu {
+public class MenuLogueo extends Menu {
 
     private JLabel verificacion, menuAlerta;
     private JButton botonCancelar, botonLoguearse, botonAceptar;
@@ -27,6 +27,7 @@ import javax.sound.sampled.*;
 
     /**
      * Obtiene el texto ingresado en el campo de texto de usuario.
+     * 
      * @return El texto ingresado.
      */
     public static String getTextoIngresado() {
@@ -35,6 +36,7 @@ import javax.sound.sampled.*;
 
     /**
      * Obtiene el campo de texto de ingreso de usuario.
+     * 
      * @return El campo de texto de ingreso de usuario.
      */
     public JTextField getIngresarUsuario() {
@@ -45,7 +47,7 @@ import javax.sound.sampled.*;
      * Constructor de la clase MenuLogueo.
      * Configura y muestra la ventana del menú de logueo.
      */
-    public MenuLogueo(){
+    public MenuLogueo() {
         panel = new JPanel();
         panel.removeAll();
         panel.setLayout(null);
@@ -56,27 +58,27 @@ import javax.sound.sampled.*;
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
-        
+
         iniciarComponentes();
         setVisible(true);
     }
 
     @Override
-    protected void iniciarComponentes(){
+    protected void iniciarComponentes() {
         colocarEtiquetas();
         colocarBotones();
         colocarCajaTexto();
     }
 
-    void colocarEtiquetas(){
+    void colocarEtiquetas() {
 
-        background=new JLabel();
+        background = new JLabel();
         background.setIcon(new ImageIcon("menuLogin.png"));
         background.setBounds(0, 0, 600, 600);
         background.setOpaque(false);
         panel.add(background);
 
-        menuAlerta=new JLabel();
+        menuAlerta = new JLabel();
         menuAlerta.setIcon(new ImageIcon("menuAlerta.png"));
         menuAlerta.setBounds(0, 0, 600, 600);
         menuAlerta.setOpaque(false);
@@ -85,17 +87,17 @@ import javax.sound.sampled.*;
         panel.setComponentZOrder(menuAlerta, 0);
 
         verificacion = new JLabel();
-        verificacion.setBounds(90,380,500,14);
-        verificacion.setFont(new Font("Arial",1,14));
+        verificacion.setBounds(90, 380, 500, 14);
+        verificacion.setFont(new Font("Arial", 1, 14));
         verificacion.setOpaque(false);
         verificacion.setForeground(Color.WHITE);
-        //verificacion.setHorizontalAlignment(SwingConstants.CENTER); // centrar texto
+        // verificacion.setHorizontalAlignment(SwingConstants.CENTER); // centrar texto
         panel.add(verificacion);
         panel.setComponentZOrder(verificacion, 0);
 
     }
 
-    void colocarCajaTexto(){
+    void colocarCajaTexto() {
 
         ingresarUsuario = new JTextField();
         ingresarUsuario.setBounds(97, 306, 234, 24);
@@ -103,22 +105,22 @@ import javax.sound.sampled.*;
 
     }
 
-    void colocarBotones(){
-        botonCancelar=new JButton();
+    void colocarBotones() {
+        botonCancelar = new JButton();
         botonCancelar.setBounds(228, 404, 147, 28);
         botonCancelar.setEnabled(true); // Me deja o no pinchar el boton
         botonCancelar.setIcon(new ImageIcon("botonCancelar.png"));
         panel.add(botonCancelar);
         botonCancelar.setVisible(true);
 
-        botonLoguearse=new JButton();
+        botonLoguearse = new JButton();
         botonLoguearse.setBounds(341, 303, 147, 28);
         botonLoguearse.setEnabled(true); // Me deja o no pinchar el boton
         botonLoguearse.setIcon(new ImageIcon("botonLoguearse.png"));
         panel.add(botonLoguearse);
         botonLoguearse.setVisible(true);
 
-        botonAceptar=new JButton();
+        botonAceptar = new JButton();
         botonAceptar.setBounds(255, 306, 87, 30);
         botonAceptar.setEnabled(true); // Me deja o no pinchar el boton
         botonAceptar.setIcon(new ImageIcon("botonAceptar.png"));
@@ -135,7 +137,7 @@ import javax.sound.sampled.*;
     /**
      * ActionListener para volver al menú principal.
      */
-    ActionListener volverMenuPrincipal = (ActionEvent e)->{
+    ActionListener volverMenuPrincipal = (ActionEvent e) -> {
         reproducirSonido("audio2.wav");
         botonCancelar.setVisible(false);
         botonLoguearse.setVisible(false);
@@ -145,6 +147,7 @@ import javax.sound.sampled.*;
 
     /**
      * Reproduce un sonido desde un archivo de audio.
+     * 
      * @param ruta La ruta del archivo de audio.
      */
     private void reproducirSonido(String ruta) {
@@ -166,12 +169,13 @@ import javax.sound.sampled.*;
         @Override
         public void actionPerformed(ActionEvent ae) {
             textoIngresado = ingresarUsuario.getText();
-    
+            textoIngresado = ingresarUsuario.getText();
+
             if (textoIngresado.isEmpty()) {
                 sinTexto();
                 return;
             }
-    
+
             if (verificarUsuario(textoIngresado)) {
                 verificacion.setText("El usuario: " + ingresarUsuario.getText() + " ha sido verificado con éxito.");
                 System.out.println("Usuario verificado");
@@ -183,7 +187,7 @@ import javax.sound.sampled.*;
                 reproducirSonido("audio1.wav");
                 System.out.println("Usuario registrado");
                 guardarUsuario(textoIngresado);
-    
+
                 panel.remove(botonLoguearse);
                 panel.remove(botonCancelar);
             }
@@ -201,12 +205,13 @@ import javax.sound.sampled.*;
 
     /**
      * Verifica si un usuario existe en el archivo de usuarios.
+     * 
      * @param usuario El nombre de usuario a verificar.
      * @return true si el usuario existe, false de lo contrario.
      */
     boolean verificarUsuario(String usuario) {
         archivoUsuarios = new File("src/DatosJugadores/listaJugadores.txt");
-    
+
         try {
             if (!archivoUsuarios.exists()) {
                 archivoUsuarios.createNewFile();
@@ -227,14 +232,15 @@ import javax.sound.sampled.*;
         }
         return false;
     }
-    
+
     /**
      * Guarda un nuevo usuario en el archivo de usuarios.
+     * 
      * @param usuario El nombre de usuario a guardar.
      */
     void guardarUsuario(String usuario) {
         archivoUsuarios = new File("src/DatosJugadores/" + "listaJugadores.txt");
-      
+
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(archivoUsuarios, true))) {
             writer.write(usuario + "\n");
         } catch (IOException e) {
@@ -245,28 +251,30 @@ import javax.sound.sampled.*;
 
     /**
      * Crea un archivo de estadísticas para un nuevo usuario.
+     * 
      * @param usuario El nombre de usuario para el archivo de estadísticas.
      */
     void crearArchivoEstadisticas(String usuario) {
-        archivo = new File("src/DatosJugadores/"+usuario +".txt");
+        archivo = new File("src/DatosJugadores/" + usuario + ".txt");
 
         if (!archivo.exists()) {
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(archivo))) {
-                String datosIniciales = "Partidas jugadas: 1"+ 
-                "\nPartidas ganadas: 0" +
-                "\nPartidas perdidas: 0" +
-                "\nPartidas abandonadas: 0";
+                String datosIniciales = "Partidas jugadas: 1" +
+                        "\nPartidas ganadas: 0" +
+                        "\nPartidas perdidas: 0" +
+                        "\nPartidas abandonadas: 0";
                 writer.write(datosIniciales);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
-    
+
     /**
-     * Muestra un mensaje de alerta cuando no se ingresa texto en el campo de usuario.
+     * Muestra un mensaje de alerta cuando no se ingresa texto en el campo de
+     * usuario.
      */
-    void sinTexto(){
+    void sinTexto() {
         botonCancelar.setVisible(false);
         botonLoguearse.setVisible(false);
         ingresarUsuario.setVisible(false);
@@ -278,7 +286,7 @@ import javax.sound.sampled.*;
     /**
      * ActionListener para aceptar el mensaje de alerta de falta de texto.
      */
-    ActionListener aceptar=(ActionEvent e)->{
+    ActionListener aceptar = (ActionEvent e) -> {
         menuAlerta.setVisible(false);
         botonAceptar.setVisible(false);
         iniciarComponentes();
@@ -287,16 +295,17 @@ import javax.sound.sampled.*;
     /**
      * Retorna al menú principal del juego.
      */
-    void retornar(){
+    void retornar() {
         new MenuPrincipal();
         this.dispose();
     }
 
     /**
      * Abre el menú de batalla del juego.
+     * 
      * @param usuario El nombre de usuario para el juego.
      */
-    void menuBatalla(String usuario){
+    void menuBatalla(String usuario) {
         new MenuBatalla(usuario);
         this.dispose();
     }

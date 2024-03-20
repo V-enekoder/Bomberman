@@ -4,15 +4,17 @@ package Juego.Personaje;
  * La clase Enemigo representa a un enemigo en el juego Bomberman.
  */
 public class Enemigo extends Personaje {
-    
+
     private Movimiento direccion; // La dirección actual del enemigo
 
     /**
-     * Crea una instancia de Enemigo con una posición inicial dada y una dirección asignada aleatoriamente.
+     * Crea una instancia de Enemigo con una posición inicial dada y una dirección
+     * asignada aleatoriamente.
      * 
      * @param x        La coordenada x inicial del enemigo.
      * @param y        La coordenada y inicial del enemigo.
-     * @param vertical Indica si el movimiento del enemigo será vertical o horizontal.
+     * @param vertical Indica si el movimiento del enemigo será vertical o
+     *                 horizontal.
      */
     public Enemigo(int x, int y, boolean vertical) {
         super(x, y); // Inicializa la posición del enemigo
@@ -22,17 +24,19 @@ public class Enemigo extends Personaje {
     /**
      * Asigna una dirección aleatoria al enemigo, vertical u horizontal.
      * 
-     * @param vertical Indica si el movimiento del enemigo será vertical o horizontal.
+     * @param vertical Indica si el movimiento del enemigo será vertical o
+     *                 horizontal.
      * @return La dirección asignada al enemigo.
      */
     private Movimiento asignarDireccion(boolean vertical) {
-        int pick = (int) (Math.random() * (Movimiento.values().length - 2)); // Selecciona un valor aleatorio para la dirección
-        if (vertical) 
+        int pick = (int) (Math.random() * (Movimiento.values().length - 2)); // Selecciona un valor aleatorio para la
+                                                                             // dirección
+        if (vertical)
             return Movimiento.values()[pick]; // Retorna una dirección vertical aleatoria
         else
             return Movimiento.values()[pick + 2]; // Retorna una dirección horizontal aleatoria
     }
-    
+
     /**
      * Obtiene la dirección actual del enemigo.
      * 
@@ -59,7 +63,7 @@ public class Enemigo extends Personaje {
                 break;
             case DERECHA:
                 direccion = Movimiento.IZQUIERDA;
-                break;        
+                break;
         }
     }
 }

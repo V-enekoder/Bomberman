@@ -27,10 +27,10 @@ public class MenuBatalla extends Menu {
     private static int colorSeleccionado;
     private static boolean seleccion = false;
     private ArrayList<Integer> colores = new ArrayList<>();
-    //private Estadisticas estadisticas = new Estadisticas();
+    // private Estadisticas estadisticas = new Estadisticas();
 
     public MenuBatalla(String nombre) {
-        this.nombre=nombre;
+        this.nombre = nombre;
         panel = new JPanel();
         panel.removeAll();
         panel.setLayout(null);
@@ -48,16 +48,17 @@ public class MenuBatalla extends Menu {
         recibirColores();
     }
 
-    private void recibirColores(){
+    private void recibirColores() {
         this.colores.clear();
         Cliente c = new Cliente();
         Packet03Informacion informacion = new Packet03Informacion();
         informacion.enviar(c);
         DatagramPacket recibido = c.recibir();
-        c.analizarPacket(recibido.getData(),recibido.getAddress(),recibido.getPort());
+        c.analizarPacket(recibido.getData(), recibido.getAddress(), recibido.getPort());
         this.colores = c.getColoresDisponibles();
     }
-        private void reproducirSonido(String ruta) {
+
+    private void reproducirSonido(String ruta) {
         try {
             File archivoSonido = new File(ruta);
             AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(archivoSonido);
@@ -68,13 +69,16 @@ public class MenuBatalla extends Menu {
             e.printStackTrace();
         }
     }
+
     @Override
+    protected void iniciarComponentes() {
+
     protected void iniciarComponentes() {
         iniciarEtiquetas();
         iniciarBotones();
     }
 
-    void iniciarEtiquetas(){
+    void iniciarEtiquetas() {
         String color = "";
 
         switch (colorSeleccionado) {
@@ -104,7 +108,7 @@ public class MenuBatalla extends Menu {
         jugador.setBounds(90, 125, 200, 16);
         jugador.setOpaque(false);
         jugador.setForeground(Color.WHITE);
-        jugador.setFont(new Font("Arial",Font.BOLD,16));
+        jugador.setFont(new Font("Arial", Font.BOLD, 16));
         panel.add(jugador);
         panel.setComponentZOrder(jugador, 0);
 
@@ -113,19 +117,19 @@ public class MenuBatalla extends Menu {
         eleccion.setOpaque(true);
         eleccion.setBackground(Color.BLACK);
         eleccion.setForeground(Color.WHITE);
-        eleccion.setFont(new Font("Arial",Font.PLAIN,16));
+        eleccion.setFont(new Font("Arial", Font.PLAIN, 16));
         eleccion.setHorizontalAlignment(SwingConstants.CENTER); // centrar texto
         panel.add(eleccion);
         panel.setComponentZOrder(eleccion, 0);
 
     }
 
-    void iniciarBotones(){
+    void iniciarBotones() {
         Map<Integer, BotonConfiguracion> botonesConfiguracion = obtenerConfiguracionBotones();
-        
-        for(int i = 0; i < 5; i++){
+
+        for (int i = 0; i < 5; i++) {
             BotonConfiguracion config = botonesConfiguracion.get(i);
-            botones[i] = crearBoton(config,i);
+            botones[i] = crearBoton(config, i);
             panel.add(botones[i]);
             panel.setComponentZOrder(botones[i], 0);
         }
@@ -133,72 +137,50 @@ public class MenuBatalla extends Menu {
         confirmar = crearBotonConfirmar();
         cancelar = crearBotonCancelar();
     }
-    
+
     private Map<Integer, BotonConfiguracion> obtenerConfiguracionBotones() {
         Map<Integer, BotonConfiguracion> botonesConfiguracion = new HashMap<>();
-        botonesConfiguracion.put(0, new BotonConfiguracion("whiteND.png", 
-            "whiteD.png", 16));
-        botonesConfiguracion.put(1, new BotonConfiguracion("blackND.png", 
-            "blackD.png", 131));
-        botonesConfiguracion.put(2, new BotonConfiguracion("redND.png", 
-            "redD.png", 245));
-        botonesConfiguracion.put(3, new BotonConfiguracion("blueND.png", 
-            "blueD.png", 360));
-        botonesConfiguracion.put(4, new BotonConfiguracion("greenND.png", 
-            "greenD.png", 473));
+        botonesConfiguracion.put(0, new BotonConfiguracion("whiteND.png",
+                "whiteD.png", 16));
+        botonesConfiguracion.put(1, new BotonConfiguracion("blackND.png",
+                "blackD.png", 131));
+        botonesConfiguracion.put(2, new BotonConfiguracion("redND.png",
+                "redD.png", 245));
+        botonesConfiguracion.put(3, new BotonConfiguracion("blueND.png",
+                "blueD.png", 360));
+        botonesConfiguracion.put(4, new BotonConfiguracion("greenND.png",
+                "greenD.png", 473));
         return botonesConfiguracion;
     }
 
-    private JButton crearBoton(BotonConfiguracion config, int i){
+    private JButton crearBoton(BotonConfiguracion config, int i) {
         JButton boton = new JButton();
         boton.setBounds(config.getX(), 314, 110, 101);
         boton.setEnabled(true);
         String imagen;
-        if(!colores.contains(i))
+        if (!colores.contains(i))
             imagen = config.getColorDisponible();
         else
-            imagen = colorSeleccionado == i ? config.getColorDisponible(): 
-                config.getColorNoDisponible();
+            imagen = colorSeleccionado == i ? config.getColorDisponible() : config.getColorNoDisponible();
         boton.setIcon(new ImageIcon(imagen));
         boton.addActionListener(cambiarColor);
         return boton;
     }
 
     /**
-     * Cambia el color seleccionado por el jugador al hacer clic en un botón de color.
+     * Cambia el color seleccionado por el jugador al hacer clic en un botón de
+     * color.
+     * 
      * @param e El evento de acción que desencadena la función.
      */
-    ActionListener cambiarColor = new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            JButton boton = (JButton) e.getSource();
-            int nuevoColor = -1;
-            for (int i = 0; i < botones.length; i++) {
-                if (boton == botones[i]) {
-                    nuevoColor = i;
-                    break;
-                }
-            }
+    ActionListener cambiarColor=new ActionListener(){@Override public void actionPerformed(ActionEvent e){JButton boton=(JButton)e.getSource();int nuevoColor=-1;for(int i=0;i<botones.length;i++){if(boton==botones[i]){nuevoColor=i;break;}}
 
-            if(colores.contains(nuevoColor)){
-                colorSeleccionado = nuevoColor;
-                for (int i = 0; i < botones.length; i++) {
-                    if (i == nuevoColor)
-                        panel.remove(botones[i]);
-                    else
-                        panel.add(botones[i]);
-                }
-            }
-            reproducirSonido("audio3.wav");
-            repintar();
-        }
-    };
-
+    if(colores.contains(nuevoColor)){colorSeleccionado=nuevoColor;for(int i=0;i<botones.length;i++){if(i==nuevoColor)panel.remove(botones[i]);else panel.add(botones[i]);}}reproducirSonido("audio3.wav");repintar();}};
 
     void repintar(){
         iniciarComponentes();
         panel.repaint();
-    }   
+    }
 
     private JButton crearBotonConfirmar() {
         JButton boton = new JButton();

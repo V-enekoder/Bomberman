@@ -24,11 +24,11 @@ import java.util.Random;
 /**
  * Clase que representa el juego Bomberman.
  */
-public class Bomberman{
+public class Bomberman {
 
     private final int TIME_STEP = 30; // Paso de tiempo del juego en milisegundos
     private Timer clockTimer; // Temporizador para controlar el paso del tiempo en el juego
-    private int contador_mejoras = 1000*30; // Contador para generar mejoras en intervalos regulares
+    private int contador_mejoras = 1000 * 30; // Contador para generar mejoras en intervalos regulares
     private boolean notificado; // Indica si el juego ya ha notificado el resultado del juego
 
     /**
@@ -46,29 +46,30 @@ public class Bomberman{
     public static void main(String[] args) {
         Bomberman juego = new Bomberman();
 
-        if(true)
-            //juego.startServer();
-        juego.startClient();
+        if (true)
+            // juego.startServer();
+            juego.startClient();
     }
 
     /**
      * Inicia el servidor del juego.
      */
-    public void startServer(){
+    public void startServer() {
         Servidor socketServidor = new Servidor(5000);
         Thread servidorThread = new Thread(socketServidor);
         servidorThread.start();
+
     }
 
     /**
      * Inicia el cliente del juego.
      */
-    public void startClient(){
+    public void startClient() {
         Cliente cliente = new Cliente();
         Thread clienteThread = new Thread(cliente);
         clienteThread.start();
     }
- 
+
     /**
      * Inicia el juego con el tablero especificado.
      * 
@@ -91,7 +92,7 @@ public class Bomberman{
      * @param tablero El tablero del juego.
      */
     private void tick(Tablero tablero) {
-        if (tablero.isGameOver() && !notificado){
+        if (tablero.isGameOver() && !notificado) {
             Cliente c = new Cliente();
             Packet05GameOver resultado = new Packet05GameOver();
             resultado.enviar(c);
@@ -99,9 +100,9 @@ public class Bomberman{
         }
 
         contador_mejoras -= 30;
-        if(contador_mejoras <= 0){
+        if (contador_mejoras <= 0) {
             tablero.generarMejoraAleatoria();
-            contador_mejoras = 1000*30;
+            contador_mejoras = 1000 * 30;
         }
 
         tablero.moverEnemigos();
@@ -110,8 +111,8 @@ public class Bomberman{
         tablero.aplicarExplosion();
         tablero.choqueconEnemigos();
         tablero.comprobarVictoria();
-        for(Jugador jugador: tablero.getJugadores())
-            if(jugador.isInmune())
+        for (Jugador jugador : tablero.getJugadores())
+            if (jugador.isInmune())
                 tablero.reducirTiempoInmunidad();
         tablero.informarSensores();
     }
@@ -121,7 +122,7 @@ public class Bomberman{
      * 
      * @param GUI La interfaz gráfica del juego.
      */
-    private void gameOver(InterfazGrafica GUI){
+    private void gameOver(InterfazGrafica GUI) {
         clockTimer.stop();
         GUI.dispose();
     }
@@ -152,4 +153,15 @@ public class Bomberman{
     public void setClockTimer(Timer clockTimer) {
         this.clockTimer = clockTimer;
     }
+
+    /*
+     * public static boolean getInicio() {
+     * return inicio;
+     * }
+     * 
+     * public static void setInicio(boolean inicio) {
+     * Bomberman.inicio = inicio;
+     * }
+     */
+
 }
