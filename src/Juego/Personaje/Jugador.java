@@ -4,7 +4,6 @@ import javax.swing.*;
 
 import Juego.Bomba;
 import Juego.ComponenteGrafico;
-//import Juego.Estadisticas;
 import Juego.Estadisticas;
 import Juego.InterfazGrafica;
 import Juego.Tablero;
@@ -13,6 +12,10 @@ import Server.UDP.Cliente;
 
 import java.awt.event.ActionEvent;
 import java.net.InetAddress;
+
+/**
+ * La clase Jugador representa a un jugador en el juego Bomberman.
+ */
 
 public class Jugador extends Personaje{
 
@@ -29,6 +32,11 @@ public class Jugador extends Personaje{
     private InetAddress direccionIP;
     private int puerto;
 	private Estadisticas datos;
+	private String control;
+
+	public String getControl() {
+		return control;
+	}
 
 	public Estadisticas getDatos() {
 		return datos;
@@ -45,6 +53,19 @@ public class Jugador extends Personaje{
 	public void setFantasma(boolean fantasma) {
 		this.fantasma = fantasma;
 	}
+
+    /**
+     * Crea una instancia de Jugador con la interfaz gráfica, el tablero y los parámetros proporcionados.
+     * 
+     * @param GUI          La interfaz gráfica del juego.
+     * @param tablero      El tablero del juego.
+     * @param posicion     La posición inicial del jugador.
+     * @param id           El identificador del jugador.
+     * @param nombre       El nombre del jugador.
+     * @param direccionIP  La dirección IP del jugador.
+     * @param puerto       El puerto del jugador.
+     * @param color        El color del jugador.
+     */
 
 	public Jugador(InterfazGrafica GUI, Tablero tablero, int[] posicion, int id,
         String nombre,InetAddress direccionIP ,int puerto, int color){
@@ -66,6 +87,12 @@ public class Jugador extends Personaje{
 			configurarControles(GUI.getBombermanComponent(), tablero);
 	}
 	
+    /**
+     * Configura los controles del jugador en la interfaz gráfica.
+     * 
+     * @param bombermanComponent El componente gráfico del jugador en la interfaz.
+     * @param tablero            El tablero del juego.
+     */
 
 	private void configurarControles(ComponenteGrafico bombermanComponent, Tablero tablero) {
 		bombermanComponent.getInputMap().put(KeyStroke.getKeyStroke("D"), "Derecha");
@@ -89,15 +116,20 @@ public class Jugador extends Personaje{
 		bombermanComponent.getActionMap().put("CerrarJuego", cerrarJuego());
 	}
 	
-	private Action cerrarJuego() {
-		return new AbstractAction() {
-			public void actionPerformed(ActionEvent e){
-				Cliente socket = new Cliente();
-				Packet01Desconexion desconexion = new Packet01Desconexion(nombre,id);
-				desconexion.enviar(socket);
-			}
-		};
-	}
+    /**
+     * Crea una acción para cerrar el juego.
+     * 
+     * @return La acción para cerrar el juego.
+     */
+    private Action cerrarJuego() {
+        return new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                Cliente socket = new Cliente();
+                Packet01Desconexion desconexion = new Packet01Desconexion(nombre, id);
+                desconexion.enviar(socket);
+            }
+        };
+    }
 
     private Action mover(Movimiento Movimiento, Tablero tablero) {
         return new AbstractAction() {
@@ -190,15 +222,29 @@ public class Jugador extends Personaje{
 		return vidas;
 	}
 
-    private void moverJugador(Movimiento movimiento,Tablero tablero) {
-		Movimiento(movimiento);
+ /**
+     * Mueve al jugador en la dirección especificada y realiza acciones relacionadas.
+     * 
+     * @param movimiento La dirección en la que se moverá el jugador.
+     * @param tablero    El tablero del juego.
+     */
+    private void moverJugador(Movimiento movimiento, Tablero tablero) {
+        // Mueve al jugador en la dirección especificada
+        Movimiento(movimiento);
+        controles(movimiento);
 
-		if(tablero.chocaconBloque(this) || tablero.chocaconBomba(this))
-			regresar(movimiento);
+        // Verifica si el jugador choca con un bloque o una bomba
+        if (tablero.chocaconBloque(this) || tablero.chocaconBomba(this))
+            regresar(movimiento);
 
-		tablero.verificarSalidaBomba();
-		tablero.choqueconMejora();
-		tablero.informarSensores();
+        // Verifica si hay alguna bomba que haya explotado y debe ser eliminada del tablero
+        tablero.verificarSalidaBomba();
+        
+        // Verifica si el jugador choca con alguna mejora
+        tablero.choqueconMejora();
+        
+        // Informa a los sensores del tablero sobre la posición actual del jugador y otras actualizaciones
+        tablero.informarSensores();
     }
 
 	public int getId() {

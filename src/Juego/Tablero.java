@@ -1,13 +1,21 @@
 package Juego;
 
+import java.io.File;
 import java.util.*;
+
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 
 import Juego.Mejora.*;
 import Juego.Packet.Packet02Derrota;
 import Juego.Personaje.*;
 import Juego.Personaje.Personaje.Movimiento;
 import Server.UDP.Cliente;
-
+/**
+ * La clase Tablero representa el tablero de juego donde se desarrolla la partida de Bomberman.
+ * Contiene información sobre las celdas, jugadores, enemigos, bombas, mejoras y explosiones.
+ */
 public class Tablero {
     private final static double PROB_PARED = 0.4;
     private final Celda[][] celdas;
@@ -22,18 +30,19 @@ public class Tablero {
     private Collection<Explosion> ubicacionExplosiones= new ArrayList<>();
     private boolean GameOver = false;
 	ArrayList<int[]> reserva;
-	//private Cliente socket;
 
     public Tablero(int ancho, int alto, int enemigos){
 		this.ancho = ancho;
 		this.alto = alto;
 		this.celdas = new Celda[alto][ancho];
 		this.reserva = reservarCasillas();
-		//this.socket = new Cliente();
 		definirCasillas();
 		crearEnemigos(enemigos);
 	}
-	
+	    /**
+     * Método para reservar las casillas especiales del tablero.
+     * @return Una lista de arreglos de enteros que representan las coordenadas de las casillas reservadas.
+     */
 	private ArrayList<int[]> reservarCasillas() {
 		ArrayList<int[]> reserva = new ArrayList<>();
 	
@@ -62,7 +71,9 @@ public class Tablero {
 		}
 		return reserva;
 	}
-
+    /**
+     * Método para definir las casillas del tablero.
+     */
 	private void definirCasillas() {
 		// Marcar todas las casillas como piso
 		for (int i = 0; i < alto; i++) {
@@ -105,6 +116,11 @@ public class Tablero {
 		}
 		return false;
 	}
+    /**
+     * Método para crear enemigos en el tablero.
+     * @param cantidadEnemigos La cantidad de enemigos a crear.
+     */
+
     private void crearEnemigos (int cantidadEnemigos){
 		int enemigos_generados = 0;
 		int x,y;
@@ -186,7 +202,10 @@ public class Tablero {
 	public void agregarJugador(Jugador jugador){
 		jugadores.add(jugador);
 	}
-
+/**
+ * Elimina un jugador del tablero utilizando su nombre como identificador.
+ * @param nombre El nombre del jugador a eliminar.
+ */
 	public void eliminarJugador(String nombre){
 		int posicion = 0;
 		for(Jugador j: jugadores){
@@ -196,11 +215,18 @@ public class Tablero {
 		}
 		jugadores.remove(posicion);
 	}
-
+/**
+ * Elimina un jugador del tablero.
+ * @param jugador El jugador a eliminar.
+ */
 	public void eliminarJugador(Jugador jugador){
 		jugadores.remove(jugador);
 	}
 
+	/**
+ * Mueve todos los enemigos en el tablero en la dirección actual de cada uno.
+ * Si un enemigo choca con un bloque o una bomba, cambia su dirección.
+ */
 
     public void moverEnemigos(){
 
@@ -225,7 +251,11 @@ public class Tablero {
 				e.cambiarDireccion();
 		}
 	}
-	
+	/**
+ * Verifica si un enemigo choca con un bloque en su proxima posición.
+ * @param e El enemigo que se está moviendo.
+ * @return true si el enemigo choca con un bloque, false de lo contrario.
+ */
 	public boolean chocaconBloque(Enemigo e){
 		int fila = e.getUbicacionFila();  
 		int columna = e.getUbicacionColumna();
@@ -240,6 +270,11 @@ public class Tablero {
 		return false;
     }
 	
+	/**
+ * Verifica si un jugador choca con un bloque en su proxima posición.
+ * @param jugador El jugador que se está moviendo.
+ * @return true si el jugador choca con un bloque, false de lo contrario.
+ */
 	public boolean chocaconBloque(Jugador jugador){
 		int fila = jugador.getUbicacionFila();  
 		int columna = jugador.getUbicacionColumna();
@@ -262,6 +297,14 @@ public class Tablero {
 		return false;
 	}
 	
+/**
+ * Verifica si hay interacción entre un personaje y una casilla en particular en el tablero.
+ * @param personaje El personaje que se está moviendo.
+ * @param fila La fila de la casilla.
+ * @param columna La columna de la casilla.
+ * @return true si hay interacción, false de lo contrario.
+ */
+
 	private boolean hayInteraccion(Personaje personaje,int fila, int columna) {
 		int x = personaje.getX();
 		int y = personaje.getY();
@@ -279,7 +322,11 @@ public class Tablero {
 		else
 			return true;
     }
-
+/**
+ * Verifica si un jugador choca con alguna bomba en su proxima posición.
+ * @param jugador El jugador que se está moviendo.
+ * @return true si el jugador choca con alguna bomba, false de lo contrario.
+ */
     public boolean chocaconBomba(Jugador jugador){ 
 		int x,y;
 		for (Bomba bomb : bombas) {
@@ -291,7 +338,11 @@ public class Tablero {
 		}
 		return false;
     }
-
+/**
+ * Verifica si un enemigo choca con alguna bomba en su proxima posición.
+ * @param enemigo El enemigo que se está moviendo.
+ * @return true si el enemigo choca con alguna bomba, false de lo contrario.
+ */
 	public boolean chocaconBomba(Enemigo enemigo){
 		int x, y;
 		for (Bomba bomb : bombas){
@@ -303,6 +354,14 @@ public class Tablero {
 		return false;
     }
 
+
+/**
+ * Verifica si hay choque entre un personaje y una posición en particular.
+ * @param personaje El personaje que se está moviendo.
+ * @param x La coordenada x de la posición.
+ * @param y La coordenada y de la posición.
+ * @return true si hay choque, false de lo contrario.
+ */
 	private boolean hayChoque(Personaje personaje, int x, int y){
 		double distancia_horizontal = personaje.getX() - x - ComponenteGrafico.getSquareMiddle();
 		double distancia_vertical = personaje.getY() - y - ComponenteGrafico.getSquareMiddle();
@@ -311,7 +370,12 @@ public class Tablero {
 			return true;
 		return false;
     }
-	
+	/**
+ * Avanza la cuenta regresiva de todas las bombas en el tablero.
+ * Si el tiempo restante de una bomba llega a cero, se agrega a la lista de explosiones y se elimina de la lista de bombas.
+ * 
+ * @return Una colección de enteros que representa los índices de las bombas que deben ser eliminadas de la lista de bombas.
+ */
 	public void avanzarCuentaRegresiva(){
 		Collection<Integer> bombas_por_Eliminar = new ArrayList<>();
 		explosiones.clear();
@@ -327,7 +391,12 @@ public class Tablero {
 		for (int i: bombas_por_Eliminar)
 			bombas.remove(i);
 	}
-	
+	/**
+ * Genera y gestiona las explosiones causadas por las bombas en el tablero.
+ * Reduce la duración de las explosiones existentes y elimina aquellas cuya duración llega a cero.
+ * Para cada bomba que explota, determina las direcciones en las que se propagará la explosión y procesa cada celda afectada.
+ * 
+ */
 	public void generarExplosion(){
 		Collection<Explosion> explosionesporEliminar = new ArrayList<>();
 		for (Explosion e:ubicacionExplosiones) {
@@ -358,7 +427,17 @@ public class Tablero {
 			}
 		}
 	}
-	
+	/**
+ * Procesa la explosión en la posición dada por fila y columna.
+ * Verifica si hay una mejora en esa posición y la elimina si la encuentra.
+ * Actualiza el estado de la celda en la posición dada y agrega una explosión en esa posición si no es una pared.
+ * Además, si la celda es un bloque, lo destruye y genera una nueva mejora en esa posición.
+ * Finalmente, reduce el tiempo restante de cualquier bomba que esté en esa posición a 1.
+ * 
+ * @param fila     La fila donde ocurrió la explosión.
+ * @param columna  La columna donde ocurrió la explosión.
+ * @return true si la celda en la posición dada está abierta (no es una pared), false de lo contrario.
+ */
 	private boolean procesarExplosion(int fila, int columna){
 		boolean open = true;
 
@@ -391,7 +470,13 @@ public class Tablero {
 		}
 		return open;
 	}
-
+/**
+ * Genera una mejora en una posición específica del tablero dada por fila y columna.
+ * La mejora se elige aleatoriamente entre cuatro opciones y se agrega a la colección de mejoras.
+ * 
+ * @param fila     La fila donde se generará la mejora.
+ * @param columna  La columna donde se generará la mejora.
+ */
 	private void generarMejora(int fila, int columna) {
 		int mejora = generarNumeroAleatorio(1, 10);
 		int squareMiddle = ComponenteGrafico.getSquareMiddle();
@@ -412,7 +497,10 @@ public class Tablero {
 				break;
 		}
 	}
-
+/**
+ * Genera una mejora aleatoria en una posición del tablero que sea de tipo PISO.
+ * La mejora se elige aleatoriamente entre cuatro opciones y se agrega a la colección de mejoras.
+ */
 	public void generarMejoraAleatoria(){
 		int fila,columna;
 		do{
@@ -439,7 +527,13 @@ public class Tablero {
 				break;
 		}
 	}
-
+/**
+ * Aplica el efecto de la explosión en el tablero.
+ * Reduce las vidas de los jugadores que se encuentren dentro del área de la explosión y que no estén inmunes.
+ * Si un jugador se queda sin vidas, aumenta el contador de partidas perdidas, guarda los datos del jugador,
+ * lo convierte en un fantasma y envía un paquete de derrota al servidor.
+ * Elimina a los enemigos que se encuentren dentro del área de la explosión.
+ */
 	public void aplicarExplosion(){
 		int x,y;
 		for (Explosion explosion:ubicacionExplosiones){
@@ -480,7 +574,12 @@ public class Tablero {
     public void agregarSensor(Sensor sensor) {
 		sensores.add(sensor);
     }
-
+/**
+ * Verifica si hay choque entre los jugadores y los enemigos.
+ * Si un jugador colisiona con un enemigo y no está inmune ni es un fantasma, reduce sus vidas.
+ * Si el jugador se queda sin vidas, envía un paquete de derrota al servidor, convierte al jugador en un fantasma
+ * e imprime un mensaje indicando que el jugador ha muerto.
+ */
     public void choqueconEnemigos(){
 		int x,y;
 		for (Enemigo enemy : enemigos){
@@ -501,23 +600,43 @@ public class Tablero {
 			}
 		}
     }
-
-	public void choqueconMejora(){
-		int x,y;
-		Iterator<Mejora> iteradorMejoras = mejoras.iterator();
-		while (iteradorMejoras.hasNext()) {
-			Mejora powerup = iteradorMejoras.next();
-			x = powerup.getColumna() - ComponenteGrafico.getSquareMiddle();
-			y = powerup.getFila() - ComponenteGrafico.getSquareMiddle();
-			for (Jugador jugador : jugadores) {
-				if (hayChoque(jugador, x, y) && !jugador.isFantasma()){
-					powerup.agregarMejora(jugador);
-					iteradorMejoras.remove();
-					break;
-				}
-			}
+/**
+ * Reproduce un archivo de sonido ubicado en la ruta especificada.
+ * 
+ * @param ruta la ruta del archivo de sonido a reproducir
+ */
+	private void reproducirSonido(String ruta) {
+		try {
+			File archivoSonido = new File(ruta);
+			AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(archivoSonido);
+			Clip clip = AudioSystem.getClip();
+			clip.open(audioInputStream);
+			clip.start();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
+/**
+ * Comprueba si algún jugador ha chocado con una mejora y aplica la mejora al jugador si corresponde.
+ * Reproduce un sonido cuando se aplica una mejora.
+ */
+public void choqueconMejora() {
+    int x, y;
+    Iterator<Mejora> iteradorMejoras = mejoras.iterator();
+    while (iteradorMejoras.hasNext()) {
+        Mejora powerup = iteradorMejoras.next();
+        x = powerup.getColumna() - ComponenteGrafico.getSquareMiddle();
+        y = powerup.getFila() - ComponenteGrafico.getSquareMiddle();
+        for (Jugador jugador : jugadores) {
+            if (hayChoque(jugador, x, y) && !jugador.isFantasma()) {
+                powerup.agregarMejora(jugador);
+                iteradorMejoras.remove();
+                reproducirSonido("audio7.wav");
+                break;
+            }
+        }
+    }
+}
 	
     public boolean tieneBomba(int fila, int columna){
 		for (Bomba bomba: bombas) {
@@ -526,7 +645,9 @@ public class Tablero {
 		}
 		return false;
     }
-
+/**
+ * Verifica si algún jugador ha salido del radio de explosión de una bomba y actualiza su estado.
+ */
 	public void verificarSalidaBomba(){
 		int x,y;
 		for (Bomba bomb: bombas){
@@ -539,7 +660,9 @@ public class Tablero {
 			}
 		}
 	}
-	
+	/**
+ * Reduce el tiempo de inmunidad de los jugadores y los restaura si el tiempo de inmunidad llega a cero.
+ */
 	public void reducirTiempoInmunidad() {
 		for(Jugador jugador: jugadores){
 			jugador.reducirTiempoInmunidad();
@@ -549,7 +672,10 @@ public class Tablero {
 			}
 		}
 	}
-
+/**
+ * Verifica si algún jugador ha ganado la partida, es decir, si todos los jugadores, excepto uno, son fantasmas.
+ * En ese caso, establece el estado de GameOver como true.
+ */
 	public void comprobarVictoria(){
 		int fantasmas = 0;
 		for(Jugador jugador: jugadores){
@@ -569,4 +695,23 @@ public class Tablero {
 		return bombasPuestas;
     }
 
+	public static double getProbPared() {
+		return PROB_PARED;
+	}
+
+	public Celda[][] getCeldas() {
+		return celdas;
+	}
+
+	public Collection<Sensor> getSensores() {
+		return sensores;
+	}
+
+	public Collection<Bomba> getExplosiones() {
+		return explosiones;
+	}
+
+	public ArrayList<int[]> getReserva() {
+		return reserva;
+	}
 }

@@ -1,17 +1,18 @@
 package graficos;
 
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import javax.swing.*;
 
-import Juego.Bomberman;
 import Juego.Packet.Packet03Informacion;
 import Juego.Packet.Packet04Actualizacion;
-import Juego.Personaje.Jugador;
 import Server.UDP.Cliente;
-//import Juego.Estadisticas;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.net.DatagramPacket;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,7 +57,17 @@ public class MenuBatalla extends Menu {
         c.analizarPacket(recibido.getData(),recibido.getAddress(),recibido.getPort());
         this.colores = c.getColoresDisponibles();
     }
-
+        private void reproducirSonido(String ruta) {
+        try {
+            File archivoSonido = new File(ruta);
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(archivoSonido);
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioInputStream);
+            clip.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     @Override
     protected void iniciarComponentes() {
         iniciarEtiquetas();
@@ -153,6 +164,10 @@ public class MenuBatalla extends Menu {
         return boton;
     }
 
+    /**
+     * Cambia el color seleccionado por el jugador al hacer clic en un botón de color.
+     * @param e El evento de acción que desencadena la función.
+     */
     ActionListener cambiarColor = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -174,9 +189,11 @@ public class MenuBatalla extends Menu {
                         panel.add(botones[i]);
                 }
             }
+            reproducirSonido("audio3.wav");
             repintar();
         }
     };
+
 
     void repintar(){
         iniciarComponentes();
@@ -189,7 +206,10 @@ public class MenuBatalla extends Menu {
         boton.setEnabled(true);
         boton.setIcon(new ImageIcon("confirmar.png"));
         panel.add(boton);
-        boton.addActionListener(e -> confirmar());
+        boton.addActionListener(e -> {
+            confirmar();
+            reproducirSonido("audio1.wav");
+        });
         return boton;
     }
 
@@ -199,7 +219,10 @@ public class MenuBatalla extends Menu {
         boton.setEnabled(true);
         boton.setIcon(new ImageIcon("botonCancelar.png"));
         panel.add(boton);
-        boton.addActionListener(e -> cancelar());
+        boton.addActionListener(e -> {
+            cancelar();
+            reproducirSonido("audio4.wav");
+        });
         return boton;
     }
 
@@ -209,13 +232,14 @@ public class MenuBatalla extends Menu {
     }
 
     void confirmar(){
-        //estadisticas.aumentarPartidasJugadas();
-        //estadisticas.guardar(nombre+".txt"/*+"_estadisticas.txt"*/);
         enviarColores();
         seleccion = true;
         this.dispose();
     }
 
+    /**
+     * Envia los colores seleccionados por los jugadores al servidor para su actualización.
+     */
     private void enviarColores(){
         for(Integer i: colores){
             if(i == colorSeleccionado){
@@ -253,5 +277,4 @@ public class MenuBatalla extends Menu {
     public static void setColorSeleccionado(int colorSeleccionado) {
         MenuBatalla.colorSeleccionado = colorSeleccionado;
     }
-
 }

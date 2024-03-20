@@ -1,4 +1,4 @@
 Partidas jugadas: 1
-Partidas ganadas: 0
-Partidas perdidas: 0
-Partidas abandonadas: 1
+Partidas ganadas: 3
+Partidas perdidas: 1
+Partidas abandonadas: 6

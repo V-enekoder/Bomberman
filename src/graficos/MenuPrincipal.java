@@ -5,10 +5,25 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import java.io.File;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+
+/**
+ * Esta clase representa el menú principal del juego Bomberman.
+ * Desde este menú, los usuarios pueden acceder a otras funciones como iniciar una batalla, ver estadísticas o ver información.
+ */
+
 public class MenuPrincipal extends Menu{
 
     private JLabel boton_estadisticas, boton_info;
     private JButton botonbatalla, botoninfo, botonestadisticas;
+    private Clip clip;
+
+    /**
+     * Constructor de la clase MenuPrincipal.
+     * Configura y muestra la ventana del menú principal del juego.
+     */
 
     public MenuPrincipal(){
         setSize(616, 639);
@@ -87,7 +102,11 @@ public class MenuPrincipal extends Menu{
 
     }
 
-    ActionListener iniciarBatalla = new ActionListener() {
+    /**
+     * ActionListener para iniciar una batalla en el juego.
+     */
+    
+     ActionListener iniciarBatalla = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
             botonbatalla.setVisible(false);
@@ -95,16 +114,26 @@ public class MenuPrincipal extends Menu{
             botoninfo.setVisible(false);
             background.setVisible(false);
             System.out.println("game.log_startLogueo");
+            reproducirSonido("audio1.wav");
             respuesta = 1;
             respuestaEstablecida = true;
             MenuLogueo();
         }
     };
+
+    /**
+     * Abre el menú de logueo del juego.
+     */
+
     void MenuLogueo(){
         new MenuLogueo();
         this.dispose();
     }
 
+    /**
+     * ActionListener para ver las estadísticas del juego.
+     */
+    
     ActionListener verEstadisticas = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -113,15 +142,35 @@ public class MenuPrincipal extends Menu{
             botoninfo.setVisible(false);
             background.setVisible(false);
             System.out.println("game.log_viewStats");
+            reproducirSonido("audio.wav");
             MenuEstadisticas();
         }
     };
+
+    /**
+     * Reproduce un archivo de sonido ubicado en la ruta especificada.
+     * 
+     * @param ruta La ruta del archivo de sonido a reproducir.
+     */
+    
+     private void reproducirSonido(String ruta) {
+        try {
+            File archivoSonido = new File(ruta);
+            clip = AudioSystem.getClip();
+            clip.open(AudioSystem.getAudioInputStream(archivoSonido));
+            clip.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     
     void MenuEstadisticas(){
         new MenuEstadisticas();
         this.dispose();
     }
-
+    /**
+     * ActionListener para ver la información del juego.
+     */
     ActionListener verInfo = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -130,10 +179,10 @@ public class MenuPrincipal extends Menu{
             botoninfo.setVisible(false);
             background.setVisible(false);
             System.out.println("game.log_viewInfo");
+            reproducirSonido("audio.wav");
             menuInfo();
         }
     };
-
     void menuInfo(){
         new MenuInfo();
         this.dispose();

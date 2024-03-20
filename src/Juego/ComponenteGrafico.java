@@ -5,6 +5,8 @@ import javax.swing.*;
 import Juego.Mejora.Mejora;
 import Juego.Personaje.Enemigo;
 import Juego.Personaje.Jugador;
+import Juego.Personaje.Personaje;
+import Juego.Personaje.Personaje.Movimiento;
 import Juego.Personaje.Jugador;
 
 import java.awt.*;
@@ -36,6 +38,9 @@ public class ComponenteGrafico extends JComponent implements Sensor{
     private final Tablero tablero;
     private final AbstractMap<Celda, Color> mapaColores;
 	private final Map<Jugador, JLabel> vidasLabels = new HashMap<>();
+	private final Map<Jugador, JLabel> nombreJugadors = new HashMap<>();
+	private int spriteContador=0;
+	private JLabel nombreJugador;
 
     public ComponenteGrafico(Tablero tablero) {
 		this.tablero = tablero;
@@ -160,21 +165,159 @@ public class ComponenteGrafico extends JComponent implements Sensor{
 		for (Jugador jugador : jugadores) {
 			Image imagen = null;
 			
+			String movimientoJugador = "ESTATICO";
+			movimientoJugador=Personaje.getJugador();
+
 			switch (jugador.getColor()) {
 				case 0:
+				switch (movimientoJugador){
+					case "ESTATICO":
 					imagen = new ImageIcon("p_white_estatico.png").getImage();
 					break;
+					case "ABAJO":
+					spriteContador++;
+					if (spriteContador<=20) { imagen = new ImageIcon("p_white_abajo1.png").getImage(); } 
+					if(spriteContador>20) { imagen = new ImageIcon("p_white_abajo2.png").getImage(); }
+					if(spriteContador>40) {spriteContador=0; }
+					break;
+					case "ARRIBA":
+					spriteContador++;
+					if (spriteContador<=20) { imagen = new ImageIcon("p_white_arriba1.png").getImage(); } 
+					if(spriteContador>20) { imagen = new ImageIcon("p_white_arriba2.png").getImage(); }
+					if(spriteContador>40) {spriteContador=0; }
+					break;
+					case "IZQUIERDA":
+					spriteContador++;
+					if (spriteContador<=20) { imagen = new ImageIcon("p_white_izquierda1.png").getImage(); } 
+					if(spriteContador>20) { imagen = new ImageIcon("p_white_izquierda2.png").getImage(); }
+					if(spriteContador>40) {spriteContador=0; }
+					break;
+					case "DERECHA":
+					spriteContador++;
+					if (spriteContador<=20) { imagen = new ImageIcon("p_white_derecha1.png").getImage(); } 
+					if(spriteContador>20) { imagen = new ImageIcon("p_white_derecha2.png").getImage(); }
+					if(spriteContador>40) {spriteContador=0; }
+				}
+					break;
 				case 1:
+				switch (movimientoJugador){
+					case "ESTATICO":
 					imagen = new ImageIcon("p_black_estatico.png").getImage();
 					break;
+					case "ABAJO":
+					spriteContador++;
+					if (spriteContador<=20) { imagen = new ImageIcon("p_black_abajo1.png").getImage(); } 
+					if(spriteContador>20) { imagen = new ImageIcon("p_black_abajo2.png").getImage(); }
+					if(spriteContador>40) {spriteContador=0; }
+					break;
+					case "ARRIBA":
+					spriteContador++;
+					if (spriteContador<=20) { imagen = new ImageIcon("p_black_arriba1.png").getImage(); } 
+					if(spriteContador>20) { imagen = new ImageIcon("p_black_arriba2.png").getImage(); }
+					if(spriteContador>40) {spriteContador=0; }
+					break;
+					case "IZQUIERDA":
+					spriteContador++;
+					if (spriteContador<=20) { imagen = new ImageIcon("p_black_izquierda1.png").getImage(); } 
+					if(spriteContador>20) { imagen = new ImageIcon("p_black_izquierda2.png").getImage(); }
+					if(spriteContador>40) {spriteContador=0; }
+					break;
+					case "DERECHA":
+					spriteContador++;
+					if (spriteContador<=20) { imagen = new ImageIcon("p_black_derecha1.png").getImage(); } 
+					if(spriteContador>20) { imagen = new ImageIcon("p_black_derecha2.png").getImage(); }
+					if(spriteContador>40) {spriteContador=0; }
+				}
+				break;
 				case 2:
+				switch (movimientoJugador){
+					case "ESTATICO":
 					imagen = new ImageIcon("p_red_estatico.png").getImage();
 					break;
+					case "ABAJO":
+					spriteContador++;
+					if (spriteContador<=20) { imagen = new ImageIcon("p_red_abajo1.png").getImage(); } 
+					if(spriteContador>20) { imagen = new ImageIcon("p_red_abajo2.png").getImage(); }
+					if(spriteContador>40) {spriteContador=0; }
+					break;
+					case "ARRIBA":
+					spriteContador++;
+					if (spriteContador<=20) { imagen = new ImageIcon("p_red_arriba1.png").getImage(); } 
+					if(spriteContador>20) { imagen = new ImageIcon("p_red_arriba2.png").getImage(); }
+					if(spriteContador>40) {spriteContador=0; }
+					break;
+					case "IZQUIERDA":
+					spriteContador++;
+					if (spriteContador<=20) { imagen = new ImageIcon("p_red_izquierda1.png").getImage(); } 
+					if(spriteContador>20) { imagen = new ImageIcon("p_red_izquierda2.png").getImage(); }
+					if(spriteContador>40) {spriteContador=0; }
+					break;
+					case "DERECHA":
+					spriteContador++;
+					if (spriteContador<=20) { imagen = new ImageIcon("p_red_derecha1.png").getImage(); } 
+					if(spriteContador>20) { imagen = new ImageIcon("p_red_derecha2.png").getImage(); }
+					if(spriteContador>40) {spriteContador=0; }
+				}
+					break;
 				case 3:
+				switch (movimientoJugador){
+					case "ESTATICO":
 					imagen = new ImageIcon("p_blue_estatico.png").getImage();
 					break;
+					case "ABAJO":
+					spriteContador++;
+					if (spriteContador<=20) { imagen = new ImageIcon("p_blue_abajo1.png").getImage(); } 
+					if(spriteContador>20) { imagen = new ImageIcon("p_blue_abajo2.png").getImage(); }
+					if(spriteContador>40) {spriteContador=0; }
+					break;
+					case "ARRIBA":
+					spriteContador++;
+					if (spriteContador<=20) { imagen = new ImageIcon("p_blue_arriba1.png").getImage(); } 
+					if(spriteContador>20) { imagen = new ImageIcon("p_blue_arriba2.png").getImage(); }
+					if(spriteContador>40) {spriteContador=0; }
+					break;
+					case "IZQUIERDA":
+					spriteContador++;
+					if (spriteContador<=20) { imagen = new ImageIcon("p_blue_izquierda1.png").getImage(); } 
+					if(spriteContador>20) { imagen = new ImageIcon("p_blue_izquierda2.png").getImage(); }
+					if(spriteContador>40) {spriteContador=0; }
+					break;
+					case "DERECHA":
+					spriteContador++;
+					if (spriteContador<=20) { imagen = new ImageIcon("p_blue_derecha1.png").getImage(); } 
+					if(spriteContador>20) { imagen = new ImageIcon("p_blue_derecha2.png").getImage(); }
+					if(spriteContador>40) {spriteContador=0; }
+				}
+					break;
 				case 4:
+				switch (movimientoJugador){
+					case "ESTATICO":
 					imagen = new ImageIcon("p_green_estatico.png").getImage();
+					break;
+					case "ABAJO":
+					spriteContador++;
+					if (spriteContador<=20) { imagen = new ImageIcon("p_green_abajo1.png").getImage(); } 
+					if(spriteContador>20) { imagen = new ImageIcon("p_green_abajo2.png").getImage(); }
+					if(spriteContador>40) {spriteContador=0; }
+					break;
+					case "ARRIBA":
+					spriteContador++;
+					if (spriteContador<=20) { imagen = new ImageIcon("p_green_arriba1.png").getImage(); } 
+					if(spriteContador>20) { imagen = new ImageIcon("p_green_arriba2.png").getImage(); }
+					if(spriteContador>40) {spriteContador=0; }
+					break;
+					case "IZQUIERDA":
+					spriteContador++;
+					if (spriteContador<=20) { imagen = new ImageIcon("p_green_izquierda1.png").getImage(); } 
+					if(spriteContador>20) { imagen = new ImageIcon("p_green_izquierda2.png").getImage(); }
+					if(spriteContador>40) {spriteContador=0; }
+					break;
+					case "DERECHA":
+					spriteContador++;
+					if (spriteContador<=20) { imagen = new ImageIcon("p_green_derecha1.png").getImage(); } 
+					if(spriteContador>20) { imagen = new ImageIcon("p_green_derecha2.png").getImage(); }
+					if(spriteContador>40) {spriteContador=0; }
+				}
 					break;
 			}
 	
@@ -239,17 +382,35 @@ public class ComponenteGrafico extends JComponent implements Sensor{
 	}
 
 	private void pintarBomba(Bomba bomba, Graphics g2d) {
-		// Cargar la imagen desde el archivo "bomba.png"
-		ImageIcon icono = new ImageIcon("icon_bomb.png");
-		Image imagen = icono.getImage();
+		// Cargar la imagen desde el archivo "bomba.gif"
+		ImageIcon gifIcon = new ImageIcon("bomba.gif");
+		Image gifImage = gifIcon.getImage();
 	
 		// Obtener las coordenadas de la bomba
 		int bombX = tablero.transfromarAPixel(bomba.getColumna());
 		int bombY = tablero.transfromarAPixel(bomba.getFila());
 	
+		// Definir el nuevo tamaño con valores decimales
+		double factorEscala = 2.3; // Puedes ajustar el factor de escala según sea necesario
+		double nuevoAnchoDouble = gifImage.getWidth(null) * factorEscala;
+		double nuevoAltoDouble = gifImage.getHeight(null) * factorEscala;
+	
+		// Convertir los valores decimales a enteros
+		int nuevoAncho = (int) nuevoAnchoDouble;
+		int nuevoAlto = (int) nuevoAltoDouble;
+	
+		// Crear una imagen compatible con transparencia
+		BufferedImage imagenCompatible = new BufferedImage(nuevoAncho, nuevoAlto, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g2dImagen = imagenCompatible.createGraphics();
+	
+		// Redimensionar la imagen y dibujarla en la imagen compatible
+		g2dImagen.drawImage(gifImage, 0, 0, nuevoAncho, nuevoAlto, null);
+		g2dImagen.dispose();
+	
 		// Dibujar la imagen de la bomba en la posición específica
-		g2d.drawImage(imagen, bombX, bombY, null);
+		g2d.drawImage(imagenCompatible, bombX, bombY, null);
 	}
+	
 
 	private void pintarExplosion(Explosion explosion, Graphics2D g2d) {
 		// Cargar la imagen desde el archivo "fuego.png"
@@ -270,28 +431,41 @@ public class ComponenteGrafico extends JComponent implements Sensor{
 		if (vidasLabel != null) {
 			this.remove(vidasLabel);
 		}
+
+		JLabel nombreJugador = nombreJugadors.remove(jugador);
+		if (nombreJugador != null) {
+			this.remove(nombreJugador);
+		}
 	
 		// Configurar el JLabel con la cantidad de vidas
 		vidasLabel = new JLabel("Vidas: " + jugador.getVidas());
 		vidasLabel.setForeground(Color.WHITE);
 		vidasLabel.setFont(new Font("Arial", Font.BOLD, 12));
+
+		nombreJugador = new JLabel(jugador.getNombre());
+		nombreJugador.setForeground(Color.WHITE);
+		nombreJugador.setFont(new Font("Arial", Font.BOLD, 12));
 	
 		int jugadorX = jugador.getX() - CHARACTER_ADJUSTMENT_FOR_PAINT + 2;
 		int jugadorY = jugador.getY() - CHARACTER_ADJUSTMENT_FOR_PAINT - 20;
 	
 		// Establecer la posición del JLabel en el componente gráfico
 		vidasLabel.setBounds(jugadorX, jugadorY, 60, 20);
+		nombreJugador.setBounds(jugadorX, jugadorY-13, 60, 20);
 	
 		// Agregar el JLabel al componente gráfico
 		this.add(vidasLabel);
+		this.add(nombreJugador);
 	
 		// Actualizar el mapeo de vidasLabels
 		vidasLabels.put(jugador, vidasLabel);
+		nombreJugadors.put(jugador, nombreJugador);
 	}
 
 
 	private void actualizarVidasLabel(Jugador jugador) {
 		JLabel vidasLabel = vidasLabels.get(jugador);
+		JLabel nombreJugador = nombreJugadors.get(jugador);
 	
 		if (vidasLabel == null) {
 			// Si el JLabel no existe, crear uno nuevo
@@ -299,17 +473,35 @@ public class ComponenteGrafico extends JComponent implements Sensor{
 			vidasLabels.put(jugador, vidasLabel);
 			this.add(vidasLabel);
 		}
+
+		if(nombreJugador==null){
+			// Si el JLabel no existe, crear uno nuevo
+			nombreJugador = new JLabel();
+			nombreJugadors.put(jugador, nombreJugador);
+			this.add(nombreJugador);
+		}
 	
 		// Configurar el JLabel con la cantidad de vidas
 		vidasLabel.setText("Vidas: " + jugador.getVidas());
 		vidasLabel.setForeground(Color.WHITE); // Configura el color del texto
 		vidasLabel.setFont(new Font("Arial", Font.BOLD, 12)); // Configura la fuente del texto
+
+		nombreJugador = new JLabel(jugador.getNombre());
+		nombreJugador.setForeground(Color.WHITE);
+		nombreJugador.setFont(new Font("Arial", Font.BOLD, 12));
 	
 		int jugadorX = jugador.getX() - CHARACTER_ADJUSTMENT_FOR_PAINT + 2;
 		int jugadorY = jugador.getY() - CHARACTER_ADJUSTMENT_FOR_PAINT - 20;
+
+		vidasLabel.setBounds(jugadorX, jugadorY, 60, 20);
+		nombreJugador.setBounds(jugadorX, jugadorY-13, 60, 20);
+
 	
 		// Establecer la posición del JLabel en el componente gráfico
 		vidasLabel.setLocation(jugadorX, jugadorY); // Actualiza la posición directamente
 		vidasLabel.setSize(60, 20); // Ajusta el tamaño según sea necesario
+
+		nombreJugador.setLocation(jugadorX, jugadorY); // Actualiza la posición directamente
+		nombreJugador.setSize(60, 20); // Ajusta el tamaño según sea necesario
 	}
 }

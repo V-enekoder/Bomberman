@@ -2,8 +2,6 @@ package graficos;
 
 import javax.swing.*;
 
-//import Juego.Estadisticas;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -11,8 +9,14 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import javax.sound.sampled.*;
 
-public class MenuLogueo extends Menu{
+/**
+ * Esta clase representa el menú de logueo en el juego Bomberman.
+ * Permite a los usuarios ingresar y verificar sus credenciales.
+ */
+
+ public class MenuLogueo extends Menu {
 
     private JLabel verificacion, menuAlerta;
     private JButton botonCancelar, botonLoguearse, botonAceptar;
@@ -21,14 +25,26 @@ public class MenuLogueo extends Menu{
     private static File archivoUsuarios;
     private static File archivo;
 
+    /**
+     * Obtiene el texto ingresado en el campo de texto de usuario.
+     * @return El texto ingresado.
+     */
     public static String getTextoIngresado() {
         return textoIngresado;
     }
 
+    /**
+     * Obtiene el campo de texto de ingreso de usuario.
+     * @return El campo de texto de ingreso de usuario.
+     */
     public JTextField getIngresarUsuario() {
         return ingresarUsuario;
     }
 
+    /**
+     * Constructor de la clase MenuLogueo.
+     * Configura y muestra la ventana del menú de logueo.
+     */
     public MenuLogueo(){
         panel = new JPanel();
         panel.removeAll();
@@ -115,13 +131,37 @@ public class MenuLogueo extends Menu{
         botonAceptar.addActionListener(aceptar);
 
     }
+
+    /**
+     * ActionListener para volver al menú principal.
+     */
     ActionListener volverMenuPrincipal = (ActionEvent e)->{
+        reproducirSonido("audio2.wav");
         botonCancelar.setVisible(false);
         botonLoguearse.setVisible(false);
         background.setVisible(false);
         retornar();
     };
 
+    /**
+     * Reproduce un sonido desde un archivo de audio.
+     * @param ruta La ruta del archivo de audio.
+     */
+    private void reproducirSonido(String ruta) {
+        try {
+            File archivoSonido = new File(ruta);
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(archivoSonido);
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioInputStream);
+            clip.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * ActionListener para verificar el usuario ingresado.
+     */
     ActionListener verificarUsuario = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent ae) {
@@ -135,12 +175,12 @@ public class MenuLogueo extends Menu{
             if (verificarUsuario(textoIngresado)) {
                 verificacion.setText("El usuario: " + ingresarUsuario.getText() + " ha sido verificado con éxito.");
                 System.out.println("Usuario verificado");
-    
+                reproducirSonido("audio1.wav");
                 panel.remove(botonLoguearse);
                 panel.remove(botonCancelar);
             } else {
                 verificacion.setText("El usuario: " + ingresarUsuario.getText() + " ha sido creado con éxito.");
-                
+                reproducirSonido("audio1.wav");
                 System.out.println("Usuario registrado");
                 guardarUsuario(textoIngresado);
     
@@ -159,13 +199,15 @@ public class MenuLogueo extends Menu{
         }
     };
 
-
+    /**
+     * Verifica si un usuario existe en el archivo de usuarios.
+     * @param usuario El nombre de usuario a verificar.
+     * @return true si el usuario existe, false de lo contrario.
+     */
     boolean verificarUsuario(String usuario) {
-        
-// Si no se encontro el usuario en el archivo, retorna false
-         archivoUsuarios = new File("src/DatosJugadores/listaJugadores.txt");
+        archivoUsuarios = new File("src/DatosJugadores/listaJugadores.txt");
     
-            try {
+        try {
             if (!archivoUsuarios.exists()) {
                 archivoUsuarios.createNewFile();
                 return false;
@@ -186,6 +228,10 @@ public class MenuLogueo extends Menu{
         return false;
     }
     
+    /**
+     * Guarda un nuevo usuario en el archivo de usuarios.
+     * @param usuario El nombre de usuario a guardar.
+     */
     void guardarUsuario(String usuario) {
         archivoUsuarios = new File("src/DatosJugadores/" + "listaJugadores.txt");
       
@@ -197,6 +243,10 @@ public class MenuLogueo extends Menu{
 
     }
 
+    /**
+     * Crea un archivo de estadísticas para un nuevo usuario.
+     * @param usuario El nombre de usuario para el archivo de estadísticas.
+     */
     void crearArchivoEstadisticas(String usuario) {
         archivo = new File("src/DatosJugadores/"+usuario +".txt");
 
@@ -206,8 +256,6 @@ public class MenuLogueo extends Menu{
                 "\nPartidas ganadas: 0" +
                 "\nPartidas perdidas: 0" +
                 "\nPartidas abandonadas: 0";
-                // Convertimos las estadisticas a formato de texto y las escribimos en el archivo
-                //
                 writer.write(datosIniciales);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -215,31 +263,39 @@ public class MenuLogueo extends Menu{
         }
     }
     
+    /**
+     * Muestra un mensaje de alerta cuando no se ingresa texto en el campo de usuario.
+     */
     void sinTexto(){
-
         botonCancelar.setVisible(false);
         botonLoguearse.setVisible(false);
         ingresarUsuario.setVisible(false);
 
         menuAlerta.setVisible(true);
         botonAceptar.setVisible(true);
-
     }
 
+    /**
+     * ActionListener para aceptar el mensaje de alerta de falta de texto.
+     */
     ActionListener aceptar=(ActionEvent e)->{
-
         menuAlerta.setVisible(false);
         botonAceptar.setVisible(false);
         iniciarComponentes();
-
     };
 
-
+    /**
+     * Retorna al menú principal del juego.
+     */
     void retornar(){
         new MenuPrincipal();
         this.dispose();
     }
 
+    /**
+     * Abre el menú de batalla del juego.
+     * @param usuario El nombre de usuario para el juego.
+     */
     void menuBatalla(String usuario){
         new MenuBatalla(usuario);
         this.dispose();

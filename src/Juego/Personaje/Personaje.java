@@ -2,12 +2,17 @@ package Juego.Personaje;
 
 import Juego.Tablero;
 
-public abstract class Personaje{
+public class Personaje{
     
   protected int SIZE = 30;
   protected int x;
   protected int y;
   protected int velocidad;
+  private static String jugador="ESTATICO";
+
+  public static String getJugador() {
+    return jugador;
+  }
 
   protected Personaje(int x, int y){ //Preguntar a la profe por este constructor y su privacidad
     this.x = x;
@@ -15,9 +20,9 @@ public abstract class Personaje{
     this.velocidad = this instanceof Jugador ? 4 : 1;
   }
 
-  public enum Movimiento{
+  public enum Movimiento {
     ABAJO(0, 1),
-    ARRIBA(0, -1), 
+    ARRIBA(0, -1),
     DERECHA(1, 0),
     IZQUIERDA(-1, 0);
 
@@ -25,14 +30,31 @@ public abstract class Personaje{
     private final int deltaY;
 
     Movimiento(final int deltaX, final int deltaY) {
-      this.deltaX = deltaX;
-      this.deltaY = deltaY;
+        this.deltaX = deltaX;
+        this.deltaY = deltaY;
     }
+
+} 
+  public void Movimiento(Movimiento movimiento) {
+    y += movimiento.deltaY * velocidad;
+    x += movimiento.deltaX * velocidad;
   }
 
-  public void Movimiento(Movimiento Movimiento) {
-    y += Movimiento.deltaY * velocidad;
-    x += Movimiento.deltaX * velocidad;
+  public void controles(Movimiento control){
+    switch (control){
+      case ARRIBA:
+      jugador="ARRIBA";
+      break;
+    case ABAJO:
+      jugador="ABAJO";
+      break;
+    case DERECHA:
+      jugador="DERECHA";
+      break;
+    case IZQUIERDA:
+      jugador="IZQUIERDA";
+      break;   
+    }
   }
 
   public void regresar(Movimiento direccion) {
